@@ -1,3 +1,6 @@
+// Global imports
+import _ from 'lodash';
+
 import {
     createStore,
     applyMiddleware,
