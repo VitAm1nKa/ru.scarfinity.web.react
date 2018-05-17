@@ -28,8 +28,7 @@ module.exports = (env) => {
         entry: { 'main-client': './src/boot-client.jsx' },
         module: {
             rules: [
-                { test: /\.css$/, use: ExtractTextPlugin.extract({ use: isDevBuild ? ['style-loader', 'css-loader', 'postcss-loader'] : ['style-loader', 'css-loader?minimize', 'postcss-loader'] }) },
-                { test: /\.less$/, use: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader'] }
+                { test: /\.less$/, use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: isDevBuild ? ['css-loader', 'postcss-loader', 'less-loader'] : ['css-loader?minimize', 'postcss-loader', 'less-loader'] })}
             ]
         },
         output: { path: path.join(__dirname, clientBundleOutputDir) },
