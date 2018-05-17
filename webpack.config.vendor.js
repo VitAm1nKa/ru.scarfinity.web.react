@@ -26,7 +26,10 @@ module.exports = (env) => {
                 'react-redux',
                 'redux',
                 'redux-thunk',
-                'react-router-redux'
+                'react-router-redux',
+                'material-ui',
+                'qs',
+                'lodash'
             ],
         },
         output: {
