@@ -8,7 +8,7 @@ import * as Grid    from '../../lib/grid';
 import ValueSwitch  from '../utility/value-switch';
 import SortBy       from '../utility/sort-by';
 
-import './catalog-header.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

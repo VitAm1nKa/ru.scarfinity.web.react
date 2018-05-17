@@ -9,7 +9,7 @@ import RadioBoxGroup            from '../../utility/radio-box-group';
 import PriceCalculation         from '../../utility/price-calculation';
 import * as Grid                from '../../../lib/grid';
 
-import './requisites.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

@@ -7,7 +7,7 @@ import {
     BasicButton
 }                   from './buttons';
 
-import './mail-line.less';
+
 
 class View extends React.Component {
     constructor(props) {

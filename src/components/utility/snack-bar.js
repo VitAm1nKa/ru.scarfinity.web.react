@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './snack-bar.less';
+
 
 class Controller extends React.Component {
     render() {

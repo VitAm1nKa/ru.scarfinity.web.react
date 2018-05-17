@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './sort-by.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

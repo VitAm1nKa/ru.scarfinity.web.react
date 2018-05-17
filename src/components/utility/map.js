@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './map.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

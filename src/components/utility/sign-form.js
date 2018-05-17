@@ -13,7 +13,7 @@ import {
 }                       from './input';
 import OverlayLoader    from './loader';
 
-import './sign-form.less';
+
 
 const SignBody = (props) => {
     return(

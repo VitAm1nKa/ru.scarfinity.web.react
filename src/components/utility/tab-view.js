@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './tab-view.less';
+
 
 export const Tab = (props) => {
     return(

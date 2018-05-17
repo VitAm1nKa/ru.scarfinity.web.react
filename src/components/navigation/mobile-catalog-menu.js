@@ -7,7 +7,7 @@ import Currency         from '../utility/currency';
 import ImageContainer   from '../utility/image-container';
 import Slider           from '../utility/slider';
 
-import './mobile-catalog-menu.less';
+
 
 const ProductCard = (props) => {
     return(

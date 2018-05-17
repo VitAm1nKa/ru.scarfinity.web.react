@@ -1,7 +1,7 @@
 import React        from 'react';
 import * as Grid    from '../../lib/grid';
 
-import './about-us.less';
+
 
 class Controller extends React.Component {
     render() {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './banner.less';
+
 
 import {Row, Container, Col}        from '../../lib/grid';
 import FiberManualRecord            from 'material-ui/svg-icons/av/fiber-manual-record';

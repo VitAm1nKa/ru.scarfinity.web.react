@@ -1,6 +1,6 @@
 import React    from 'react';
 
-import './value-switch.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

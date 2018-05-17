@@ -1,7 +1,7 @@
 import React    from 'react';
 import update   from 'immutability-helper';
 
-import './input-phone.less';
+
 import { PhoneNumber } from '../../store/__models';
 
 function makeMask(mask) {

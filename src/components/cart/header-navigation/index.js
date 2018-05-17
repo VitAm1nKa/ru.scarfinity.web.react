@@ -1,7 +1,5 @@
 import React from 'react';
 
-import './header-navigation.less';
-
 const renderState = [
     { s1: "active active--state-1", s2: "state-1", s3: "", s4: "", s5: "" },
     { s1: "complete", s2: "state-2", s3: "active active--state-2", s4: "state-3", s5: "" },

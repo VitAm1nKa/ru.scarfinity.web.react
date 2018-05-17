@@ -27,7 +27,7 @@ import {
 
 import * as Validation      from '../lib/validation';
 
-import './sandbox.less';
+
 
 import * as TabView         from '../components/utility/tab-view';
 import ReviewsContainer     from '../components/reviews/reviews-container';

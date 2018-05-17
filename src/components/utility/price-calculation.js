@@ -1,7 +1,7 @@
 import React        from 'react';
 import Currency     from './currency';
 
-import './price-calculation.less';
+
 
 const PriceCalculationView = (props) => {
     return(

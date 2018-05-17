@@ -13,7 +13,7 @@ import Paper                    from 'material-ui/Paper';
 import ItemRow                  from '../utility/item-row';
 import ImageContainer           from '../utility/image-container';
 
-import './recenly-viewed-small.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

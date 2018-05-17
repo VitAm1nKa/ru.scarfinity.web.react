@@ -9,7 +9,7 @@ import ExpandLess               from 'material-ui/svg-icons/navigation/expand-le
 import ExpandMore               from 'material-ui/svg-icons/navigation/expand-more';
 import IconButton               from 'material-ui/IconButton';
 
-import './item-row.less';
+
 
 var iconStyle = {
     width: 20,

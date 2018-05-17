@@ -2,7 +2,7 @@ import React        from 'react';
 import Measure      from 'react-measure';
 import SlickSlider  from 'react-slick';
 
-import './slider.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

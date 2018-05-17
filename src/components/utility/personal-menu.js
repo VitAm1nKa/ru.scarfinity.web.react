@@ -10,7 +10,7 @@ import IconButton   from 'material-ui/IconButton';
 import Settings     from 'material-ui/svg-icons/action/settings';
 import ExitToApp    from 'material-ui/svg-icons/action/exit-to-app';
 
-import './personal-menu.less';
+
 
 const styles = {
     button: {

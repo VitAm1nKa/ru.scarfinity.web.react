@@ -4,7 +4,7 @@ import ImageContainer       from './image-container';
 import Currency             from './currency';
 import { HorisontalRibbon } from './ribbon';
 
-import './mini-product-card.less';
+
 
 class Controller extends React.Component {
     render() {

@@ -7,7 +7,7 @@ import Paper                    from 'material-ui/Paper';
 import ItemRow                  from './item-row';
 import ImageContainer           from './image-container';
 
-import './recenly-viewed.less';
+
 
 class Controller extends React.Component {
     constructor(props) {

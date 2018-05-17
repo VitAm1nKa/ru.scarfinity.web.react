@@ -8,7 +8,7 @@ import {
 }                           from './icons';
 import { ImageGallery }     from '../../store/__models';
 
-import './image-gallery-view.less';
+
 
 class ImageView extends React.Component {
     constructor(props) {

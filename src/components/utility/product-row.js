@@ -6,7 +6,7 @@ import * as Grid            from '../../lib/grid';
 import ArrowForward         from 'material-ui/svg-icons/navigation/arrow-forward';
 import ArrowBack            from 'material-ui/svg-icons/navigation/arrow-back';
 
-import './product-row.less';
+
 
 var iconStyle = {
     width: 20,

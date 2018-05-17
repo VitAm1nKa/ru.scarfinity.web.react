@@ -4,7 +4,7 @@ import {
     NavLink
 }               from 'react-router-dom';
 
-import './gallery-view.less';
+
 
 class Controller extends React.Component {
     render() {
