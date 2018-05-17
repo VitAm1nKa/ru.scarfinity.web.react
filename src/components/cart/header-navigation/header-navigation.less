@@ -1,0 +1,135 @@
+.cart {
+	&__header-navigation {
+		display: flex;
+		flex-direction: row;
+		margin: 0px 0;
+		overflow: hidden;
+				
+		&__navigation-item {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 51px;
+			position: relative;
+			font-weight: 400;
+
+
+			&__text {
+				font-size: 16px;
+				text-transform: capitalize;
+				margin-left: 10px;
+			}
+
+			color: #777;
+			background: #ffffff;
+			
+			// animation
+			transition: all 0.3s;
+
+			&.active {
+				font-weight: 500;
+				color: #ffffff;
+
+				&--state-1 { background: #bf4e79; }
+				&--state-2 { background: #ef8642; }
+				&--state-3 { background: #8868c9; }
+			}
+
+			@media screen and (max-width: 620px) {
+				flex: 0 1;
+				padding: 0px 10px;
+
+				&__text {
+					font-size: 0px;
+					max-width: 0px;
+					width: 0px;
+					margin-left: 0px;
+				}
+				
+				&.active, &.active & {
+					flex: 1 0;
+
+					&__text {
+						display: inline-block;
+						font-size: 16px;
+						margin-left: 10px;
+						max-width: 300px;
+						width: auto;
+					}
+				}
+			}
+
+			@media screen and (max-width: 400px) {
+				&.active & {
+					&__text {
+						font-size: 14px;
+					}
+				}
+			}
+
+			&__delim {
+				flex: 0 0 16px;
+				height: 54px;
+				width: 16px;
+				position: relative;
+				
+				background: #ccc;
+
+				border-bottom: 1px solid red;
+				
+				&:after {
+					content: "";
+					position: absolute;
+					border-top: 27px solid white;
+					border-bottom: 27px solid white;
+					border-left: 14px solid transparent;
+					border-right: none;
+					right: 0;
+					top: 0;
+					bottom: 0;
+					transition: all 0.3s;
+				}
+
+				&:before {
+					content: "";
+					position: absolute;
+					border-top: 27px solid transparent;
+					border-bottom: 27px solid transparent;
+					border-left: 14px solid white;
+					border-right: none;
+					left: 0;
+					top: 0;
+					bottom: 0;
+					transition: all 0.3s;
+				}
+
+				&.state-1 {
+					background: #ffffff;
+					&:before { border-left-color: #bf4e79; }
+				}
+
+				&.state-2 {
+					background: #ffffff;
+					&:after { border-top-color: #ef8642; border-bottom-color: #ef8642; }
+				}
+
+				&.state-3 {
+					background: #ffffff;
+					&:before { border-left-color: #ef8642; }
+				}
+
+				&.state-4 {
+					background: #ffffff;
+					&:after { border-top-color: #8868c9; border-bottom-color: #8868c9; }
+				}
+			}
+
+			&__delim2 {
+				flex: 0 0 18px;
+				height: 51px;
+				width: 18px;
+			}
+		}
+	}
+}

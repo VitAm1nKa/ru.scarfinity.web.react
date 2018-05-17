@@ -1,0 +1,29 @@
+.info-list {
+    display: block;
+    list-style: circle;
+    margin: 0;
+    padding: 20px 20px;
+
+    & > li {
+        display: flex;
+        align-items: baseline;
+        color: #8869ca;
+        font-size: 14px;
+        margin: 5px 0px;
+
+        & > span {
+            color: #303030;
+        }
+
+        &:before {
+            content: "\2022";
+            margin-right: 5px;
+        }
+    }
+
+    &__dots {
+        flex: 1;
+        margin: 0px 10px;
+        border-bottom: 1px dotted #d7d7d7;
+    }
+}

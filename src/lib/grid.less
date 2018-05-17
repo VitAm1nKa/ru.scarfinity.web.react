@@ -1,0 +1,118 @@
+.s-grid-vertical {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    margin: -7px 0px;
+
+    &__item {
+        padding: 7px 0px;
+        flex: 0 0;
+        box-sizing: border-box;
+    }
+}
+
+.s-grid-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.s-grid-container {
+    flex: 1 1;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+
+    min-width: 200px;
+
+    margin: 0px -7px;
+    margin-bottom: -14px;
+
+    // background: rgba(240, 128, 128, 0.20);
+
+    &.fluid {
+        max-width: 1202px + 14px;
+    }
+}
+
+.s-grid-col {
+    box-sizing: border-box;
+    flex: 0 0;
+    padding: 0px 7px;
+
+    flex-basis: 100%;
+    max-width: 100%;
+
+    @media screen and (min-width: 1128px) {
+        &.lg {
+            .col-setup(16);
+            .col-setup(12);
+            .col-setup(9);
+        }
+
+        &.lg-16_0,
+        &.lg-12_0,
+        &.lg-9_0 {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 1127px) {
+        &.md {
+            .col-setup(16);
+            .col-setup(12);
+            .col-setup(9);
+        }
+
+        &.md-16_0,
+        &.md-12_0,
+        &.md-9_0 {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 992px) {
+        &.sm {
+            .col-setup(16);
+            .col-setup(12);
+            .col-setup(9);
+        }
+
+        &.sm-16_0,
+        &.sm-12_0,
+        &.sm-9_0 {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 767px) {
+        &.xs {
+            .col-setup(16);
+            .col-setup(12);
+            .col-setup(9);
+        }
+
+        &.xs-16_0,
+        &.xs-12_0,
+        &.xs-9_0 {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: 390px) {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+}
+
+.s-grid-box {
+    margin-bottom: 14px;
+}
+
+.col-setup(@count, @index: 1) when (@index =< @count) {
+    &-@{count}_@{index} {
+        flex-basis: (100% / @count) * @index;
+        max-width: (100% / @count) * @index;
+    }
+    .col-setup(@count, (@index + 1));
+}

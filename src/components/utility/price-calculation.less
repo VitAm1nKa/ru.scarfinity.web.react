@@ -1,0 +1,56 @@
+.price-calculation {
+    margin: 5px 0px;
+    border: 1px solid #d7d7d7;
+    border-radius: 2px;
+    padding: 6px 15px;
+
+    &__row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        &__text {
+            width: 80px;
+
+            font-family: "Roboto";
+            font-size: 13px;
+            text-transform: uppercase;
+
+            text-align: center;
+
+            color: #aaaaaa;
+
+            & .utility__currency__value {
+                color: #808080 !important;
+            }
+
+            &.accent {
+                color: #303030;
+
+                & .utility__currency__value {
+                    color: #303030 !important;
+                }
+            }
+        }
+
+        &__sign {
+            width: 30px;
+            height: 30px;
+
+            &.equals {
+                background-image: url('./icons/equals.svg');
+                background-size: 40% 40%;
+                background-position: center center;
+                background-repeat: no-repeat;
+            }
+
+            &.plus {
+                background-image: url('./icons/plus.svg');
+                background-size: 40% 40%;
+                background-position: center center;
+                background-repeat: no-repeat;
+            }
+        }
+    }
+}

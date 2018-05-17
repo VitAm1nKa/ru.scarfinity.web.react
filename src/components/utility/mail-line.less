@@ -1,0 +1,52 @@
+.mail-line {
+    background: white;
+
+    &__line {
+        background:linear-gradient(-45deg, #2799c9 11%, white 11%, white 35.28%, #e05543 35.28%, #e05543 60%, white 60%, white 84%, #2799c9 84%);
+        background-size: 85px 4px;
+        height: 4px;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        padding: 5px 0px;        
+    }
+
+    &__banner-container {
+        text-align: right;
+    }
+
+    &__banner {
+        display: inline-block;
+        margin: 5px 0px;
+
+        line-height: 20px;
+        text-align: center;
+
+        color: #808080;
+
+        &__top {
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        &__bottom {
+            font-size: 12px;
+            color: #808080;
+        }
+    }
+
+    &__blue {
+        color: #3c5569;
+        margin-right: 3px;
+    }
+
+    &__green {
+        color: #9cbf3e;
+        margin-left: 3px;
+    }
+}

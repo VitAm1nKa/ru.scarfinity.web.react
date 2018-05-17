@@ -1,0 +1,133 @@
+.order-number {
+    text-decoration: none;
+    font-size: 14px;
+
+    &__number {
+        margin-left: 5px;
+        color: #2799c9;
+    }
+}
+
+.order-status {
+    padding: 4px 12px;
+    color: #303030;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+
+    &--processed {
+        color: #ef7c42;
+    }
+
+    &--delivered {
+        color: #37c17b;      
+    }
+
+    &--canceled {
+        color: #e05343;
+    }
+}
+
+.orders-history-orders {
+    font-size: 14px;
+    color: #303030;
+
+    & .s-grid-col {
+        &:nth-child(n+2):nth-child(-n+5) {
+            text-align: center;
+        }
+
+        &:last-child {
+            text-align: center;
+        }
+    }
+}
+
+.orders-history-header {
+    padding: 14px 14px;
+    border-bottom: 1px solid #ccc;
+
+    @media screen and (max-width: 420px) {
+        display: none;
+    }
+}
+
+.order-line {
+    align-items: center;
+    border-bottom: 1px solid #e7e7e7;
+    padding: 14px 14px;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.order-line-center {
+    align-items: center;
+}
+
+.order-container {
+    padding: 14px;
+    position: relative;
+    background: white;
+    border-radius: 2px;
+    filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 1px);
+}
+
+.order-separate-title {
+    height: 30px;
+    color: #303030;
+    text-align: center;
+    margin: 7px 0px;
+
+    & > span {
+        font-weight: 400;
+        font-size: 14px;
+        z-index: 1;
+        left: 0;
+        right: 0;
+        color: #303030;
+        position: absolute;
+        line-height: 33px;
+    }
+
+    &:after {
+        content: "";
+        position: absolute;
+        left: -4px;
+        right: -4px;
+        height: 30px;
+        background-color: rgba(249, 249, 249, 1.0);
+        border-top: 1px solid rgba(233, 233, 233, 1.0);
+        border-bottom: 1px solid rgba(233, 233, 233, 1.0);
+        z-index: 0;
+    }
+}
+
+.order-info-ul {
+    list-style: none;
+    border: 1px solid #d7d7d7;
+    border-radius: 2px;
+    padding: 14px;
+    margin: 0;
+
+    & > li {
+        display: flex;
+        align-items: flex-end;
+        text-align: left;
+        line-height: 22px;
+        font-size: 14px;
+        color: #303030;
+
+        & > span {
+            flex: 0 0 60px;
+            align-self: flex-start;
+            text-align: right;
+            width: 60px;
+            font-size: 13px;
+            display: inline-block;
+            margin-right: 7px;
+            color: #808080;
+        }
+    }
+}

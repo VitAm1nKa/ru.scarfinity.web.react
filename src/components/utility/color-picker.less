@@ -1,0 +1,52 @@
+.color-picker {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0px -5px;
+
+    &__item {
+        flex: 0 0;
+        width: 20%;
+        flex-basis: 20%;
+    }
+
+    .color-setup(@index) when (@index > 0) {
+        .color-setup((@index - 1));
+
+        &.color-@{index} & {
+            &__item {
+                flex-basis: (100% / @index);
+                max-width: (100% / @index);
+            }
+        }
+    }
+
+    .color-setup(32);
+}
+
+.color-picker-item {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+
+    transition: opacity 0.2s ease;
+
+    cursor: pointer;
+    
+    &--disabled {
+        opacity: 0.2;
+        cursor: default;
+    }
+
+    &__container {
+        @padding: 4px;
+
+        position: absolute;
+        top: @padding;
+        right: @padding;
+        bottom: @padding;
+        left: @padding;
+    }
+}

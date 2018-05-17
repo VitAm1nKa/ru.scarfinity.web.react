@@ -1,0 +1,70 @@
+.image-gallery-view {
+    &__body {
+        background: white;
+        position: relative;
+
+        &__buttons {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+
+            display: flex;
+
+            &__button {
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 0px 14px;
+
+                & > svg {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                fill: #d7d7d7;
+
+                transition: fill 0.4s ease;
+
+                &:hover {
+                    fill: #808080;
+                }
+
+                &.prev { flex: 2; align-items: flex-start}
+                &.next { flex: 8; align-items: flex-end}
+            }
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: space-between;
+
+        padding: 4px 14px;
+
+        background: #303030;
+        
+        color: white;
+        font-size: 12px;
+        line-height: 26px;
+
+        &__title {
+            color: #808080;
+            font-weight: 500;
+        }
+    }
+}
+
+.image-gallery-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & > img {
+        width: 0px;
+        height: 0px;
+        // transition: all 0.1s ease;
+    }
+}

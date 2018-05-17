@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280">
+<defs>
+    <style>
+      .cls-1 {
+        fill: #e05543;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Error_Icon" data-name="Error Icon" class="cls-1" d="M150,10.026a140,140,0,1,1-140,140A140.016,140.016,0,0,1,150,10.026ZM136,80h28v98H136V80Zm0,112h28v28H136V192Z" transform="translate(-10 -10.031)"/>
+</svg>

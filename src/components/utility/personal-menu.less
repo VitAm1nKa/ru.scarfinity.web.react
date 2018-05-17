@@ -1,0 +1,96 @@
+.personal-menu {
+    &__avatar {
+        background-color: #f7f7f7;
+        background-image: url('');
+
+        flex: 9 0;
+
+        width: 100%;
+        padding-top: 100%;
+
+        background-size: cover;
+        background-position: top center;
+        border-radius: 50%;
+    }
+
+    &__header {
+        padding: 14px;
+        position: relative;
+
+        display: flex;
+        flex-direction: row;
+
+        & > div:nth-child(odd) {
+            text-align: center;
+        }
+
+        & > div:nth-child(even) {
+            flex: 1;
+        }
+
+        &:after {
+			content: "";
+			position: absolute;
+			background: linear-gradient(rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.12) 5%, rgba(255, 255, 255, 0) 45%);
+			left: 0;
+			right: 0;
+            height: 4px;
+            bottom: 0;
+		}
+    }
+
+    &__body {      
+        padding: 14px;
+
+        & > ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+
+            & > li {
+                text-align: center;
+                display: block;
+
+                position: relative;
+
+                padding: 10px 0px;
+
+                font-size: 14px;
+                font-weight: 400;
+
+                & > a {
+                    display: block;
+                    color: #303030;
+                    text-transform: capitalize;
+                    transition: color 0.3s ease;
+
+                    & > span {
+                        position: relative;
+                    }
+                }
+
+                &:hover {
+                    & > a {
+                        color: #ef8742;
+                    }
+                }
+            }
+
+            & > li:not(:last-child) {
+                &:before {
+                    content: "";
+                    position: absolute;
+                    width: 10%;
+                    bottom: 0;
+                    left: 45%;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+                }
+            } 
+        }
+    }
+}

@@ -1,0 +1,564 @@
+//  Colors ------------------------------------------------
+@main:                      #f9f9f9;
+@scale-background:          #f9f9f9;
+@scale:                     #d7d7d7;
+
+@banner-scale-bar-first:    #bf4f79;
+@banner-scale-bar-second:   #ef8742;
+@banner-scale-bar-third:    #9cbf3e;
+@banner-scale-bar-fourth:   #2799c9;
+
+@banner-title:              #303030;
+@banner-subtitle:           #808080;
+@banner-index:              #eeeeee;
+
+@content:                   #fff;
+@content-shadow:            rgba(0, 0, 0, 0.12);
+
+@content-simple-title:      #303030;
+@content-simple-second:     #303030;
+@content-simple-subtitle:   #808080;
+
+@pagination:                #aaaaaa;
+
+
+@itemBackground:    #bf4f79;
+@color:             #ffffff;
+@arrow:             rgba(255, 255, 255, 0.5);
+@active:            #bf4f79;
+@decoration:        #d7d7d7;
+//  -------------------------------------------------------
+
+// -- Utility things
+.banner-button {
+display: inline-block;
+justify-content: center !important;
+border-radius: 4px;
+
+margin: 5px 0px;
+
+position: relative;
+overflow: hidden;
+
+border: none;
+outline: none;
+
+height: 44px;
+width: 120px;
+text-align: center;
+
+z-index: 1;
+
+transition: background 0.2s ease-in-out;
+
+&__text {
+    font-family: "Roboto";
+    font-size: 15px;
+    text-transform: uppercase;
+
+    color: @content;
+    font-weight: 500;
+
+    z-index: 200;
+    text-align: center;
+}
+
+&:hover {
+    cursor: pointer;
+}
+
+&--first {
+    background: @banner-scale-bar-first;
+
+    &:hover {
+        background: lighten(@banner-scale-bar-first, 10%);
+    }
+
+    &:active {
+        background: darken(@banner-scale-bar-first, 5%);
+    }
+}
+&--second {
+    background: @banner-scale-bar-second;
+
+    &:hover {
+        background: lighten(@banner-scale-bar-second, 10%);
+    }
+
+    &:active {
+        background: darken(@banner-scale-bar-second, 5%);
+    }
+}
+&--third {
+    background: @banner-scale-bar-third;
+
+    &:hover {
+        background: lighten(@banner-scale-bar-third, 10%);
+    }
+
+    &:active {
+        background: darken(@banner-scale-bar-third, 5%);
+    }
+}
+&--fourth {
+    background: @banner-scale-bar-fourth;
+
+    &:hover {
+        background: lighten(@banner-scale-bar-fourth, 10%);
+    }
+
+    &:active {
+        background: darken(@banner-scale-bar-fourth, 5%);
+    }
+}
+}
+//------------------------------
+
+.banner {
+    background: @main;
+    overflow: hidden;
+
+    &__content {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        &__side {
+            flex: 0 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            & > svg {
+                fill: @pagination !important;
+            }
+
+            &:hover {
+                cursor: pointer;
+
+                & > svg {
+                    fill: darken(@pagination, 20%) !important;
+                }
+            }
+
+            @media screen and (max-width: 767px) {
+                display: none;
+            }
+        }
+    }
+
+    &__menu {
+        padding: 0px 30px;
+        position: relative;
+        overflow: hidden;
+
+        &:before {
+            content: "";
+            position: absolute;
+            top: 2px;
+            right: 0;
+            left: 0;
+            border-top: 1px solid @scale;
+        }
+
+        @media screen and (max-width: 767px) {
+            padding: 0px 0px;
+        }
+    }
+
+    filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 1px);
+}
+
+.banner-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    &__item {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        opacity: 0;
+
+        &--active {
+            opacity: 1;
+        }
+    }
+}
+
+.banner-item-simple {
+    position: relative;
+    display: grid;
+    grid-template-columns: 45fr 55fr;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+
+&__content {
+    padding: 5px;
+    margin: 0px 25px;
+
+    // overflow: hidden;
+
+    font-family: "Roboto";
+
+    z-index: 10;
+
+    &__primary {
+        display: block;
+
+        font-size: 32px;
+        font-weight: 500;
+        text-transform: uppercase;
+
+        z-index: 10;
+
+        color: @content-simple-title;
+
+        transition: all 800ms cubic-bezier(0.1, 0.1, 0.6, 1.0);
+    }
+
+    &__secondary {
+        display: block;
+
+        font-size: 24px;
+        font-weight: 500;
+        text-transform: uppercase;
+
+        z-index: 10;
+
+        color: @content-simple-second;
+
+        transition: all 800ms cubic-bezier(0.3, 0.1, 0.6, 1.0);
+    }
+
+    &__subtitle {
+        display: block;
+
+        margin: 15px 0px;
+
+        font-size: 16px;
+        font-weight: 400;
+
+        z-index: 10;
+
+        color: @content-simple-subtitle;
+
+        transition: all 800ms cubic-bezier(0.5, 0.1, 0.6, 1.0);
+    }
+
+    &__button {
+        transition: all 800ms cubic-bezier(0.6, 0.1, 0.6, 0.8);
+    }
+
+    &__image {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        z-index: -1;
+
+        background-image: url('./icons/banner-bg.png');
+        background-size: cover;
+        transition: all 800ms cubic-bezier(0.6, 0.1, 0.6, 0.8);
+
+        & > img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &--pre-focus & {
+        &__primary, &__secondary, &__subtitle, &__button {
+            transform: translate3d(160%, 0, 0);
+            opacity: 0;
+        }
+
+        &__image {
+            opacity: 0;
+        }
+    }
+
+    &--after-focus & {
+        &__primary, &__secondary, &__subtitle, &__button {
+            transform: translate3d(-100%, 0, 0);
+            opacity: 0;
+        }
+
+        &__image {
+            opacity: 0;
+        }
+    }
+}
+}
+
+.banner-content {
+    position: relative;
+    background: @content;
+    width: 100%;
+    padding-top: 6 / 14 * 100%;
+    padding-top: 310px;
+
+    border-left: 1px solid @scale;
+    border-right: 1px solid @scale;
+
+    @media screen and (max-width: 767px) {
+        border-left: none;
+        border-right: none;
+    }
+
+    &__container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.banner-menu {
+    display: flex;
+    flex-direction: row;
+}
+
+.banner-menu-item {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    line-height: 16px;
+
+    margin-left: -9px;
+
+    height: 70px;
+
+    &__title {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        font-size: 16px;
+        font-weight: 500;
+
+        z-index: 20;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &__text {
+            display: block;
+            text-transform: uppercase;
+
+            color: @banner-title;
+
+            transition: color 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        }
+
+        &--style01 {
+            & > svg {
+                fill: @banner-scale-bar-first !important;
+            }
+        }
+
+        &--style02 {
+            & > svg {
+                fill: @banner-scale-bar-second !important;
+            }
+        }
+
+        &--style03 {
+            & > svg {
+                fill: @banner-scale-bar-third !important;
+            }
+        }
+
+        &--style04 {
+            & > svg {
+                fill: @banner-scale-bar-fourth !important;
+            }
+        }
+
+        &--active01 & {
+            &__text {
+                color: @banner-scale-bar-first;
+            }
+        }
+
+        &--active02 & {
+            &__text {
+                color: @banner-scale-bar-second;
+            }
+        }
+
+        &--active03 & {
+            &__text {
+                color: @banner-scale-bar-third;
+            }
+        }
+
+        &--active04 & {
+            &__text {
+                color: @banner-scale-bar-fourth;
+            }
+        }
+    }
+
+    &__subtitle {
+        position: relative;
+        -webkit-backface-visibility: hidden;
+        -webkit-transform-style: preserve-3d;
+        display: block;
+        z-index: 10;
+
+        font-size: 12px;
+
+        color: @banner-subtitle;
+        margin: 0px 0px 10px 20px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &:before {
+        content: attr(data-index);
+        position: absolute;
+
+        text-align: right;
+
+        color: @banner-index;
+        font-size: 85px;
+        line-height: 85px;
+
+        bottom: -22px;
+        right: 5%;
+        z-index: 0;
+    }
+
+    @media screen and (max-width: 767px) {
+        height: 56px;
+        padding: 0px 7px;
+
+        &__title {
+            font-size: 11px;
+        }
+
+        &__subtitle {
+            display: none;
+        }
+
+        &:before {
+            font-size: 56px;
+            bottom: -30px;
+        }
+    }
+}
+
+.banner-scale {
+    height: 14px;
+
+    background: 
+        linear-gradient(90deg, @scale 1px, rgba(0, 0, 0, 0.0) 1px),
+        linear-gradient(270deg, @scale 1px, rgba(0, 0, 0, 0.0) 1px);
+    background-color: @scale-background;
+    background-repeat: repeat-x, repeat-x;
+    background-size: 25.4% 100%, 100% 100%;
+    background-position: 0px 0px, 0px 0px;
+}
+
+.banner-slide-item {
+    flex: 1;
+
+    position: relative;
+    overflow: hidden;
+
+    &__white {
+        position: absolute;
+
+        transform: 'scale3d(1, 1, 1)';
+
+        background: @content;
+        top: 0;
+        bottom: 0;
+        right: -1px;
+        left: 0;
+
+        transform-origin: right;
+    }
+}
+
+.banner-slide {
+    height: 2px;
+    display: flex;
+
+    border-left: 1px solid @scale;
+    border-right: 1px solid @scale;
+
+    background: @content;
+}
+
+.banner-slide-bar {
+    height: 2px;
+    position: relative;
+
+    background: linear-gradient(
+        90deg,
+        @banner-scale-bar-first 0%,
+        @banner-scale-bar-first 25.4%,
+        @banner-scale-bar-second 25.4%,
+        @banner-scale-bar-second 50.8%,
+        @banner-scale-bar-third 50.8%,
+        @banner-scale-bar-third 76.2%,
+        @banner-scale-bar-fourth 76.2%,
+        @banner-scale-bar-fourth 100%
+    );
+
+    &__white {
+        position: absolute;
+
+        background: @scale-background;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+
+        transform: scale3d(1, 1, 1);
+        transform-origin: right;
+
+        transition: all 1s linear;
+    }
+}
+
+.banner-scale-container {
+    display: flex;
+    border-left: 1px solid @scale;
+    border-right: 1px solid @scale;
+}
+
+.banner-scale-item {
+    flex: 1;
+    overflow: hidden;
+
+    background: 
+        linear-gradient(90deg, @scale 1px, rgba(0, 0, 0, 0.0) 1px) no-repeat;
+    background-color: @scale-background;
+    background-size: 2px 100%;
+    background-position: 0px 0px, 0px 0px;
+
+    &__scale {
+        overflow: hidden;
+        height: 40px;
+        background: 
+            linear-gradient(90deg, @scale 1px, transparent 1px);
+        background-size: 5px 35%, 100% 100%, 100% 100%;
+        background-repeat: repeat-x, repeat-x, repeat-x;
+        background-position: -3px 0px, 0px 0px, 0px 0px;
+    }
+}

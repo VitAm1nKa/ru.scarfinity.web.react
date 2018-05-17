@@ -1,0 +1,197 @@
+//- Colors -------------------------------
+@check-background:          #f9f9f9;
+@check-shadow:              rgba(0, 0, 0, 0.2);
+@check-title:               #808080;
+@check-delim:               #cccccc;
+
+@button-background:         #1bb869;
+@button-left-border:        rgba(0, 0, 0, 0.1);
+@button-right-border:       rgba(255, 255, 255, 0.17);
+
+@prevButton-background:     rgba(255, 255, 255, 0.0);
+@prevButton-color:          #808080;
+//- --------------------------------------
+
+.payments-check {
+    background: @check-background;
+    padding: 10px;
+    position: relative;
+
+    filter: drop-shadow(@check-shadow 0px 1px 1px);
+
+    text-align: center;
+
+    &:before {
+        content: "";
+        position: absolute;
+
+        left: 0px;
+        bottom: -5px;
+        width: 100%;
+        height: 5px;
+
+        background:
+            linear-gradient( 45deg, transparent 67%, @check-background 67%),
+            linear-gradient(-45deg, transparent 67%, @check-background 67%);
+        background-size: 10px 5px;
+    }
+
+    &__title {
+        display: block;
+        margin: 0;
+        margin-bottom: 5px;
+        padding: 3px 15px;
+
+        border-bottom: 1px solid @check-delim;
+
+        font-family: "Roboto";
+        font-weight: 500;
+        font-size: 14px;
+
+        text-transform: uppercase;
+
+        color: @check-title;
+    }
+}
+
+.cart__bottom-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 20px;
+    margin-bottom: 10px;
+    position: relative;
+
+    padding: 0px 20px;
+
+    &.check {
+        height: 80px;
+    }
+
+    &__left {
+        display: inline;
+        flex: 1 1;
+    }
+
+    &__right {
+        flex: 1 1;
+        text-align: right;
+    }
+
+    &__check {
+        position: absolute;
+        margin: auto;
+        width: 120px;
+        height: 82px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    @media screen and (max-width: 768px) {
+        &__left {
+            flex: 1
+        }
+
+        &__right {
+            flex: 7;
+        }
+    }
+
+    @media screen and (max-width: 580px) {
+        &__check {
+            top: -110px;
+            bottom: auto;
+        }
+
+        &.check {
+            margin-top: 120px;
+            height: auto;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        padding: 0px 10px;
+    }
+}
+
+.cart__button-next {
+    display: inline-block;
+    position: relative;
+    padding: 12px 55px 12px 25px;
+
+    border-radius: 2px;
+
+    font-family: "Roboto";
+    font-weight: 500;
+    font-size: 14px;
+
+    color: #ffffff;
+
+    text-transform: capitalize;
+
+    background-color: @button-background;
+    background-image: url('./icons/chevron-right.svg');
+    background-size: 17px 14px;
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+
+    user-select: none;
+
+    transition: all 0.3s ease;
+
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 36px;
+
+        border-left: 1px solid @button-left-border;
+        border-right: 1px solid @button-right-border;
+    }
+
+    &:hover {
+        cursor: pointer;
+        background-color: lighten(@button-background, 2%);
+    }
+
+    &:active {
+        background-color: darken(@button-background, 2%);
+    }
+}
+
+.cart__button-prev {
+    display: block;
+    padding: 12px 10px 12px 30px;
+
+    font-weight: 400;
+    font-size: 14px;
+
+    color: @prevButton-color;
+
+    background-color: @prevButton-background;
+    background-image: url('./icons/chevron-left.svg');
+    background-size: 22px 100%;
+    background-position: left center;
+    background-repeat: no-repeat;
+
+    user-select: none;
+
+    transition: all 0.3s ease;
+
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    @media screen and (max-width: 768px) {
+        color: rgba(0, 0, 0, 0.0);
+        font-size: 0px;
+        width: 26px;
+        height: 26px;
+        padding: 0px;
+        background-size: 26px 100%;
+    }
+}

@@ -1,0 +1,633 @@
+//- Colors --------------------
+    @input__basic__border:             #d7d7d7; 
+    @input__basic-background:          #ffffff;   
+    @input__basic-disabled-border:     #eeeeee;  
+    @input__basic-disabled-background: #f9f9f9;
+
+    @input__search-delim:				#d7d7d7;
+    @input__search-options-background:	#ffffff;
+    @input__search-background:         #f9f9f9;
+
+    @input__success:                   #1bb869;
+    @input__warning:                   #ef8742;   
+    @input__error:                     #e05543;
+    @input__active:                    #2799c9;
+
+    @input__dropdown-bg-iddle:          #f9f9f9;
+    @input__dropdown-bg-active:         #ffffff;
+    @input__dropdown-bg-static:         #f9f9f9;
+    @input__dropdown-br:                #d7d7d7;
+    @input__dropdown-br-disabled:       #eeeeee;
+//- ---------------------------
+
+.sSearch-wrap {
+    display: block;
+    position: relative;
+    
+    &__button {
+        position: absolute;
+        display: block;
+        top: 1px;
+        right: 1px;
+        bottom: 1px;
+        width: 30px;
+        height: calc(~'100% - 2px');
+    
+        background-color: #ccc;
+        background-image: url('./icons/search.svg');
+        background-size: 14px 100%;
+        background-position: right 8px top 0px;
+        background-repeat: no-repeat;
+        transition: background-color 0.2s ease;
+    
+        outline: none;
+        border: none;
+    
+        cursor: pointer;
+    
+        user-select: none;
+    
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+    
+        text-transform: uppercase;
+        
+        &:hover {
+            background-color: #aaa;
+        }
+    }
+}
+
+.sSearch {
+    display: block;
+    width: 100%;
+    padding: 9px 15px;
+    margin: 5px 0;
+    box-sizing: border-box;
+
+    border-radius: 2px;
+    border: 1px solid @input__basic__border;
+    outline: none;
+
+    transition: border 0.4s ease;
+
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 12px;
+
+    background: #fff;
+
+    &:focus {
+        border-color: @input__active;
+        background-color: #fff;
+    }
+
+    &:disabled {
+        background-color: @input__basic-disabled-background;
+        border-color: @input__basic-disabled-border;
+    }
+}
+
+.sInput {
+    display: inline-block;
+    width: 100%;
+    padding: 11px 15px;
+    margin: 5px 0;
+    box-sizing: border-box;
+
+    border-radius: 2px;
+    border: 1px solid @input__basic__border;
+    outline: none;
+
+    transition: border 0.4s ease;
+
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 14px;
+
+    background-color: @input__basic-background;
+    background-size: 18px 100%;
+    background-position: right 10px top 0px;
+    background-repeat: no-repeat;
+
+    &:focus {
+        border-color: @input__active;
+    }
+
+    &--success {
+        background-image: url('./icons/checked.svg');
+        &:focus { border-color: @input__success }
+    }
+
+    &--error {
+        background-image: url('./icons/error.svg');
+        &:focus { border-color: @input__error }
+    }
+
+    &--search {
+        background-image: url('./icons/search.svg');
+        &:focus { border-color: @input__active }
+    }
+
+    &:disabled {
+        background-color: @input__basic-disabled-background;
+        border-color: @input__basic-disabled-border;
+    }
+}
+
+.sInput-search {
+	display: inline-block;
+    width: 100%;
+	padding: 12px 15px;
+	padding-right: 67px;
+    margin: 5px 0;
+    box-sizing: border-box;
+
+    border-radius: 2px;
+    border: 1px solid @input__basic__border;
+    outline: none;
+
+    transition: border 0.4s ease;
+
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 14px;
+
+    background-color: @input__basic-background;
+    background-size: 8px 100%, 29px 100%, 18px 100%;
+    background-position: right 10px center, right center, right 39px center;
+	background-repeat: no-repeat, no-repeat, no-repeat;
+	
+	background-image: 
+		url('./icons/arrows.svg'),
+		linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+		none;
+
+    &:focus {
+        border-color: @input__active;
+    }
+
+    &--success {
+		background-image: 
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/checked.svg');
+        &:focus { border-color: @input__success }
+    }
+
+    &--warning {
+		background-image:
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/warning.svg');
+        &:focus { border-color: @input__warning }
+	}
+
+    &--error {
+		background-image:
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/error.svg');
+        &:focus { border-color: @input__error }
+	}
+
+    &:disabled {
+        background-color: @input__basic-disabled-background;
+        border-color: @input__basic-disabled-border;
+    }
+}
+
+.sInput-sign {
+    display: block;
+    position: relative;
+    // font-size: 0;
+
+    & > input {
+        outline: none;
+        width: 100%;
+
+        display: block;
+        box-sizing: border-box;
+
+        padding: 12px 15px;
+        margin: 0;
+        padding-left: 54px;
+
+        font-weight: 400;
+        font-size: 14px;
+        height: 42px;
+
+        background: transparent;
+        border-radius: 2px;
+        border: 1px solid @input__basic__border;
+
+        transition: border 0.4s ease;
+
+        overflow: hidden;
+
+        &:focus, &:active {
+            border-color: @input__active;
+        }
+
+        &:disabled {
+            border-color: @input__basic-disabled-border;
+        }
+    }
+
+    &:after {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        bottom: 1px;
+        height: 40px;
+        width: 42px;
+
+        border-right: 1px solid @input__basic__border;
+
+        z-index: 10;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 36px;
+
+        z-index: 10;
+    }
+
+    &--mail {
+        &:after {
+            background-color: @input__basic-background;
+            background-image:
+                url('./icons/mail.svg'),
+                linear-gradient(90deg, #f9f9f9 42px, transparent 1px);
+            background-size: 22px 22px, 42px 100%, 18px 100%;
+            background-position: left 10px center, left center, right 10px top;
+            background-repeat: no-repeat;
+        }
+    }
+
+    &--password {
+        &:after {
+            background-color: @input__basic-background;
+            background-image:
+                url('./icons/lock.svg'),
+                linear-gradient(90deg, #f9f9f9 42px, transparent 1px);
+            background-size: 22px 22px, 42px 100%, 18px 100%;
+            background-position: left 10px center, left center, right 10px top;
+            background-repeat: no-repeat;
+        }
+    }
+
+    &--success > input {            
+        &:focus { border-color: @input__success }
+    }
+
+    &--success {
+        &:before {
+            background-image: url('./icons/checked.svg');
+            background-size: 18px 100%;
+            background-position: center top;
+            background-repeat: no-repeat;
+        }
+    }
+
+    &--error > input {
+        &:focus { border-color: @input__error }
+    }
+
+    &--error {
+        &:before {
+            background-image: url('./icons/error.svg');
+            background-size: 18px 100%;
+            background-position: center top;
+            background-repeat: no-repeat;
+        }
+    }
+
+    &--disabled {
+        background-color: @input__basic-disabled-background;
+    }
+}
+
+.sInput-dropdown {
+	display: inline-block;
+    width: 100%;
+	padding: 12px 15px;
+	padding-right: 30px;
+    margin: 5px 0;
+    box-sizing: border-box;
+
+    border-radius: 2px;
+    border: 1px solid @input__dropdown-br;
+    outline: none;
+
+    transition: border 0.4s ease;
+
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 14px;
+
+    background-color: @input__dropdown-bg-iddle;
+    background-size: 8px 100%, 29px 100%, 18px 100%;
+    background-position: right 10px center, right center, right 39px center;
+	background-repeat: no-repeat, no-repeat, no-repeat;
+	
+	background-image: 
+		url('./icons/arrows.svg'),
+		linear-gradient(90deg, @input__dropdown-br 1px, transparent 1px),
+		none;
+
+    &:focus {
+        border-color: @input__active;
+        background-color: @input__dropdown-bg-active;
+    }
+
+    &--success {
+		background-image: 
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/checked.svg');
+        &:focus { border-color: @input__success }
+    }
+
+    &--warning {
+		background-image:
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/warning.svg');
+        &:focus { border-color: @input__warning }
+	}
+
+    &--error {
+		background-image:
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			url('./icons/error.svg');
+        &:focus { border-color: @input__error }
+	}
+
+    &:disabled {
+        background-color: @input__dropdown-bg-static;
+        border-color: @input__dropdown-br-disabled;
+        background-image: 
+            url('./icons/arrows-disabled.svg'),
+            linear-gradient(90deg, @input__dropdown-br-disabled 1px, transparent 1px),
+            none;
+    }
+
+    &--white {
+        background-color: @input__dropdown-bg-active;
+        border: 1px solid rgba(0, 0, 0, 0.0);
+        filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 1px);
+        color: #808080;
+        font-weight: 500;
+    }
+}
+
+.sDropdown {
+	position: relative;
+	
+	&__options-container {
+        position: absolute;
+        top: calc(~'100% + 6px');
+        left: 0px;
+        right: 0px;
+        background: @input__search-options-background;
+        z-index: 400;
+        padding: 5px 0px;
+        border-radius: 2px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        
+        // base display value
+        opacity: 1;
+        pointer-events: all;
+        
+        // magic
+        filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.36));
+        
+        &:before {
+            content: attr(data-section-title);
+            display: block;
+            // padding: 7px 14px;
+            color: #aaa;
+            font-family: "Roboto";
+            font-size: 12px;
+            pointer-events: none;
+            cursor: none;
+        }
+    
+        &:after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 9px;
+            display: block;
+    
+            border-top: none;
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            border-bottom: 6px solid  @input__search-options-background;
+        }
+        
+        &__item {
+            display: block;
+            font-size: 14px;
+            padding: 6px 14px;
+            color: #808080 !important;
+            user-select: none;
+            
+            transition: background 0.05s linear;
+            
+            &:hover {
+                background: #eaeaea;
+                cursor: pointer;
+            }
+    
+            &--selected {
+                background: #eaeaea;
+            }
+        }
+	}
+}
+
+.sInput-select {
+	position: relative;
+	
+	&__input {
+		display: inline-block;
+		width: 100%;
+		padding: 12px 15px;
+		padding-right: 30px;
+		margin: 5px 0;
+		box-sizing: border-box;
+
+		user-select: none;
+
+		border-radius: 2px;
+		border: 1px solid @input__basic__border;
+		outline: none;
+	
+		transition: all 0.4s ease;
+	
+		font-weight: 400;
+		font-size: 14px;
+	
+		background-color: @input__search-background;
+		background-size: 8px 100%, 29px 100%, 18px 100%;
+		background-position: right 10px center, right center, right 39px center;
+		background-repeat: no-repeat, no-repeat, no-repeat;
+		
+		background-image: 
+			url('./icons/arrows.svg'),
+			linear-gradient(90deg, @input__search-delim 1px, transparent 1px),
+			none;
+		
+		&:hover {
+            cursor: pointer;
+            background-color: lighten(@input__search-background, 1%);
+		}
+	}
+	
+	&__options-container {
+        position: absolute;
+        top: calc(~'100% + 10px');
+        left: 0px;
+        right: 0px;
+        background: @input__search-options-background;
+        z-index: 400;
+        padding: 5px 0px;
+        border-radius: 2px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        
+        // base display value
+        opacity: 1;
+        pointer-events: all;
+        
+        // magic
+        filter: drop-shadow(rgba(0, 0, 0, 0.12) 0px 0px 1px);
+        
+        &:before {
+            content: attr(data-section-title);
+            display: block;
+            padding: 7px 14px;
+            color: #aaa;
+            font-family: "Roboto";
+            font-size: 12px;
+            pointer-events: none;
+            cursor: none;
+        }
+    
+        &:after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 9px;
+            display: block;
+    
+            border-top: none;
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+            border-bottom: 6px solid  @input__search-options-background;
+        }
+        
+        &__item {
+            display: block;
+            font-size: 14px;
+            padding: 6px 14px;
+            color: #808080;
+            user-select: none;
+            
+            transition: background 0.05s linear;
+            
+            &:hover {
+                background: #eaeaea;
+                cursor: pointer;
+            }
+    
+            &--selected {
+                background: #eaeaea;
+            }
+        }
+	}
+}
+
+.sInput-search-wrap {
+    position: relative;
+}
+
+.pac-item {
+    background: @input__search-options-background;
+}
+
+.sInput-options-container {
+	position: absolute;
+	top: calc(~'100% + 10px');
+	left: 0px;
+	right: 0px;
+	background: @input__search-options-background;
+	z-index: 400;
+	padding: 5px 0px;
+	border-radius: 2px;
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	
+	// base display value
+	opacity: 1;
+	pointer-events: all;
+	
+	// magic
+	filter: drop-shadow(rgba(0, 0, 0, 0.12) 0px 0px 1px);
+	
+	&:before {
+		content: attr(data-section-title);
+		display: block;
+		padding: 7px 14px;
+		color: #aaa;
+		font-family: "Roboto";
+		font-size: 12px;
+		pointer-events: none;
+		cursor: none;
+	}
+
+	&:after {
+		content: "";
+		position: absolute;
+		bottom: 100%;
+		right: 9px;
+		display: block;
+
+		border-top: none;
+		border-right: 6px solid transparent;
+		border-left: 6px solid transparent;
+		border-bottom: 6px solid  @input__search-options-background;
+	}
+	
+	&__item {
+		display: block;
+		font-size: 14px;
+		padding: 6px 14px;
+		color: #808080;
+		user-select: none;
+		
+		transition: background 0.05s linear;
+		
+		&:hover {
+			background: #eaeaea;
+			cursor: pointer;
+		}
+
+		&--selected {
+			background: #eaeaea;
+		}
+	}
+}

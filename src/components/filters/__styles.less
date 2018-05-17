@@ -1,0 +1,71 @@
+@import './filter-block.less';
+
+.filters-container {
+    background: #f1f1f1;
+
+    &__navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f1f1f1;
+        padding: 0px 0px;
+        
+        &__title {
+            font-size: 13px;
+            color: #808080;
+            flex: 1;
+            text-align: right;
+            margin: 0px 10px;
+        }
+
+        &__dropdown {
+            flex: 2;
+        }
+    }
+    
+    @media screen and (min-width: 768px) {
+        &__navigation {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        // Коменсации линии вертикальной таблицы в широкой версии
+        margin-bottom: -14px;
+
+        &__filters {
+            padding: 7px 0px;
+
+            &--close {
+                display: none;
+                padding: 0;
+            }
+        }
+    }
+}
+
+.filter-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 43px;
+    width: 43px;
+
+    fill: #999;
+    background: white;
+    transition: color 0.2s ease;
+
+    user-select: none;
+
+    filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 1px);
+
+    & > svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    &--active {
+        fill: #303030;
+        font-weight: 500;
+    }
+}

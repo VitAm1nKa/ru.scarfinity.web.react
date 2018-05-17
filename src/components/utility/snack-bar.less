@@ -1,0 +1,127 @@
+//- Colors --------------------------
+    @container-bg:          rgba(255, 255, 255, 0.85);
+    @text-color:            #ffffff;
+    @text-color-bold:       rgba(38, 38, 38, 0.7);
+
+    @success:               rgba(27, 184, 105, 0.9);
+    @success-border:        rgba(27, 184, 105, 1.0);
+    @error:                 #e05543;
+    @error-border:          rgba(224, 85, 67, 0.45);
+    @warning:               #ef8742;
+    @warning-border:        rgba(239, 135, 66, 0.45);
+    @default:               #2799c9;
+    @default-border:        rgba(39, 153, 201, 0.45); 
+//- ---------------------------------
+
+.snack-bar {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    transform: translateY(50px);
+    transition: transform 0.36s ease-in-out;
+
+    z-index: 400;
+    pointer-events: none;
+
+
+    &.snack-show {
+        transform: translateY(0px);
+    }
+}
+
+.snack-bar-item {
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    min-width: 200px;
+
+    border-radius: 2px;
+
+    background-clip: padding-box;
+
+    &__container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center; 
+    
+        height: 44px;
+    
+        padding: 0px 10px;
+    
+        &__text {
+            font-family: "Roboto";
+            font-size: 14px;
+            font-weight: 400;
+    
+            color: @text-color;
+        }
+    
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &--success {
+        background-color: @success;
+    }
+    
+    &--success & {
+        &__container {
+            padding-left: 40px;
+            padding-right: 35px;
+        }
+    }
+    
+    &--error {
+        border-color: @error-border;
+        background-color: @error;
+    }
+    
+    &--error & {
+        &__container {
+            padding-left: 40px;
+            padding-right: 35px;
+        }
+    }
+    
+    &--warning {
+        border-color: @warning-border;
+        background-color: @warning;
+    }
+    
+    &--warning & {
+        &__container {
+            padding-right: 35px;
+        }
+    }
+    
+    &--default {
+        border-color: @default-border;
+        background-color: @default;
+    }
+    
+    &--default & {
+        &__container {
+            padding-right: 35px;
+        }
+    }
+}
+
+.alert-block-text {
+    font-family: "Roboto";
+    font-size: 15px;
+    font-weight: 400;
+
+    color: @text-color;
+
+    & > b {
+        font-weight: 500;
+        color: @text-color-bold;
+    }
+}

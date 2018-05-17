@@ -1,0 +1,175 @@
+//  Colors ------------------------------------------------
+    @border:        #d7d7d7;
+    @background:    #f9f9f9;
+    @hover:         #eaeaea;
+    @input-text:    #808080;
+    @icon-color:    #aaaaaa;
+//  -------------------------------------------------------
+
+.quantity {
+    display: flex;
+    align-items: stretch;
+    border-radius: 2px;
+    border: 1px solid @border;
+    overflow: hidden;
+
+    &__button {
+        width: 20px;
+        border: none;
+        outline: none;
+        user-select: none;
+        height: 29px;
+
+        cursor: pointer;
+
+        transition: background-color 0.3s ease;
+
+        &.plus {
+            background:
+                linear-gradient(@icon-color 2px, transparent 1px),
+                linear-gradient(90deg, @icon-color 2px, transparent 1px);
+            background-color: @background;
+            background-position: center center, center center;
+            background-size: 10px 2px, 2px 10px;
+            background-repeat: no-repeat, no-repeat;
+            border-left: 1px solid @border;
+        }
+
+        &.minus {
+            background:
+                linear-gradient(@icon-color 2px, transparent 1px);
+            background-color: @background;
+            background-position: center center;
+            background-size: 10px 2px;
+            background-repeat: no-repeat;
+            border-right: 1px solid @border;
+        }
+
+        &:hover {
+            background-color: @hover;
+        }
+
+        &:disabled {
+            cursor: default;
+            background-color: #f9f9f9;
+
+            &.plus {
+                background-image:
+                    linear-gradient(#d7d7d7 2px, transparent 1px),
+                    linear-gradient(90deg, #d7d7d7 2px, transparent 1px);
+            }
+
+            &.minus {
+                background-image:
+                    linear-gradient(#d7d7d7 2px, transparent 1px);
+            }
+        }
+    }
+
+    &__input {
+        background: #fff;
+        color: @input-text;
+        font-family: 'Roboto';
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 6px;
+        border: none;
+        outline: none;
+        text-align: center;
+        max-width: 40px;
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.quantity-product-card {
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	overflow: hidden;
+	display: inline-flex;
+	align-items: center;
+	margin-right: 10px;
+	position: relative;
+
+	& > input {
+        font-size: 17px;
+        max-width: 50px;
+		width: 50px;
+		color: #555;
+	}
+
+	&__control {
+		background: #ddd;
+		padding-left: 1px;
+		display: inline-flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-self: stretch;
+
+		& > button {
+            background: #eee;
+            height: 23px;
+            border: none !important;
+            
+			&:first-child {
+				margin-bottom: 1px;
+			}
+		}
+	}
+
+	&--in-process & {
+		&__value, &__control {
+			filter: blur(3px);
+		}
+
+		&__process-block {
+			opacity: 1;
+			pointer-events: auto;
+			
+			&__spinner {
+				&:after {
+					animation-play-state: running;
+				}
+			}
+		}
+	}
+
+	&__process-block {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+
+		background: rgba(245, 245, 245, 0.4);
+		z-index: 2;
+
+		font-size: 16px;
+
+		opacity: 0;
+		pointer-events: none;
+		user-select: none;
+
+		transition: opacity 0.25s;
+
+		&__spinner {
+			display: inline-block;
+			margin: 0 5px;
+			padding: 0;
+			
+			&:after {
+				content: "\f110";
+				font-family: "FontAwesome";
+				font-size: 20px;
+				display: block;
+				animation: cart-process-spinner 1s linear infinite;
+				animation-play-state: paused;
+			}
+		}
+	}
+}

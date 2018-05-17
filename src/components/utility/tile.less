@@ -1,0 +1,26 @@
+.tile {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+
+    &__container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        background: white;
+    }
+
+    .tiles-setup(@index) when (@index > 0) {
+        .tiles-setup((@index - 1));
+
+        &--w-@{index} {
+            @paddings: (@index - 1) * 14px;
+            padding-top: calc(~'(100% - @{paddings})' / @index);
+        }
+    }
+
+    .tiles-setup(16);
+}

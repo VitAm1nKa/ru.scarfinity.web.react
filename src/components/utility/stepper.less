@@ -1,0 +1,103 @@
+.stepper {
+    @def-color: #ededed;
+
+    display: flex;
+    position: relative;
+
+    &:before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 40px;
+        right: 40px;
+        height: 4px;
+        background-image: linear-gradient(90deg, @def-color 0%, @def-color 30%);
+    }
+
+    &.st-1 { &:before { background-image: linear-gradient(90deg, #f6b63a 0%, @def-color 30%); }}
+    &.st-2 { &:before { background-image: linear-gradient(90deg, #f6b63a 0%, #ef8742 34%, @def-color 60%); }}
+    &.st-3 { &:before { background-image: linear-gradient(90deg, #f6b63a 0%, #ef8742 34%, #bf4f79 60%, @def-color 100%); }}
+    &.st-4 { &:before { background-image: linear-gradient(90deg, #f6b63a 0%, #ef8742 34%, #bf4f79 67%, #8869ca 100%); }}
+
+    &__step {
+        flex: 0 0 80px;
+        text-align: center;
+
+        &__icon {
+            display: inline-block;
+            &__text {
+                border-radius: 50%;
+                color: white;
+                width: 40px;
+                height: 40px;
+                text-align: center;
+                display: block;
+                line-height: 40px;
+                position: relative;
+                font-weight: 500;
+
+                &.cl-1 { background: #f6b63a; border-color: #f6b63a }
+                &.cl-2 { background: #ef8742; border-color: #ef8742 }
+                &.cl-3 { background: #bf4f79; border-color: #bf4f79 }
+                &.cl-4 { background: #8869ca; border-color: #8869ca }
+
+                &.dis {
+                    background: @def-color !important;
+                    border-color: @def-color !important;
+                    color: #999 !important;
+                }
+
+                &.cnt-left {
+                    &:before {
+                        content: "";
+                        position: absolute;
+                        border: 6px solid;
+                        border-top-color: transparent;
+                        border-bottom-color: transparent;
+                        border-left: none;
+                        border-right-color: inherit;
+                        top: calc(~'50% - 6px');
+                        left: -4px;
+                    }
+                }
+
+                &.cnt-right {
+                    &:after {
+                        content: "";
+                        position: absolute;
+                        border: 6px solid;
+                        border-top-color: transparent;
+                        border-bottom-color: transparent;
+                        border-right: none;
+                        border-left-color: inherit;
+                        top: calc(~'50% - 6px');
+                        right: -4px;
+                    } 
+                }
+            }
+        }
+
+        & > span {
+            color: #aaa;
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 400;
+            padding: 14px 0px;
+            display: block;
+
+            &.sel {
+                font-weight: 500;
+                color: #303030;
+            }
+
+            &.done {
+                font-weight: 400;
+                color: #303030;
+            }
+        }
+    }
+
+    &__gap {
+        flex: 1;
+    }
+}

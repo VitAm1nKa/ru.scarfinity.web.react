@@ -1,0 +1,21 @@
+.utility__rating-box {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0;
+    margin-left: -2px;
+
+    &__text {
+        font-family: "Roboto";
+        font-size: 13px;
+        color: #aaaaaa;
+        margin-left: 4px;
+    }
+
+    &--changeable {
+        & > svg {
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+}

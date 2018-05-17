@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+<defs>
+    <style>
+      .cls-1 {
+        fill: #d7d7d7;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Equals_Icon" data-name="Equals Icon" class="cls-1" d="M10,79H290v35.5H10V79Zm0,106.5H290V221H10V185.5Z"/>
+</svg>

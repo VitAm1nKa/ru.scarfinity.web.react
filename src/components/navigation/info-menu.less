@@ -1,0 +1,54 @@
+//  Colors ------------------------------------------------
+    @border:        #d7d7d7;
+    @background:    #ffffff;
+    @text:          #808080;
+    @text-hover:    #bf4f79;
+//  -------------------------------------------------------
+
+.info-menu {
+    line-height: 28px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    @media screen and (max-width: 768px) {
+        visibility: hidden;
+        opacity: 0;
+        user-select: none;
+        pointer-events: none;
+        height: 50px;
+    }
+
+    &__container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.info-menu-navigation {
+    & > a {
+        color: @text;
+        margin-right: 14px;
+
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: @text-hover;
+        }
+    }
+}
+
+.info-menu-sign {
+    display: inline-block;
+
+    &__link {
+        text-transform: capitalize;
+        color: #c2567f;
+        font-weight: 500;
+    }
+
+    &__delim {
+        margin: 0px 5px;
+    }
+}

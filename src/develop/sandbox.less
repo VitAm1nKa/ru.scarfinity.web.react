@@ -1,0 +1,86 @@
+.drop-test {
+    display: inline-block;
+    position: relative;
+}
+
+.drop {
+    position: absolute;
+    height: 200px;
+    background: #ccc;
+    border: 1px solid #777;
+    width: 100%;
+}
+
+//- Colors --------------------
+@input__basic__border:             #d7d7d7; 
+@input__basic-background:          #ffffff;   
+@input__basic-disabled-border:     #eeeeee;  
+@input__basic-disabled-background: #f9f9f9;
+
+@input__search-delim:				#d7d7d7;
+@input__search-options-background:	#ffffff;
+@input__search-background:         #f9f9f9;
+
+@input__success:                   #1bb869;
+@input__warning:                   #ef8742;   
+@input__error:                     #e05543;
+@input__active:                    #2799c9;
+//- ---------------------------
+
+
+.hover-test {
+    height: 50px;
+    position: relative;
+    background: lightcoral;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.hover-test-cart {
+    width: 200px;
+    background: lightcyan;
+
+    & > .cart-popup {
+        display: none;
+    }
+
+    &:hover > .cart-popup {
+        display: block;
+    }
+}
+
+.test-triangle {
+    width: 240px;
+    height: 240px;
+
+    position: relative;
+
+    background: 
+        linear-gradient(90deg, black, red 10px, black 10px);
+    background-repeat: no-repeat;
+}
+
+.hohoho {
+    width: 200px;
+    height: 200px;
+
+    border-radius: 2px;
+
+    background: white;
+
+    transition: background 0.4s ease;
+
+    &:hover {
+        cursor: pointer;
+        background: #1bb869;
+    }
+}
+
+.mcm-container {
+    border: 10px solid #cccccc;
+    height: 600px;
+    width: 100%;
+    position: relative;
+}

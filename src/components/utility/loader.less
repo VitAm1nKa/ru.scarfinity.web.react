@@ -1,0 +1,55 @@
+@keyframes spinning-cog {
+    0% { transform: rotate(0deg) }
+    20% { transform: rotate(-45deg) }
+    100% { transform: rotate(360deg) }
+}
+
+@keyframes shrinking-cog {
+    0% { transform: scale(1) }
+    20% { transform: scale(1.2) }
+    100% { transform: scale(0) }
+  }
+
+.overlay-loader {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+
+    z-index: 1500;
+
+    opacity: 0;
+    visibility: hidden;
+
+    &__icon {
+        display: block;
+        position: absolute;
+        fill: #808080;
+        top: 50%;
+        left: 50%;
+        margin: -13px 0 0 -13px;
+        width: 28px;
+        height: 28px;
+
+        transform-origin: center center;
+    }
+
+    &.loading {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    &.loading & {
+        &__icon {
+            animation: spinning-cog 1.3s infinite ease;
+        }
+    }
+}

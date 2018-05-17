@@ -1,0 +1,70 @@
+.float-container {
+    position: absolute;
+
+    top: calc(~'100% - 14px');
+    left: 7px;
+    width: calc(~'100% / 16 * 3 - 14px');
+
+    z-index: 400;
+
+    &:before {
+        display: block;
+        content: "";
+
+        background: url('./icons/popup-triangle-horisontal-white.svg');
+        background-size: 16px 20px;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: left 15px top;
+
+        height: 14px;
+    }
+
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.36));
+}
+
+.float-container-center {
+    position: absolute;
+    display: flex;
+    align-items: stretch;
+    // flex-basis: calc(~'((100%) / 13 * 10 + 7px)');
+    // flex-basis: calc(~'((100%) / 13 * 3 + 7px)');
+    
+    & > div {
+        flex: 1;
+    }
+    
+    top: 0;
+    left: 100%;
+    // width: 100%;
+    width: calc(~'(100% + 14px) / 3 * 13');
+    min-height: 100%;
+
+    z-index: 400;
+
+    padding-top: 14px;
+    padding-left: 14px;
+
+    &:before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 38px;
+
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-right: 6px solid #ffffff;
+        border-left: none;
+    }
+
+    .tr(12);
+    
+    .tr(@n, @i: 0) when(@i =< @n) {
+        &.trr-@{i} {
+            &:before {
+                top: 14px + 14px + 34px * @i + (34px / 2) - 6px; 
+            }
+        }
+        .tr(@n, (@i+1));
+    }
+}

@@ -1,0 +1,63 @@
+@import '../components/navigation/__styles.less';
+@import '../components/reviews/__styles.less';
+@import '../components/utility/__styles.less';
+@import '../components/filters/__styles.less';
+@import '../components/catalog/__styles.less';
+@import '../components/product/__styles.less';
+@import '../components/personal/__styles.less';
+@import '../pages/__styles.less';
+@import '../lib/__styles.less';
+
+@import '../develop/__styles.less';
+
+body,
+html {
+	margin: 0;
+	padding: 0;
+	font-family: 'Roboto', 'sans-serif';
+	background-color: #eaeaea;
+	background: #f1f1f1;
+	overflow-x: hidden;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: 400;
+}
+
+* {
+	box-sizing: border-box;
+	text-decoration: none;
+}
+
+header {
+	margin-bottom: 14px;
+
+	@media screen and (max-width: 768px) {
+        margin-bottom: 0px;
+	}
+}
+
+main {
+	padding-bottom: 40px;
+
+	@media screen and (max-width: 768px) {
+		padding: 0px 7px;
+		padding-bottom: 40px;
+	}
+
+     @media screen and (max-width: 425px) {
+	padding: 0px 7px;
+	padding-bottom: 40px;
+    }
+}
+
+.site-layout {
+	@media screen and (max-width: 768px) {
+        //margin-right: -2px;
+	}
+}

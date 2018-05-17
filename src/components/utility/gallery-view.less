@@ -1,0 +1,44 @@
+.button {
+    width: 250px;
+    height: 60px;
+
+    background: lightcoral;
+
+    border-radius: 4px;
+}
+
+.gallery-view-transparent {
+    background: rgba(0, 0, 0, 0.0) !important;
+    box-shadow: none !important;
+}
+
+.gallery-view-container {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
+    &__container {
+        flex: 1;
+    }
+
+    &__button {
+        flex: 0 0 60px;
+        height: 40px;
+
+        background: lightcoral;
+    }
+}
+
+.gallery-view-body {
+    padding: 14px !important;
+    margin-top: -24px !important;
+}
+
+.gallery-view-content {
+    background: rgba(0, 0, 0, 0) !important;
+    max-width: none !important;
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}

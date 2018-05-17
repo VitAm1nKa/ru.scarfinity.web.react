@@ -1,0 +1,47 @@
+@keyframes lazy-loader-circle {
+    0% {
+        border-color: rgba(255, 255, 255, 1.0);
+    }
+    100% {
+        border-color: rgba(90, 90, 90, 0.3);
+    }
+}
+
+.lazy-loader-icon {
+    font-size: 0px;
+    background: transparent;
+    display: inline-block;
+
+    &__circle {
+        border: 1px solid rgba(255, 255, 255, 1.0);
+        border-radius: 50%;
+        display: inline-block;
+
+        &:nth-child(1) {
+            animation: lazy-loader-circle 0.8s linear 0s infinite;
+        }
+
+        &:nth-child(2) {
+            margin: 0px 3px;
+            animation: lazy-loader-circle 0.8s linear 0.1s infinite;
+        }
+
+        &:nth-child(3) {
+            animation: lazy-loader-circle 0.8s linear 0.2s infinite;
+        }
+    }
+}
+
+.lazy-loader-view {
+    display: inline-flex;
+    align-items: center;
+
+    &__text {
+        flex: 1;
+
+        font-family: "Roboto";
+        color: #ffffff;
+
+        margin-left: 10px;
+    }
+}

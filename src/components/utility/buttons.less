@@ -1,0 +1,438 @@
+//- Colors --------------------
+	@basic__border:             #d7d7d7; 
+	@basic-background:          #ffffff;   
+	@basic-disabled-border:     #eeeeee;  
+	@basic-disabled-background: #f9f9f9;
+
+	@search-delim:				#d7d7d7;
+	@search-options-background:	#ffffff;
+	@search-background:         #f9f9f9;
+
+	@delim-left:                rgba(0, 0, 0, 0.1);
+	@delim-right:               rgba(255, 255, 255, 0.17);
+
+	@end:                       #1bb869;
+	@loading:                   #ef8742;   
+    @start:                     #e05543;
+    
+    @button-background:         #1bb869;
+    @button-left-border:        rgba(0, 0, 0, 0.1);
+    @button-right-border:       rgba(255, 255, 255, 0.17);
+//- ---------------------------
+
+.buttonTestTest {
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 300px;
+    align-items: center;
+    justify-content: center;
+
+    background: white;
+    padding: 20px;
+    border-radius: 2px;
+
+    &__text {
+        margin-bottom: 14px;
+        font-size: 18px;
+        color: #303030;
+        font-weight: 500;
+    }
+
+    & > ol {
+        margin: 0;
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border-radius: 2px;
+        background: #eee;
+
+        list-style: none;
+
+        & > {
+            color: #303030;
+            font-size: 14px;
+            line-height: 22px;
+            text-align: center;
+        }
+    }
+}
+
+.product-card-catalog-button {
+	border-radius: 2px;
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	max-height: 32px;
+
+	background-color: #e05543;
+
+	min-width: 32px;
+	min-height: 26px;
+	max-height: 26px;
+	
+    padding: 6px 15px;
+
+    outline: none;
+    border: none;
+
+    border-radius: 2px;
+
+    cursor: pointer;
+
+    user-select: none;
+
+	font-size: 11px;
+	font-weight: 500;
+	color: #ffffff;
+
+	text-transform: uppercase;
+	
+	// transition: color 0.2s ease 0.3s, max-width 0.2s ease 0.1s, padding 0.2s ease 0.1s;
+
+	&.loading {
+		background-color: #ef8742;
+		// transition: color 0.2s ease 0.1s, max-width 0.3s ease 0.2s, padding 0.3s ease 0.2s;
+		color: transparent;
+	}
+
+	&.complete {
+		background-color: #1bb869;
+	}
+}
+
+.product-card-button {
+    @icon-size: 22px;
+
+    padding: 12px 15px;
+    border-radius: 2px;
+    height: 50px;
+    max-width: 300px;
+    position: relative;
+
+    cursor: pointer;
+
+    border: none;
+
+    background-image: 
+        url('./icons/basket.svg'),
+        linear-gradient(90deg, @delim-left 1px, @delim-right 1px),
+        url('./icons/basket.svg');
+    background-position: left 12px center, left (@icon-size + 24px - 1px) center, right 12px center;
+    background-size: @icon-size @icon-size, 2px 100%, 0px 0px;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+
+    padding-left: @icon-size + 36px;
+
+    text-align: center;
+
+    font-family: "Roboto";
+    font-size: 14px;
+    line-height: 26px;
+    font-weight: 400;
+
+    color: #ffffff;
+
+    background-color: @start;
+
+    outline: none;
+
+    transition: background 0.15s ease, color 0.2s ease 0.3s, padding 0.15s;
+
+    &:disabled {
+        background-color: @end;
+        background-size: 0px 0px, 2px 100%, @icon-size @icon-size;
+        background-position: left 12px center, right (@icon-size + 24px - 1px) center, right 12px center;
+        padding-right: @icon-size + 36px;
+        padding-left: 15px;
+        cursor: pointer;
+
+        & > a {
+            user-select: all;
+            visibility: visible;
+            display: block;
+        }
+    }
+
+    & > a {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        user-select: none;
+        visibility: none;
+        display: none;
+    }
+
+    &--end {
+        background-color: @end;
+        background-size: 0px 0px, 2px 100%, @icon-size @icon-size;
+        background-position: left 12px center, right (@icon-size + 24px - 1px) center, right 12px center;
+        padding-right: @icon-size + 36px;
+        padding-left: 15px;
+    }
+
+    &--loading {
+        background-color: @loading;
+        max-width: 50px;
+        height: 50px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-size: 0px 0px, 0px 100%, 0px 0px;
+        color: rgba(255, 255, 255, 0.0);
+        transition: background 0.2s ease 0.1s, color 0.2s ease 0.1s, max-width 0.3s ease 0.2s, padding 0.3s ease 0.2s;
+    }
+}
+
+.button-next-small {
+    display: inline-block;
+    position: relative;
+    padding: 8px 44px 8px 18px;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+    border: none;
+    outline: none;
+
+    font-family: "Roboto";
+    font-weight: 400;
+    font-size: 12px;
+
+    color: #ffffff;
+
+    text-transform: capitalize;
+
+    background-color: @button-background;
+    background: 
+        url('./icons/chevron-right-white.svg'),
+        linear-gradient(270deg, @button-right-border 1px, @button-left-border 1px);
+    background-color: @button-background;
+    background-size: 14px 10px, 2px 100%;
+    background-position: right 8px center, right 29px center;
+    background-repeat: no-repeat, no-repeat;
+
+    user-select: none;
+
+    transition: all 0.3s ease;
+
+    &:hover {
+        cursor: pointer;
+        background-color: lighten(@button-background, 2%);
+    }
+
+    &:active {
+        background-color: darken(@button-background, 2%);
+    }
+}
+
+.button-sign-in {
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    max-height: 40px;
+    height: 40px;
+
+    background-color: #1bb869;
+    transition: background-color 0.4s ease;
+	
+    padding: 6px 15px;
+
+    outline: none;
+    border: none;
+
+    cursor: pointer;
+
+    user-select: none;
+
+	font-size: 13px;
+	font-weight: 500;
+	color: #ffffff;
+
+    text-transform: uppercase;
+    
+    &:hover {
+        background-color: #37c17b;
+    }
+
+    &.sn {
+        background-color: #1bb869;
+
+        &:hover {
+            background-color: #37c17b;
+        }
+    }
+
+    &.su {
+        background-color: #ef8742;
+
+        &:hover {
+            background-color: #ef8742;
+        }
+    }
+
+    &.rp {
+        background-color: #e05543;
+
+        &:hover {
+            background-color: #e05543;
+        }
+    }
+}
+
+.button-base() {
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    max-height: 40px;
+    height: 40px;
+
+    background-color: #d7d7d7;
+    transition: background-color 0.2s ease;
+
+    padding: 6px 15px;
+    margin: 5px 0px;
+
+    outline: none;
+    border: none;
+    
+    user-select: none;
+    cursor: pointer;
+
+    font-size: 12px;
+	font-weight: 600;
+    color: #303030;
+    
+    text-transform: uppercase;
+
+    &:hover {
+        background-color: #ccc;
+    }
+}
+
+.button-basic {
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    max-height: 40px;
+    height: 40px;
+
+    background-color: #1bb869;
+    transition: background-color 0.2s ease;
+	
+    padding: 6px 15px;
+    margin: 5px 0px;
+
+    outline: none;
+    border: none;
+
+    border-radius: 2px;
+
+    cursor: pointer;
+
+    user-select: none;
+
+	font-size: 12px;
+	font-weight: 600;
+	color: #ffffff;
+
+    text-transform: uppercase;
+    
+    &:hover {
+        background-color: #37c17b;
+    }
+
+    &--orange {
+        background-color: #ef8742;
+
+        &:hover {
+            background-color: #ef8742
+        }
+    }
+}
+
+.button-chevron-right {
+    .button-base();
+    @height: 28px;
+    @iconSize: 10px;
+
+    height: @height;
+
+    padding-right: 15px + @height;
+
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 500;
+
+    background-image:
+        linear-gradient(90deg, @delim-left 1px, @delim-right 1px),
+        url('./icons/chevron-right-white.svg');
+    background-size: 2px 100%, @iconSize @iconSize;
+    background-position: center right (@height - 1px), center right (@height - @iconSize) / 2;
+    background-color: #1bb869;
+    background-repeat: no-repeat, no-repeat;
+
+    &:hover {
+        background-color: #37c17b;
+    }
+}
+
+.gray-button {
+    padding: 0px 10px;
+    margin: 5px 0px;
+
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    height: 28px;
+    border: 1px solid #d7d7d7;
+
+    user-select: none;
+    cursor: pointer;
+
+    font-size: 11px;
+	font-weight: 600;
+    color: #808080;
+    
+    text-transform: uppercase;
+
+    background-color: #f7f7f7;
+    width: initial;
+
+    & > span {
+        display: block;
+        flex: 1;
+        margin-left: 5px;
+    }
+
+    & > svg {
+        float: left;
+        width: 16px;
+        height: 16px;
+
+        fill: #d7d7d7;
+
+        transition: fill 0.4s ease;
+    }
+
+    &:hover {
+        & > svg {
+            fill: rgb(246, 182, 58);
+        }
+    }
+}
+
+// .t {
+//     #1bb869
+//     #9cbf3e
+//     #f6b63a
+//     #ef8742
+//     #e05543
+//     #bf4f79
+//     #8869ca
+//     #2799c9
+//     #303030
+//     #aaaaaa
+// }

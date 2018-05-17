@@ -1,0 +1,95 @@
+//- Colors ----------------------
+    @success:                   #1bb869;
+    @warning:                   #ef8742;   
+    @error:                     #e05543;
+    @active:                    #2799c9;
+//- -----------------------------
+
+.requisites {
+    padding: 20px 20px;
+    border-top: 1px solid #d7d7d7;
+
+    @media screen and (max-width: 400px) {
+        padding: 20px 10px;
+    }
+}
+
+.requisites-annotaion {
+    margin: 0;
+    padding: 0px 7px;
+    font-size: 13px;
+    color: #808080;
+    line-height: 20px;
+
+    & .accent {
+        color: #ef8742;
+    }
+}
+
+.requisites-postal-line {
+    align-items: center;
+}
+
+.requisites-row {
+    display: inline-flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-sizing: border-box;
+
+    &__left {
+        flex: 1 1;
+        margin: -5px 0px;
+    }
+
+    &__right {
+        flex: 1 1;
+        margin: -5px 0px;
+    }
+
+    &__middle {
+        flex: 0 1 1px;
+        margin: 0px 15px;
+        margin-top: 40px;
+        align-self: stretch;
+
+        &--delim {
+            background: #d7d7d7;
+        }
+    }
+
+    @media screen and (max-width: 700px) {
+        &__left, &__right {
+            flex: 1 0 320px;
+            margin: 0;
+        }
+
+        &__left {
+            margin-bottom: 20px;
+        }
+
+        &__middle {
+            display: none;
+        }
+    }
+}
+
+.requisites-title {
+    display: block;
+
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 40px;
+
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+
+    color: #303030;
+
+    b {
+        font-weight: 500;
+    }
+}

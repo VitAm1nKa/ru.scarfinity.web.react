@@ -1,0 +1,37 @@
+.price-range-widget {
+    user-select: none;
+
+    &__body {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-top: 10px;
+        padding: 0px 9px;
+    }
+}
+
+.price-range-input {
+    flex: 1 1 65px;
+    width: 65px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 2px;
+    border: 1px solid #ccc;
+
+    padding: 8px 8px;
+}
+
+.price-range-widget-noselect { 
+    user-select: none;
+
+    @media screen and (min-width: 746px) {
+        cursor: pointer;
+    }
+}
+

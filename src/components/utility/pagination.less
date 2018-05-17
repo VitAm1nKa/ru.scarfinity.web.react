@@ -1,0 +1,40 @@
+.s-pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+
+    font-size: 0px;
+
+    & > span {
+        font-size: 15px;
+        color: #808080;
+        padding: 10px 6px;
+
+        cursor: default;
+
+        border-bottom: 2px solid transparent;
+
+        user-select: none;
+
+        transition: border 0.45s ease, color 0.45s ease;
+    }
+
+    & > .def {
+        cursor: pointer;
+        
+        &:hover {
+            color: #ef8742;
+            border-color: #ef8742;
+        }
+    }
+
+    & > .crr {
+        color: #303030;
+        font-size: 18px;
+    }
+
+    & > .dtt {
+        color: #f7f7f7;
+    }
+}

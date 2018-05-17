@@ -1,0 +1,111 @@
+.sign-in {
+    background: #ffffff;
+    width: 320px;
+    position: relative;
+
+    &__fogPass{
+        display: block;
+        font-size: 12px;
+        color: #808080;
+
+        text-align: center;
+
+        cursor: pointer;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 16px 14px;
+
+        border-bottom: 1px solid #d7d7d7;
+
+        &__title {
+            font-size: 24px;
+            color: #303030;
+        }
+
+        &__action {
+            font-size: 12px;
+            color: #808080;
+
+            cursor: pointer;
+
+            transition: color 0.25s ease;
+
+            &:hover {
+                color: #ef8742;
+            }
+        }
+    }
+
+    &__body {
+        padding: 16px 14px;
+    }
+
+    &__close {
+        position: absolute;
+        
+        z-index: 600;
+    
+        right: -5px;
+        bottom: calc(~'100% + 7px');
+    
+        cursor: pointer;
+
+        width: 28px;
+        height: 28px;
+
+        fill: rgba(255, 255, 255, 0.3);
+
+        transition: fill 0.4s ease;
+
+        &:hover {
+            fill: rgba(255, 255, 255, 0.9);
+        }
+    }
+}
+
+.sign-in-error {
+    display: block;
+
+    border-radius: 2px;
+    border: 2px solid rgba(0, 0, 0, 0.0);
+
+    background-color: #ffffff;
+    background-clip: padding-box;
+
+    border-color: rgba(224, 85, 67, 0.55);
+    background-color: rgba(224, 85, 67, 0.55);
+
+    transition: all 0.3s ease;
+
+    visibility: hidden;
+    opacity: 0;
+    display: none;
+
+    &__container {
+        padding: 8px 12px;
+
+        background-color: rgba(255, 255, 255, 0.85);
+        background-size: 18px 100%, 8px 100%;
+        background-position: left 12px center, right 12px center;
+        background-repeat: no-repeat, no-repeat;
+
+        & > p {
+            padding: 5px 0px;
+            margin: 0;
+            font-size: 13px;   
+            line-height: 16px;
+            color: rgba(48, 48, 48, 0.7);
+        }
+    }
+
+    &.open {
+        visibility: visible;
+        opacity: 1;
+        display: block;
+    }
+}

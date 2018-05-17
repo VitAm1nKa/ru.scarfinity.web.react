@@ -1,0 +1,57 @@
+//  Colors ------------------------------------------------
+    @check-box__title:     #303030;
+    @check-box__subtitle:  #aaaaaa;
+    @check-box__checked:   #1bb869;
+//  -------------------------------------------------------
+
+.check-box {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    padding-right: 4px;
+    line-height: 26px;
+
+    cursor: pointer;
+
+    & > svg {
+        flex-basis: 18px;
+        max-width: 18px;
+        min-width: 18px;
+        flex: 1 0;
+        margin-top: 5px;
+    }
+
+    &__title {
+        font-weight: 400;
+        font-size: 13px;
+
+        margin-left: 6px;
+
+        color: @check-box__title;
+
+        transition: color 0.2s linear;
+
+        user-select: none;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &--checked {
+            color: @check-box__checked;
+        }
+    }
+
+    &__subtitle {
+        font-weight: 400;
+        font-size: 12px;
+        margin-left: 5px;
+
+        color: @check-box__subtitle;
+
+        user-select: none;
+
+        cursor: default;
+    }
+}

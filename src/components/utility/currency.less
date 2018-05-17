@@ -1,0 +1,99 @@
+//  Colors ------------------------------------------------
+    @primary: 	#303030;
+    @secondary: #aaaaaa;
+//  -------------------------------------------------------
+
+.utility__currency {
+    font-family: 'Roboto', monospace;
+    font-weight: 500;
+    font-size: 48px;
+    display: inline-block;
+
+    &__conteiner {
+        display: flex;
+        justify-content: flex-start;
+        align-items: baseline;
+    }
+
+    &--xsmall { font-size: 18px !important; }
+    &--small { font-size: 24px !important; }
+    &--medium { font-size: 30px !important; }
+    &--large { font-size: 34px !important; }
+    &--xlarge { font-size: 38px !important; }
+    &--xxlarge { font-size: 42px !important; }
+    &--xxxlarge { font-size: 48px !important; }
+
+    &--accent & { &__value { font-weight: 600 !important; } }
+
+    &__value {
+        flex: 0;
+        font-size: 1.0em;
+        color: @primary;
+
+        transition: color 0.3s ease;
+
+        &:before {
+            content: "₽";
+            font-size: 0.6em;
+            color: @secondary;
+            user-select: none;
+            font-weight: 400;
+        }
+
+        &--full {
+            &:before {
+                font-size: 0.9em;
+            }
+        }
+    }
+
+    &__unsale-value {
+        font-size: 0.6em;
+        font-weight: 400;
+        position: relative;
+        color: @secondary;
+        margin-left: 14px;
+
+        &:before {
+            content: "₽";
+            font-size: 0.7em;
+            color: @secondary;
+            user-select: none;
+            font-weight: 400;
+        }
+        
+        &:after {
+            content: "";
+            position: absolute;
+            left: -5%;
+            right: -5%;
+            top: 50%;
+            height: 1px;
+            background: @secondary;
+        }
+    }
+
+    &__subtitle {
+        display: block;
+        font-size: 12px;
+        color: #808080;
+    }
+
+    @media screen and (max-width: 670px) {
+        &--small { font-size: 20px !important; }
+        &--medium { font-size: 24px !important; }
+        &--large { font-size: 30px !important; }
+        &--xlarge { font-size: 34px !important; }
+        &--xxlarge { font-size: 38px !important; }
+        &--xxxlarge { font-size: 44px !important; }
+    }
+
+    @media screen and (max-width: 518px) {
+        &--small { font-size: 16px !important; }
+        &--medium { font-size: 20px !important; }
+        &--large { font-size: 26px !important; }
+        &--xlarge { font-size: 30px !important; }
+        &--xxlarge { font-size: 34px !important; }
+        &--xxxlarge { font-size: 40px !important; }
+    }
+}
