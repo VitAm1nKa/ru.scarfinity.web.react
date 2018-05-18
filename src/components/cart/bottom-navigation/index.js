@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './bottom-navigation.less';
+
 import Currency from '../../utility/currency';
 import NavLink from 'react-router-dom/NavLink';
 

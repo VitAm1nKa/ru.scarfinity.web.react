@@ -4,7 +4,7 @@ import {
     BasicButton
 }               from '../../utility/buttons';       
 
-
+import './post-order.less';
 
 class Controller extends React.Component {
     constructor(props) {

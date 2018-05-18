@@ -2,7 +2,7 @@ import React        from 'react';
 import NavLink      from 'react-router-dom/NavLink';
 import * as Grid    from '../../lib/grid';
 
-
+import './info-menu.less';
 
 class Controller extends React.Component {
     render() {

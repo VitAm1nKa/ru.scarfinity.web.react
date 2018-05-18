@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
+import './quantity.less';
 
 const QuantityView = (props) => {
     const decButton = <button

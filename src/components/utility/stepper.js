@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './stepper.less';
 
 const colors = ["#f6b63a", "#ef8742", "#bf4f79", "#8869ca"];
 

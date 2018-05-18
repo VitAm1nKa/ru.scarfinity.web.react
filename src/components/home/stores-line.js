@@ -4,7 +4,7 @@ import * as Grid    from '../../lib/grid';
 import StoreBage    from '../utility/store-bage';
 import Loader       from '../utility/loader';          
 
-
+import './stores-line.less';
 
 class Controller extends React.Component {
     render() {

@@ -14,7 +14,7 @@ import ExpandLess           from 'material-ui/svg-icons/navigation/expand-less';
 import RaisedButton         from 'material-ui/RaisedButton';
 // import {green}         from '../basic/SRaisedButton.js';
 
-
+import './mobile-main-menu.less';
 
 
 // import menuDataJSON from '../../develop/menuMap.json';
@@ -852,17 +852,13 @@ class Controller extends React.Component {
 
         const menuToggle = (this.state.leftMenuToggle || this.state.middleMenuToggle || this.state.cartMenuToggle) && (document.body.clientWidth <= 768);
 
-        try {
-            if(document != null) {
-                if(menuToggle) {
-                    document.body.style.overflow = 'hidden';
-                    document.documentElement.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                    document.documentElement.style.overflow = '';
-                }
-            }
-        } catch(e) {}
+        if(menuToggle) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }
 
         return(
             <Portal>

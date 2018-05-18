@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './input.less';
 
 export const Input = {
     Basic: (props) => {

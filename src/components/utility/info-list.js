@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './info-list.less';
 
 class Controller extends React.Component {
     render() {

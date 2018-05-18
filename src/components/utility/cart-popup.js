@@ -14,7 +14,7 @@ import IconButton           from 'material-ui/IconButton';
 import NavigationCancel     from 'material-ui/svg-icons/navigation/cancel';
 
 
-
+import './cart-popup.less';
 
 const styles = {
     mediumIcon: {
