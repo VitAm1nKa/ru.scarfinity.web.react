@@ -12,8 +12,6 @@ import Quantity             from '../components/utility/quantity';
 
 import StoreTest            from './store-test';
 
-var Hammer =                require('react-hammerjs');
-
 import { 
     BasicInput,
     NameInput,

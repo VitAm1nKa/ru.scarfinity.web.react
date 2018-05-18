@@ -33,6 +33,7 @@ export const actionCreators = {
         }
     },
     requestCatalogNodes: () => (dispatch, getState) => {
+        return true;
         const request = __request({
             url: 'api/productCategory'
         })
@@ -41,7 +42,7 @@ export const actionCreators = {
             dispatch({ type: 'NAVIGATION__CATALOGNODESRECEIVE', nodes: data });
         })
 
-        addTask(request);
+        try{addTask(request);}catch(e){};
         dispatch({ type: 'NAVIGATION__CATALOGNODESREQUEST' });
     },
 };

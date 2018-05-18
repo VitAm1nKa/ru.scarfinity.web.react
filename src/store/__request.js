@@ -37,7 +37,7 @@ const __connections = (path) => {
 }
 
 const __request = (options = {}) => {
-    const userToken = localStorage.getItem('user-token');
+    const userToken = '';// localStorage.getItem('user-token');
     const url = __connections(options.url);
     const mode = 'cors';
     const headers = update({

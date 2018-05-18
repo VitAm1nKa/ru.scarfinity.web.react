@@ -15,7 +15,9 @@ class Controller extends React.Component {
     }
 
     componentWillUnmount() {
-        document.body.style.overflow = '';
+        if(document) {
+            document.body.style.overflow = '';
+        }
     }
 
     render() {

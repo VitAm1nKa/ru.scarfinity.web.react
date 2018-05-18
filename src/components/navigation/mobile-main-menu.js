@@ -852,13 +852,17 @@ class Controller extends React.Component {
 
         const menuToggle = (this.state.leftMenuToggle || this.state.middleMenuToggle || this.state.cartMenuToggle) && (document.body.clientWidth <= 768);
 
-        if(menuToggle) {
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-        }
+        try {
+            if(document != null) {
+                if(menuToggle) {
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
+                }
+            }
+        } catch(e) {}
 
         return(
             <Portal>

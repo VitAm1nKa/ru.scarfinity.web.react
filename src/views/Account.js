@@ -40,8 +40,8 @@ class Controller extends React.Component {
 
     componentWillMount() {
         // Логин пользователя
-        const userEmail = localStorage.getItem("user-email");
-        const userToken = localStorage.getItem("user-token");
+        const userEmail = '';// localStorage.getItem("user-email");
+        const userToken = '';// localStorage.getItem("user-token");
 
         if(userToken == null || userToken == '') {
             // Зарос на новый токен

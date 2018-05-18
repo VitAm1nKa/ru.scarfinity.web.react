@@ -4,9 +4,11 @@ import {
     Route,
     Redirect,
     Switch,
-    NavLink
+    NavLink,
+    withRouter
 }                           from 'react-router-dom';
 import { GridLine }         from '../../lib/grid';
+import { useDOM }           from '../../lib/isomorphic';
 
 import Account              from '../Account';
 import TopMenu              from '../../components/navigation/top-menu';
@@ -25,6 +27,7 @@ import {
     actionCreators as shopActions                     
 }                           from '../../store/shop';
 import { Default404 }       from '../DefaultPages';
+
 
 const CatalogTopOffset = (props) => {
     return(
@@ -88,13 +91,28 @@ class PageWrap extends React.Component {
 
 class Layout extends React.Component {
     componentWillMount() {
-        this.props.requestNavigation();
+        // this.props.requestNavigation();
 
         // Получение информации о магазинах(на земле)
-        this.props.getShops();
+        // this.props.getShops();
 
         // Получение данных о структуре каталога
-        this.props.requestCatalogNodes();
+        // this.props.requestCatalogNodes();
+
+        // Создание ошибочной ситуации
+        useDOM({clientSide: () => {
+            var error = document.getElementById("id");
+        }, serverSide: () => {
+            // serverSide
+        }, bothSides: () => {
+            // bothSides
+        }, onError: () => {
+            // onError
+        }, afterComplete: () => {
+            // afterComplete  
+        }})
+
+        console.warn("Layout props", this.props);
     }
 
     render() {
@@ -124,9 +142,10 @@ class Layout extends React.Component {
     }
 }
 
-export default connect(state => ({
-    navigation: state.navigation
+export default withRouter(connect((state, ownProps) => ({
+    navigation: state.navigation,
+    ttt: ownProps
 }), Object.assign({},
     navigationActions,
     shopActions))
-(Layout);
+(Layout));

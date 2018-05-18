@@ -5,8 +5,13 @@ import { StaticRouter } from 'react-router-dom';
 import { replace } from 'react-router-redux';
 import { createMemoryHistory } from 'history';
 import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
-import { routes } from './routes';
 import configureStore from './configureStore';
+import { routes } from './routes';
+
+// -- -------------------------------------------------------
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme      from 'material-ui/styles/getMuiTheme';
+const muiTheme = getMuiTheme({userAgent: 'all'});
 
 export default createServerRenderer(params => {
     return new Promise((resolve, reject) => {

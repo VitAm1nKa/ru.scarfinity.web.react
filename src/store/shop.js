@@ -7,6 +7,8 @@ import { Shop }             from './__models';
 
 export const actionCreators = {
     getShops: () => (dispatch, getState) => {
+        return true;
+        try{
         const request = 
             __request({url: 'api/shop'})
             .then((response) => response.json())
@@ -20,6 +22,7 @@ export const actionCreators = {
 
         addTask(request);
         dispatch({type: 'SHOP__FETCH__REQUEST'});
+        } catch(e){}
     }
 };
 

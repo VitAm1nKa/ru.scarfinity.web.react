@@ -10,6 +10,11 @@ import { ApplicationState }  from './store';
 import * as RoutesModule from './routes';
 let routes = RoutesModule.routes;
 
+// -- -------------------------------------------------------
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme      from 'material-ui/styles/getMuiTheme';
+const muiTheme = getMuiTheme({userAgent: 'all'});
+
 // Create browser history to use in the Redux store
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const history = createBrowserHistory({ basename: baseUrl });

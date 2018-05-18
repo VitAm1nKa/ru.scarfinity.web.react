@@ -18,7 +18,7 @@ import * as ImageGallery            from './imageGallery';
 import * as Shop                    from './shop';
 import * as ProductCollection       from './productCollection';
 
-export var reducers = Redux.combineReducers({
+export var reducers = {
     account: Account.reducer,
     product: Product.reducer,
     catalog: Catalog.reducer,
@@ -36,5 +36,5 @@ export var reducers = Redux.combineReducers({
     imageGallery: ImageGallery.reducer,
     shop: Shop.reducer,
     productCollection: ProductCollection.reducer
-});
+};
 //# sourceMappingURL=index.js.map
