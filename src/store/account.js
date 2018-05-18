@@ -1,7 +1,7 @@
 import { fetch, addTask }   from 'domain-task';
 import update               from 'immutability-helper';
 import __request            from './__request';
-import jwtDecoder           from 'jwt-decode';
+import * as ClientData      from '../lib/client-data';
 
 function login(email, onSuccess, onError) {
     const request = 
@@ -23,7 +23,6 @@ export const actionCreators = {
         dispatch({ type: 'ACCOUNT__AUTH__CONTINUE', role });
     },
     login: (email) => (dispatch, getState) => {
-
         login(email, 
             data => {
                 dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true })
@@ -127,14 +126,14 @@ export const reducer = (state, incomingAction) => {
         }
         case 'ACCOUNT__AUTH__SUCCESS': {
 
-            localStorage.setItem('user-email', action.data.email || '');
-            localStorage.setItem('user-token', action.data.token || '');
+            ClientData.cookieSetData('user-email', action.data.email || '');
+            ClientData.cookieSetData('user-token', action.data.token || '');
 
             // Если получен токен для ананимного польователя, то сохранить email как name
             // Для избежания многократного созвавания пользователей в момент ралогинивания
             // Так же для исмольования при регистрации анонимного пользователя в реального
             if(action.anonymous == true)
-                localStorage.setItem('user-name', action.data.email);
+                ClientData.cookieSetData('user-name', action.data.email);
 
             return update(state, {$merge: {
                 authFetch: false,
@@ -144,9 +143,9 @@ export const reducer = (state, incomingAction) => {
         }
         case 'ACCOUNT__AUTH__ERROR': {
 
-            localStorage.removeItem('user-email');
-            localStorage.removeItem('user-token');
-            localStorage.removeItem('user-name');
+            ClientData.cookieRemoveData('user-email');
+            ClientData.cookieRemoveData('user-token');
+            ClientData.cookieRemoveData('user-name');
 
             return update(state, {$merge: {
                 authFetch: false,
@@ -162,8 +161,8 @@ export const reducer = (state, incomingAction) => {
         }
         case 'ACCOUNT__SIGNIN__SUCCESS': {
 
-            localStorage.setItem('user-email', action.accountData.email);
-            localStorage.setItem('user-token', action.accountData.token);
+            ClientData.cookieSetData('user-email', action.accountData.email);
+            ClientData.cookieSetData('user-token', action.accountData.token);
 
             return update(state, {$merge: {
                 signInFetch: false,
@@ -205,8 +204,8 @@ export const reducer = (state, incomingAction) => {
             }})
         }
         case 'ACCOUNT__SIGNOUT': {
-            localStorage.removeItem('user-email');
-            localStorage.removeItem('user-token');
+            ClientData.cookieRemoveData('user-email');
+            ClientData.cookieRemoveData('user-token');
 
             if(state.signIn) {
                 return update(state, {$merge: {
@@ -219,6 +218,3 @@ export const reducer = (state, incomingAction) => {
 
     return state || initialState;
 }
-
-// 839815f7-c10b-4ac9-8f01-15a23555eed6
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiOTkzYzZhNzctMzAwOS00NmRhLWFmNmYtNGJhZDNlMjU0MWUyIiwianRpIjoiMzU2Y2NjZjMtYjQ1MS00YjE3LWJiNjktYjk4NGYyYzVhNjBkIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiYW5vbnltb3VzIiwiZXhwIjoxNTIwMjMzODk4LCJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjE5ODo1NTEzOSIsImF1ZCI6Imh0dHA6Ly8xOTIuMTY4LjEuMTk4OjU1MTM5In0.2iqvZYra8yhd0hFHN22h0h8RlmAL7FtQMnbGs6ZWqtE

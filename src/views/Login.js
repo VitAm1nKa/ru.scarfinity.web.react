@@ -1,8 +1,9 @@
-import React        from 'react';
-import { connect }  from 'react-redux';
-import sha1         from 'sha1';
-import * as Grid    from '../lib/grid';
-import qs           from 'qs';
+import React            from 'react';
+import { connect }      from 'react-redux';
+import sha1             from 'sha1';
+import * as Grid        from '../lib/grid';
+import * as ClientData  from '../lib/client-data';
+import qs               from 'qs';
 
 import {
     actionCreators as AccountActions
@@ -110,8 +111,8 @@ class Controller extends React.Component {
     }
 
     render() {
-        const userEmail = localStorage.getItem("user-email");
-        const userToken = localStorage.getItem("user-token");
+        const userEmail = ClientData.cookieGetData('user-email');
+        const userToken = ClientData.cookieGetData('user-token');
 
         return(
             <Grid.Row>
@@ -119,8 +120,8 @@ class Controller extends React.Component {
                     <Grid.Col>
                         <div className="login">
                             <ul>
-                                <li>{`LocalStorage: UserEmail: ${userEmail}`}</li>
-                                <li className="login__token">{`LocalStorage: UserToken: ${userToken}`}</li>
+                                <li>{`Cookies: UserEmail: ${userEmail}`}</li>
+                                <li className="login__token">{`Cookies: UserToken: ${userToken}`}</li>
                             </ul>
                             {
                                 this.props.account.signInError &&
