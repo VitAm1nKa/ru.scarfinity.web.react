@@ -7,6 +7,8 @@ import { createMemoryHistory } from 'history';
 import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
 import configureStore from './configureStore';
 import { routes } from './routes';
+import { CookiesProvider } from 'react-cookie';
+import Cookies from 'universal-cookie';
 
 // -- -------------------------------------------------------
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -27,7 +29,9 @@ export default createServerRenderer(params => {
         const routerContext = {};
         const app = (
             <Provider store={ store }>
-                <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
+                <CookiesProvider cookies={new Cookies(params.data.cookies)}>
+                    <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
+                </CookiesProvider>
             </Provider>
         );
         renderToString(app);

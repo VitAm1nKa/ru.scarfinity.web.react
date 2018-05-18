@@ -1,4 +1,15 @@
-<div id="react-app" asp-prerender-module="src/dist/main-server"></div>
+<div>
+    @{
+        var cookies = new Dictionary<string, string>();
+        foreach(var c in ViewContext.HttpContext.Request.Cookies)
+        {
+            cookies.Add(c.Key, c.Value);
+        }
+
+        var data = new { cookies };
+    }
+</div>
+<div id="react-app" asp-prerender-module="src/dist/main-server" asp-prerender-data="@data"></div>
 
 @section scripts {
     <script src="~/dist/main-client.js" asp-append-version="true"></script>

@@ -11,39 +11,40 @@ var isLocalStorageAvaliable = (() => {
     }
 })();
 
-function setClientData(values, options = ({ cookies: false, localStorage: false })) {
-    _.forin(values, (value, key) => {
-        if(cookies)
-            cookies.set(`${key}`, `${value}`);
+function setClientData(key, value, {useCookies} = false, {useLocalStorage} = false) {
+    if(useCookies) {
+        cookies.set(`${key}`, `${value}`);
+    }
 
-        if(isLocalStorageAvaliable && localStorage)
-            localStorage.setItem(`${key}`, `${value}`);
-    })
+    if(useLocalStorage && isLocalStorageAvaliable) {
+        localStorage.setItem(`${key}`, `${value}`);
+    }
 }
 
-function getClientData(value, options = ({ cookies: false, localStorage: false })) {
-    if(cookies) {
+function getClientData(value, {useCookies} = false, {useLocalStorage} = false) {
+    if(useCookies) {
         return cookies.get(value);
     }
 
-    if(localStorage && isLocalStorageAvaliable) {
+    if(useLocalStorage && isLocalStorageAvaliable) {
         return localStorage.getItem(value);
+        // hello
     }
 }
 
-function removeClientData(value, options = ({ cookies: false, localStorage: false })) {
-    if(cookies) {
+function removeClientData(value, {useCookies} = false, {useLocalStorage} = false) {
+    if(useCookies) {
         cookies.remove(value);
     }
 
-    if(localStorage && isLocalStorageAvaliable) {
+    if(useLocalStorage && isLocalStorageAvaliable) {
         localStorage.removeItem(value);
     }
 }
 
-export var cookieSetData = (values) => setClientData(values, { cookies: true });
-export var cookieGetData = (value) => getClientData(value, { cookies: true });
-export var cookieRemoveData = (value) => removeClientData(value, { cookies: true });
-export var localStorageSetData = (values) => setClientData(values, { localStorage: true });
-export var localStorageGetData = (value) => getClientData(value, { localStorage: true });
-export var localStorageRemoveData = (value) => removeClientData(value, { localStorage: true });
+export var cookieSetData = (key, value) => setClientData(key, value, { useCookies: true });
+export var cookieGetData = (value) => getClientData(value, { useCookies: true });
+export var cookieRemoveData = (value) => removeClientData(value, { useCookies: true });
+export var localStorageSetData = (key, value) => setClientData(key, value, { useLocalStorage: true });
+export var localStorageGetData = (value) => getClientData(value, { useLocalStorage: true });
+export var localStorageRemoveData = (value) => removeClientData(value, { useLocalStorage: true });

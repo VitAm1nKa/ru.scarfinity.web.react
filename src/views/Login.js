@@ -1,8 +1,13 @@
 import React            from 'react';
 import { connect }      from 'react-redux';
+import { instanceOf }   from 'prop-types';
 import sha1             from 'sha1';
 import * as Grid        from '../lib/grid';
 import * as ClientData  from '../lib/client-data';
+import { 
+    withCookies, 
+    Cookies 
+} from 'react-cookie';
 import qs               from 'qs';
 
 import {
@@ -48,8 +53,8 @@ class Controller extends React.Component {
                         this.setState({vkAuthUri: data});
                     }
                 });*/
-        console.log(this.props);
-        this.setState({vkAuthUri: 'http://oauth.vk.com/authorize?client_id=6471031&redirect_uri=http://192.168.1.198:8095/%23/login&display=popup&response_type=code'});
+        console.log('Will mount: ',  this.props);
+        this.setState({vkAuthUri: 'http://oauth.vk.com/authorize?client_id=6471031&redirect_uri=http://192.168.1.198:8095/login?id=hello&display=popup&response_type=code'});
     }
 
     handleChange(e) {
@@ -86,7 +91,7 @@ class Controller extends React.Component {
     vkAuthorization(uri = null) {
         if(uri == null) {
             //  encodeURI(`http://localhost:50146/api/token/VKAuthUrl?redirect=${"http://192.168.1.198:8095/#/login"}`);
-            const query = qs.stringify({ redirect: 'http://192.168.1.198:8095/#/login' }, { addQueryPrefix: true });
+            const query = qs.stringify({ redirect: 'http://192.168.1.198:8095/login' }, { addQueryPrefix: true });
             const url = `http://localhost:50146/api/token/VKAuth${query}`;
             console.log(url);
             const request =
@@ -111,8 +116,8 @@ class Controller extends React.Component {
     }
 
     render() {
-        const userEmail = ClientData.cookieGetData('user-email');
-        const userToken = ClientData.cookieGetData('user-token');
+        const userEmail = this.props.cookies.get('user-email');
+        const userToken = this.props.cookies.get('user-token');
 
         return(
             <Grid.Row>
@@ -121,7 +126,7 @@ class Controller extends React.Component {
                         <div className="login">
                             <ul>
                                 <li>{`Cookies: UserEmail: ${userEmail}`}</li>
-                                <li className="login__token">{`Cookies: UserToken: ${userToken}`}</li>
+                                <li className="login__token">{`Cookies: UserToken ${userToken}`}</li>
                             </ul>
                             {
                                 this.props.account.signInError &&
@@ -142,8 +147,11 @@ class Controller extends React.Component {
         )
     }
 }
+Controller.propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+}
 
 export default connect(state => ({
     account: state.account,
     user: state.user
-}), Object.assign({}, AccountActions))(Controller);
+}), Object.assign({}, AccountActions))(withCookies(Controller));
