@@ -1,5 +1,6 @@
 import React                        from 'react';
 import { useDOM }                   from '../../lib/isomorphic'; 
+import './banner.less';
 import {Row, Container, Col}        from '../../lib/grid';
 import FiberManualRecord            from 'material-ui/svg-icons/av/fiber-manual-record';
 import ArrowForward                 from 'material-ui/svg-icons/navigation/arrow-forward';

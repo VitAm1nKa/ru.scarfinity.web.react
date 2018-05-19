@@ -9,6 +9,7 @@ import {
 import { ImageGallery }     from '../../store/__models';
 import { useDOM }           from '../../lib/isomorphic';
 
+import './image-gallery-view.less';
 
 
 class ImageView extends React.Component {

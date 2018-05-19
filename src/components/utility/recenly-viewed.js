@@ -11,7 +11,7 @@ import ExpandMore               from 'material-ui/svg-icons/navigation/expand-mo
 import IconButton               from 'material-ui/IconButton';
 import ImageContainer           from './image-container';
 
-
+import './recenly-viewed.less';
 
 const style = {
     button: {
