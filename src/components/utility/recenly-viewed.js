@@ -1,5 +1,6 @@
 import React                    from 'react';
 import { NavLink }              from 'react-router-dom';
+import { useDOM }               from '../../lib/isomorphic';
 
 import FlatButton               from 'material-ui/FlatButton';
 import Paper                    from 'material-ui/Paper';
@@ -10,7 +11,7 @@ import ExpandMore               from 'material-ui/svg-icons/navigation/expand-mo
 import IconButton               from 'material-ui/IconButton';
 import ImageContainer           from './image-container';
 
-import './recenly-viewed.less';
+
 
 const style = {
     button: {
@@ -273,7 +274,9 @@ class RecenlyViewed__Shell extends React.Component {
     }
     
     componentDidMount() {
-        window.addEventListener("resize", this.handleResize);
+        useDOM({clientSide: () => {
+            window.addEventListener("resize", this.handleResize);
+        }});
         this.recalcItemsCount(this.clientWidth(), this.clientHeight());
     }
 
@@ -384,7 +387,9 @@ class PreviewItemGridHorisontal extends React.Component {
     }
     
     componentDidMount() {
-        window.addEventListener("resize", this.handleResize);
+        useDOM({clientSide: () => {
+            window.addEventListener("resize", this.handleResize);
+        }});
         this.recalcItemsCount(this.clientWidth(), true);
     }
 
@@ -460,7 +465,9 @@ export class PreviewItemGridVertical extends React.Component {
     }
     
     componentDidMount() {
-        window.addEventListener("resize", this.handleResize);
+        useDOM({clientSide: () => {
+            window.addEventListener("resize", this.handleResize);
+        }});
         this.recalcItemsCount(this.clientBounds());
     }
 
