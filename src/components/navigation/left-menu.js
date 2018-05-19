@@ -5,6 +5,8 @@ import Paper                from 'material-ui/Paper';
 import KeyboardArrowUp      from 'material-ui/svg-icons/hardware/keyboard-arrow-up';
 import KeyboardArrowDown    from 'material-ui/svg-icons/hardware/keyboard-arrow-down';
 
+import './left-menu.less';
+
 const LeftMenuItemExpandItem = (props) => {
     return(
         <NavLink

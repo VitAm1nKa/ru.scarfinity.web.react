@@ -9,6 +9,8 @@ import MailLine                 from '../utility/mail-line';
 import SocialButton             from '../utility/social-button';
 import Logo                     from '../utility/logo';
 
+import './footer.less';
+
 const FooterMenu = (props) => {
     return(
         <div className="footer-menu">
