@@ -5,7 +5,7 @@ import {
     NavLink
 }                   from 'react-router-dom';
 
-
+import './left-menu.less';
 
 const LeftMenuItem = (props) => {
     return(

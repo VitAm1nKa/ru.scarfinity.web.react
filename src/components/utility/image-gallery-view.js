@@ -7,9 +7,8 @@ import {
     ChevronRight
 }                           from './icons';
 import { ImageGallery }     from '../../store/__models';
-import { useDOM }           from '../../lib/isomorphic';
 
-
+import './image-gallery-view.less';
 
 class ImageView extends React.Component {
     constructor(props) {
@@ -27,9 +26,7 @@ class ImageView extends React.Component {
     }
 
     componentWillMount() {
-        useDOM({clientSide: () => {
-            window.addEventListener('resize', this.handleResize);
-        }});
+        window.addEventListener('resize', this.handleResize);
         this.loadImage(this.props.images, this.props.imageId);
     }
 

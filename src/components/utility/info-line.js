@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './info-line.less';
 
 const Line = (props) => {
     switch(props.type) {

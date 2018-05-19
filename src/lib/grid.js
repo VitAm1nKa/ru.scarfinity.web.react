@@ -1,4 +1,5 @@
 import React from 'react';
+import './grid.less';
 
 const withStyle = (base, style) => {
     if(base !== null && base !== 'undefined' && style !== null && style !== 'undefined') {

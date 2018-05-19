@@ -5,7 +5,7 @@ import Currency         from './currency';
 import ImageContainer   from './image-container';
 import ColorPicker      from './color-picker';
 
-
+import './product-table.less';
 
 const TableTitle = (props) => <span className="product-table__title" data-full={props.title} data-small={props.title2}></span>
 const TableIcon = (props) => <span className="product-table__icon">{props.glyph}</span>

@@ -1,7 +1,7 @@
 import React    from 'react';
 import CheckBox from './check-box';  
 
-
+import './check-box-list.less';
 
 const View = (props) => {
     return(

@@ -3,7 +3,7 @@ import * as Grid    from '../../lib/grid';
 import NavLink      from 'react-router-dom/NavLink';
 import Currency     from './currency';
 
-
+import './order-card.less';
 
 class Controller extends React.Component {
     render() {

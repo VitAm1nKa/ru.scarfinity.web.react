@@ -2,7 +2,7 @@ import React                            from 'react';
 import {Link}                           from 'react-router-dom'
 import productCard						from '../';
 
-
+import './product-card.less';
 
 import ArrowDropDown                    from 'material-ui/svg-icons/navigation/arrow-drop-down';
 

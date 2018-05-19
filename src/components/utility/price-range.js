@@ -1,8 +1,7 @@
-import React        from 'react';
-import { useDOM }   from '../../lib/isomorphic';
+import React from 'react';
 
 // import Utility__Currency from './Utility__Currency.jsx';
-import SwapHoriz    from 'material-ui/svg-icons/action/swap-horiz';
+import SwapHoriz from 'material-ui/svg-icons/action/swap-horiz';
 
 // Slider components
 const PriceRangeSliderPill = (props) => {
@@ -162,33 +161,27 @@ class PriceRangeSliderController extends React.Component {
 
     // global mouse heandler
     componentWillMount() {
-        useDOM({clientSide: () => {
-            indow.addEventListener("mousemove", this.handleSliderMouseMove);
-            window.addEventListener("mouseup", this.handleSliderMouseUp);
-            window.addEventListener("pointercancel", this.handleSliderMouseUp);
-            window.addEventListener("pointerup", this.handleSliderMouseUp);
-        }})
+        window.addEventListener("mousemove", this.handleSliderMouseMove);
+        window.addEventListener("mouseup", this.handleSliderMouseUp);
+        window.addEventListener("pointercancel", this.handleSliderMouseUp);
+        window.addEventListener("pointerup", this.handleSliderMouseUp);
 
         // touches
-        useDOM({clientSide: () => {
-            window.addEventListener("touchmove", this.handleSliderTouchMove);
-            window.addEventListener("touchend", this.handleSliderTouchEnd);
-            window.addEventListener("touchcancel", this.handleSliderTouchCancel);
-        }});
+        window.addEventListener("touchmove", this.handleSliderTouchMove);
+        window.addEventListener("touchend", this.handleSliderTouchEnd);
+        window.addEventListener("touchcancel", this.handleSliderTouchCancel);
     }
 
     componentWillUnmount() {
-        useDOM({clientSide: () => {
-            window.removeEventListener("mousemove", this.handleSliderMouseMove);
-            window.removeEventListener("mouseup", this.handleSliderMouseUp);
-            window.removeEventListener("pointercancel", this.handleSliderMouseUp);
-            window.removeEventListener("pointerup", this.handleSliderMouseUp);
+        window.removeEventListener("mousemove", this.handleSliderMouseMove);
+        window.removeEventListener("mouseup", this.handleSliderMouseUp);
+        window.removeEventListener("pointercancel", this.handleSliderMouseUp);
+        window.removeEventListener("pointerup", this.handleSliderMouseUp);
 
-            // touches
-            window.removeEventListener("touchmove", this.handleSliderTouchMove);
-            window.removeEventListener("touchend", this.handleSliderTouchEnd);
-            window.removeEventListener("touchcancel", this.handleSliderTouchCancel);
-        }});
+        // touches
+        window.removeEventListener("touchmove", this.handleSliderTouchMove);
+        window.removeEventListener("touchend", this.handleSliderTouchEnd);
+        window.removeEventListener("touchcancel", this.handleSliderTouchCancel);
     }
 
     // mouse handlers

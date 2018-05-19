@@ -7,7 +7,7 @@ import * as Grid    from '../../lib/grid';
 import Currency     from '../utility/currency';
 import OrderCard    from '../utility/order-card';
 
-
+import './orders-history-orders.less';
 
 const OrderNumber = (props) => {
     return(

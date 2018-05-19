@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './check-box.less';
 
 const CheckBoxIcon = (props) => {
 

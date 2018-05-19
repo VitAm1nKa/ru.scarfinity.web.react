@@ -1,4 +1,5 @@
 import React from 'react';
+import './DefaultPages.less';
 
 export const Default404 = () => {
     return(

@@ -3,7 +3,7 @@ import {
     NavLink
 }               from 'react-router-dom';
 
-
+import './logo.less';
 
 
 export default (props) => {

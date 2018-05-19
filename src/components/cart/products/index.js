@@ -9,7 +9,7 @@ import NavigationCancel         from 'material-ui/svg-icons/navigation/cancel';
 // ---------------------
 import ProductCard              from './product-card';
 
-
+import './products.less';
 
 class Controller extends React.Component {
     render() {

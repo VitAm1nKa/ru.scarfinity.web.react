@@ -17,23 +17,23 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.(js|jsx)$/, include: /src/, use: 'babel-loader' },
+                { test: /\.less$/, use: ExtractTextPlugin.extract({ 
+                    fallback: 'style-loader', 
+                    use: isDevBuild ? ['css-loader', 'postcss-loader', 'less-loader'] : ['css-loader?minimize', 'postcss-loader', 'less-loader'] })},
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
             ]
-        }
+        },
+        plugins: [
+            new ExtractTextPlugin('site.css')
+        ]
     });
 
     // Configuration for client-side bundle suitable for running in browsers
     const clientBundleOutputDir = './wwwroot/dist';
     const clientBundleConfig = merge(sharedConfig(), {
         entry: { 'main-client': './src/boot-client.jsx' },
-        module: {
-            rules: [
-                { test: /\.less$/, use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: isDevBuild ? ['css-loader', 'postcss-loader', 'less-loader'] : ['css-loader?minimize', 'postcss-loader', 'less-loader'] })}
-            ]
-        },
         output: { path: path.join(__dirname, clientBundleOutputDir) },
         plugins: [
-            new ExtractTextPlugin('site.css'),
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('./wwwroot/dist/vendor-manifest.json')
