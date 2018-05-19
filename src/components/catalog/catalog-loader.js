@@ -6,6 +6,8 @@ import * as CatalogState    from '../../store/catalog';
 import * as Grid            from '../../lib/grid';
 import LazyLoader           from '../utility/lazy-loader';
 
+import './catalog-loader.less';
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);

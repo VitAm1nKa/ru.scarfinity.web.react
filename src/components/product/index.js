@@ -34,6 +34,8 @@ import {
 	Product
 }										from '../../store/__models';
 
+import './index.less';
+
 var style = {
     button: {
         width: 32,

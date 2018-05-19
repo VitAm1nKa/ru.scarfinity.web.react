@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './flat-button.less';
+
 const ChevronLeft = (props) => {
     return(
         <svg

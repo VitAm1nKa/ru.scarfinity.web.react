@@ -1,6 +1,8 @@
 import React        from 'react';
 import FlatButton   from './flat-button';
 
+import './pagination.less';
+
 const Pagination = (props) => {
     const c = props.currentPage;
     const max = props.pagesCount;

@@ -2,6 +2,8 @@ import React    from 'react';
 import Measure  from 'react-measure';
 import update   from 'immutability-helper';
 
+import './color-picker.less';
+
 const ColorPickerIcon = (props) => {
     return(
         <svg

@@ -7,6 +7,8 @@ import { Basket }   from './icons';
 
 import LazyLoader   from './lazy-loader';
 
+import './buttons.less';
+
 export class CatalogProductCartButton extends React.Component {
     constructor(props) {
         super(props);

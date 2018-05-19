@@ -6,6 +6,8 @@ import SlideContainer   from '../utility/slide-container';
 import { Filter }       from '../utility/icons';
 import { Dropdown }     from '../utility/input';
 
+import './filters-container.less';
+
 const FilterToggleButton = (props) => {
     return(
         <div
