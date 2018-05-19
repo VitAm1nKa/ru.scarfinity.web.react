@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './image-caontainer.less';
+import './image-container.less';
 
 class Controller extends React.Component {
     constructor(props) {
