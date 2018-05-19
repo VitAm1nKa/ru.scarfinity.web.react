@@ -1,6 +1,9 @@
 import React        from 'react';
 import { connect }  from 'react-redux';
-import NavLink      from 'react-router-dom/NavLink';
+import {
+    NavLink, 
+    withRouter
+}                   from 'react-router-dom';
 import {
     breadCrumbsActions
 }                   from '../../store/navigation';
@@ -55,7 +58,7 @@ class BreadCrumbController extends React.Component {
 //  Оболочка с эксопртом, коннект со стором
 export const BreadCrumb = connect(state => ({
     breadCrumbs: state.navigation.breadCrumbs
-}), breadCrumbsActions)(BreadCrumbController);
+}), breadCrumbsActions)(withRouter(BreadCrumbController));
 
 //  -- --
 //  Класс, рендеренга списка хлебныйх крошек
@@ -94,4 +97,4 @@ class BreadCrumbsController extends React.Component {
 //  Оболочка с эксопртом, коннект со стором
 export const BreadCrumbs = connect(state => ({
     breadCrumbs: state.navigation.breadCrumbs
-}))(BreadCrumbsController)
+}))(withRouter(BreadCrumbsController))
