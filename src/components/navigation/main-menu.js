@@ -14,6 +14,8 @@ import * as Grid 			from '../../lib/grid';
 import { count__cartItems }	from '../../lib/currying'; 
 import * as CartS			from '../../store/cart';
 
+import './main-menu.less';
+
 // 
 class MainMenuNavigationCart extends React.Component{
 	constructor(props) {

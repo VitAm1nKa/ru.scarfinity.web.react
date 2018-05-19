@@ -13,6 +13,8 @@ import {
     Person
 }                   from '../utility/icons';
 
+import './top-menu.less';
+
 const TopMenu = (props) => {
     const queryParams = qs.parse(props.location.search, {ignoreQueryPrefix: true});
     const pathName = _.trimEnd(props.location.pathname, '/');
