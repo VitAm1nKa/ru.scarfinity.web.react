@@ -5,6 +5,8 @@ import {
     Review
 }                   from '../../store/__models';
 
+import './review.less';
+
 const Controller = (props) =>  {
     const review = new Review(props.review);
 

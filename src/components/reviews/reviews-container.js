@@ -9,6 +9,8 @@ import RatingBox        from '../utility/rating-box';
 import Pagination       from '../utility/pagination';
 import { ReviewCollection } from '../../store/__models';
 
+import './reviews-container.less';
+
 class LeaveReview extends React.Component {
     constructor(props) {
         super(props);
