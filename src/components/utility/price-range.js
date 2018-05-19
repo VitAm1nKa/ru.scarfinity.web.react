@@ -4,6 +4,8 @@ import { useDOM }   from '../../lib/isomorphic';
 // import Utility__Currency from './Utility__Currency.jsx';
 import SwapHoriz    from 'material-ui/svg-icons/action/swap-horiz';
 
+import './price-range.less';
+
 // Slider components
 const PriceRangeSliderPill = (props) => {
     return(

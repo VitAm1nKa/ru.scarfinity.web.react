@@ -5,6 +5,8 @@ import Star         from 'material-ui/svg-icons/toggle/star';
 import StarBorder   from 'material-ui/svg-icons/toggle/star-border';
 import StarHalf     from 'material-ui/svg-icons/toggle/star-half';
 
+import './rating-box.less';
+
 class RatingBox extends React.Component {
     constructor(props) {
         super(props);

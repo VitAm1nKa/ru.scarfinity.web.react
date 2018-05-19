@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './currency.less';
+
 class ChangeValueController extends React.Component {
     constructor(props) {
         super(props);

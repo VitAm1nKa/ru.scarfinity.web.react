@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './lazy-loader.less';
+
 const LazyLoaderIcon = (props) => {
     const width = props.size / 2;
     const margin = Math.floor(props.size / 5);

@@ -23,6 +23,8 @@ import Paper        from 'material-ui/Paper';
 import Validate     from '../../lib/validation';
 import * as Grid    from '../../lib/grid';
 
+import './personal-data.less';
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);

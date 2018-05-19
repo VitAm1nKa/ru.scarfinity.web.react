@@ -19,6 +19,8 @@ import {
     CatalogProductCartButton
 }                               from './buttons';
 
+import './catalog-product-card.less';
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);
