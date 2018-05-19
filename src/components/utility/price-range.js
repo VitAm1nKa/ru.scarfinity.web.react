@@ -165,7 +165,7 @@ class PriceRangeSliderController extends React.Component {
     // global mouse heandler
     componentWillMount() {
         useDOM({clientSide: () => {
-            indow.addEventListener("mousemove", this.handleSliderMouseMove);
+            window.addEventListener("mousemove", this.handleSliderMouseMove);
             window.addEventListener("mouseup", this.handleSliderMouseUp);
             window.addEventListener("pointercancel", this.handleSliderMouseUp);
             window.addEventListener("pointerup", this.handleSliderMouseUp);

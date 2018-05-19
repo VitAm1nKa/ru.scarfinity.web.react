@@ -15,7 +15,6 @@ export function useDOM({clientSide, serverSide, bothSides, onError, afterComplet
         if(bothSides != null) bothSides();
 
     } catch(e) {
-        console.error('UseDOM trow exception: ', e);
         if(onError != null) onError();
     } finally {
         if(afterComplete != null) afterComplete();

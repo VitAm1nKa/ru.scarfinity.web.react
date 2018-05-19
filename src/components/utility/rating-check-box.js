@@ -5,7 +5,7 @@ import RadioButtonChecked   from 'material-ui/svg-icons/toggle/radio-button-chec
 import RadioButtonUnchecked from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import IconButton           from 'material-ui/IconButton';
 
-import './rating-check-box';
+import './rating-check-box.less';
 
 var colors = {
     starColor: "#f6b63a",
