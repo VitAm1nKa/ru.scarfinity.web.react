@@ -9,6 +9,8 @@ import {
 }                   from '../store/account';
 import __request    from '../store/__request';
 
+import './Login.less';
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);

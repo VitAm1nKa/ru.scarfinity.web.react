@@ -1,7 +1,7 @@
 import React    from 'react';
 import Measure  from 'react-measure';
 
-
+import './slide-container.less';
 
 class Controller extends React.Component {
     constructor(props) {

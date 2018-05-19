@@ -3,7 +3,7 @@ import {connect}                from 'react-redux';
 
 import Currency                 from './currency';
 
-
+import './radio-box-group.less';
 
 const RadioIcon = (props) => {
     const styles = {

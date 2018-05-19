@@ -1,7 +1,7 @@
 import React        from 'react';
 import { Portal }   from 'react-portal';
 
-
+import './dialog.less';
 
 class Controller extends React.Component {
     constructor(props) {
@@ -15,9 +15,7 @@ class Controller extends React.Component {
     }
 
     componentWillUnmount() {
-        if(document) {
-            document.body.style.overflow = '';
-        }
+        document.body.style.overflow = '';
     }
 
     render() {

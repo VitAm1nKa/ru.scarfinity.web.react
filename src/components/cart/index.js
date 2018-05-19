@@ -26,7 +26,7 @@ import {
     SalesOrderPost
 }                               from '../../store/__models';
 
-
+import './cart.less';
 
 class CartDataModel extends SalesOrderPost {
     constructor(model = {}) {

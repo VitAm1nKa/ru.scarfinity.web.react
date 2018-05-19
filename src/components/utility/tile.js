@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+import './tile.less';
 
 class Controller extends React.Component {
     render() {

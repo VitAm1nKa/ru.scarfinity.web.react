@@ -7,7 +7,7 @@ import {
     VerticalGrid
 }                       from '../../lib/grid';
 
-
+import './special-offer.less';
 
 class Controller extends React.Component {
     constructor(props) {

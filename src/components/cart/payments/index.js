@@ -5,7 +5,7 @@ import {
     VerticalGrid
 }                       from '../../../lib/grid';
 
-
+import './payments.less';
 
 const Payments = (props) => {
     const cash = [

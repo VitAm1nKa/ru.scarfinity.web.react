@@ -8,7 +8,7 @@ import {
     PngLadyGray
 }                   from '../utility/icons';
 
-
+import './header.less';
 
 class Controller extends React.Component {
     render() {
