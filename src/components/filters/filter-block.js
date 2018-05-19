@@ -1,7 +1,7 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
 
-import 'filter-block.less';
+import './filter-block.less';
 
 const FilterContainerView = (props) => {
     return(
