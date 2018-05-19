@@ -14,6 +14,7 @@ import * as UserStore       from '../store/user';
 import {
     actionCreators as ShoppingCartActions
 }                           from '../store/shoppingCart';
+import * as ClientData      from '../lib/client-data';
 
 
 // Класс отвечающий за первоночальную загрузку всех данных об аккаунте
@@ -40,8 +41,8 @@ class Controller extends React.Component {
 
     componentWillMount() {
         // Логин пользователя
-        const userEmail = '';// localStorage.getItem("user-email");
-        const userToken = '';// localStorage.getItem("user-token");
+        const userEmail = ClientData.cookieGetData('user-email');
+        const userToken = ClientData.cookieGetData('user-token');
 
         if(userToken == null || userToken == '') {
             // Зарос на новый токен

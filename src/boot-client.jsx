@@ -8,6 +8,7 @@ import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
 import { ApplicationState }  from './store';
 import * as RoutesModule from './routes';
+import { CookiesProvider } from 'react-cookie';
 let routes = RoutesModule.routes;
 
 // -- -------------------------------------------------------
@@ -29,7 +30,9 @@ function renderApp() {
     ReactDOM.render(
         <AppContainer>
             <Provider store={ store }>
-                <ConnectedRouter history={ history } children={ routes } />
+                <CookiesProvider>
+                    <ConnectedRouter history={ history } children={ routes } />
+                </CookiesProvider>
             </Provider>
         </AppContainer>,
         document.getElementById('react-app')
