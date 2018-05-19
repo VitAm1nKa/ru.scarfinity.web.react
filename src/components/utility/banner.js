@@ -1,7 +1,6 @@
-import React from 'react';
-
+import React                        from 'react';
+import { useDOM }                   from '../../lib/isomorphic'; 
 import './banner.less';
-
 import {Row, Container, Col}        from '../../lib/grid';
 import FiberManualRecord            from 'material-ui/svg-icons/av/fiber-manual-record';
 import ArrowForward                 from 'material-ui/svg-icons/navigation/arrow-forward';
@@ -53,11 +52,15 @@ class ScaleBar extends React.Component {
     }
 
     componentWillMount() {
-        window.addEventListener('resize', this.onResize);
+        useDOM({clientSide: () => {
+            window.addEventListener('resize', this.onResize);
+        }});
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.onResize);
+        useDOM({clientSide: () => {
+            window.removeEventListener('resize', this.onResize);
+        }});
     }
 
     componentDidMount() {
