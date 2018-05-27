@@ -80,6 +80,8 @@ import Gallery              from '../components/gallery';
 import ImageGalleryLoader   from '../components/utility/image-gallery-loader';
 import { ImageGallery } from '../store/__models';
 
+import Countdown from '../components/utility/countdown';
+
 const ModelData = {
     model: "",
     art: "",
@@ -319,6 +321,9 @@ class Controller extends React.Component {
 
         return(
             <div>
+                <div>
+                    <Countdown />
+                </div>
                 <button onClick={this.handleSliderToggle}>{"Слайдер"}</button>
                 <SlideContainer open={this.state.sliderOpen}>
                     <p>Ullamco nulla sit labore culpa voluptate dolore amet fugiat in irure adipisicing deserunt commodo. Adipisicing labore tempor ex ullamco voluptate exercitation non est labore commodo ipsum anim. Cillum consequat excepteur magna Lorem incididunt veniam in eu laborum minim. Nostrud qui magna laborum aliquip qui exercitation culpa reprehenderit anim culpa pariatur ipsum dolor nostrud.</p>
@@ -346,7 +351,7 @@ class Controller extends React.Component {
                 <ProductCartButtonTest />
                 <ButtonChevronRight title={"Расчитать"} />
                 <ValueSwitch items={["20", "40", "60"]} title="Показывать по:"/>
-                <RecenlyViewed />
+                {/* <RecenlyViewed /> */}
                 {/* <Map /> */}
                 <SocialButton />
                 <MailLine />

@@ -15,6 +15,8 @@ import {
 }                   from '../store/account';
 import __request    from '../store/__request';
 
+import Countdown from '../components/utility/countdown';
+
 import './Login.less';
 
 class Controller extends React.Component {
@@ -125,6 +127,9 @@ class Controller extends React.Component {
             <Grid.Row>
                 <Grid.Container>
                     <Grid.Col>
+                        <div>
+                            <Countdown />
+                        </div>
                         <div className="login">
                             <ul>
                                 <li>{`Cookies: UserEmail: ${userEmail}`}</li>
