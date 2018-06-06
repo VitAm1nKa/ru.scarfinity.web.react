@@ -15,7 +15,7 @@
     "cold": "SET NODE_ENV=development&& webpack-dev-server --colors",
     "watch-dev": "SET NODE_ENV=development&& webpack --watch --color",
     "watch-prod": "SET NODE_ENV=production&& webpack --watch --color",
-    "devserver": "webpack-dev-server --env.dev --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base wwwroot --port 8095 --host 192.168.1.198"
+    "devserver": "webpack-dev-server --config webpack.config.dev-server.js --env.dev --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base wwwroot --port 8095 --host 192.168.1.198"
   },
   "author": "Mikhail ru.trisquare.vitam1nka Silantyev",
   "license": "ISC",
