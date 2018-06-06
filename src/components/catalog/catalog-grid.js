@@ -18,20 +18,20 @@ class Controller extends React.Component {
         return(
             <InfiniteScroll
                 pageStart={0}
-                initialLoad={true}
+                initialLoad={false}
                 loadMore={this.props.loadMore}
                 hasMore={this.props.hasMore}
                 loader={loader}>
                     <Grid.Row>
                         <Grid.Container>
                             {
-                                _.map(this.props.products, (product, index) => {
+                                _.map(this.props.productModels, productModel => {
                                     return(
                                         <Grid.Col
                                             grid={12} lg={3} md={3} sm={4} xs={6}
-                                            key={index}>
+                                            key={productModel.productModelId}>
                                                 <ProductCard
-                                                    {...product}
+                                                    {...productModel}
                                                     onCartAdd={this.props.onCartAdd}/>
                                         </Grid.Col>
                                     )

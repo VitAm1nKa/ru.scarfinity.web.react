@@ -194,6 +194,7 @@ ClientBin/
 *.publishsettings
 node_modules/
 wwwroot/dist/
+wwwroot/uploads
 src/dist/
 orleans.codegen.cs
 stats.json

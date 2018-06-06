@@ -5,6 +5,7 @@ import {
 import SlideContainer   from '../utility/slide-container';
 import { Filter }       from '../utility/icons';
 import { Dropdown }     from '../utility/input';
+import { useDOM }       from '../../lib/isomorphic';
 
 import './filters-container.less';
 
@@ -32,13 +33,17 @@ class Controller extends React.Component {
     }
 
     componentWillMount() {
-        document.addEventListener("resize", this.handleResize);
+        useDOM({clientSide: () => {
+            document.addEventListener("resize", this.handleResize);
+        }});
     }
 
     handleResize() {
-        if(document.documentElement.clientWidth >= 768 && this.state.open == true) {
-            this.setState({open: false});
-        } 
+        useDOM({clientSide: () => {
+            if(document.documentElement.clientWidth >= 768 && this.state.open == true) {
+                this.setState({open: false});
+            } 
+        }});
     }
 
     handleFilterToggle() {
@@ -46,7 +51,9 @@ class Controller extends React.Component {
     }
 
     componentWillUnmount() {
-        document.removeEventListener("resize", this.handleResize)
+        useDOM({clientSide: () => {
+            document.removeEventListener("resize", this.handleResize);
+        }});
     }
 
     render() {

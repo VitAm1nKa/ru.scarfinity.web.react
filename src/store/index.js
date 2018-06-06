@@ -17,6 +17,7 @@ import * as ShoppingCart            from './shoppingCart';
 import * as ImageGallery            from './imageGallery';
 import * as Shop                    from './shop';
 import * as ProductCollection       from './productCollection';
+import * as Values                  from './values';
 
 export var reducers = {
     account: Account.reducer,
@@ -35,6 +36,7 @@ export var reducers = {
     shoppingCart: ShoppingCart.reducer,
     imageGallery: ImageGallery.reducer,
     shop: Shop.reducer,
-    productCollection: ProductCollection.reducer
+    productCollection: ProductCollection.reducer,
+    values: Values.reducer
 };
 //# sourceMappingURL=index.js.map

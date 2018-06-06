@@ -18,6 +18,7 @@ import Login                from './views/Login';
 import BreadCrumbs          from './views/BreadCrumbs';
 import EmptyPage            from './views/Empty';
 import Develop              from './develop';
+import CC                   from './views/CatalogPageTest';
 
 // -- -------------------------------------------------------
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -40,6 +41,7 @@ export const routes =
             <Route path='/login' component={Login} />
             <Route path='/bread' component={BreadCrumbs} />
             <Route path='/empty' component={EmptyPage} />
+            <Route path='/cc' component={CC} />
             {/* <Route component={RouteComponents} /> */}
         </Switch>
     </Layout>

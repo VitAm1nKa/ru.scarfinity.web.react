@@ -31,19 +31,38 @@ import * as CatalogS    from '../store/catalog';
 import * as CartS       from '../store/cart';
 
 import {
-    CatalogFiltersCollection
+    CatalogFiltersCollection,
+    ProductModel,
+    ProductCategory
 }                       from '../store/__models';
+
+import {
+    __catalogPage,
+    __productModel
+}                       from '../store/api-requests';
+import { CatalogPage } from '../models/CatalogPage';
+import { CatalogPageFilters } from '../models/CatalogPageFilters';
 
 class Controller extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            infinityScrollIndex: 0,
-            catalogFiltersCollection: new CatalogFiltersCollection()
+            pageNumber: 0,
+
+            catalogPage: new CatalogPage(),
+            catalogPageLoading: false,
+
+            productModels: [],
+            productModelsHasMore: true,
+            productModelsLoading: false,
+
+            catalogPageFilters: new CatalogPageFilters()
         }
 
-        this.handleLoadMore = this.handleLoadMore.bind(this);
+        this.loadProductModels = this.loadProductModels.bind(this);
+        this.loadCatalogPageInfo = this.loadCatalogPageInfo.bind(this);
+        this.reloadCatalog = this.reloadCatalog.bind(this);
         this.handlePriceValueChange = this.handlePriceValueChange.bind(this);
         this.handlePriceReset = this.handlePriceReset.bind(this);
         this.handleSelectNode = this.handleSelectNode.bind(this);
@@ -62,7 +81,7 @@ class Controller extends React.Component {
     }
 
     componentWillMount() {
-        this.state.catalogFiltersCollection = this.analyzeFilters(this.props.location);
+        this.reloadCatalog(this.props.location);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -71,17 +90,53 @@ class Controller extends React.Component {
             exact: true,
             strict: false
         })) {
-            // Проанализтровать фильтры, только в случае нового пути
-            this.state.catalogFiltersCollection = this.analyzeFilters(nextProps.location);
-            this.state.infinityScrollIndex = 0;
-            this.forceUpdate();
+            this.reloadCatalog(nextProps.location);
+        }
+    }
+
+    //  -- Перезагрузка каталога
+    reloadCatalog(location) {
+        this.state.pageNumber = 0;
+        this.state.productModels = [];
+        this.analyzeFilters(location);
+        this.loadCatalogPageInfo();
+        this.loadProductModels();
+    }
+
+    //  -- Работа со списком товаров
+    loadProductModels() {
+        if(!this.state.productModelsLoading) {
+            this.setState({ productModelsLoading: true }, () => {
+                __productModel.Get.Many(this.state.catalogPageFilters, this.state.pageNumber)(data => {
+                    this.setState({
+                        productModels: _.concat(this.state.productModels, _.map(data, productModel => new ProductModel(productModel))),
+                        productModelsHasMore: data != null && data.length == this.state.productsOnPage,
+                        productModelsLoading: false,
+                        pageNumber: this.state.pageNumber + 1
+                    });
+                });
+            })
+        }
+    }
+
+    //  -- Работа с информацией о каталоге
+    loadCatalogPageInfo() {
+        if(!this.state.cataloPageInfoLoading) {
+            this.setState({ catalogPageLoading: true }, () => {
+                __catalogPage.Get.Single(this.state.catalogPageFilters)(data => {
+                    this.setState({
+                        catalogPage: new CatalogPage(data),
+                        catalogPageLoading: false,
+                    });
+                });
+            });
         }
     }
 
     //  -- Работа с фильтрами --------------
     setStateFilters(newValue) {
-        this.setState({catalogFiltersCollection: update(this.state.catalogFiltersCollection, newValue)}, () => {
-            console.warn("R: 1.1", this.state.catalogFiltersCollection.pricePerItemTo);
+        this.setState({catalogPageFilters: update(this.state.catalogPageFilters, newValue)}, () => {
+            console.warn("R: 1.1", this.state.catalogPageFilters.pricePerItemTo);
             this.applyFilters();
         });
     }
@@ -98,15 +153,15 @@ class Controller extends React.Component {
         var filters = [];
 
         // Фильтр количества товаров на странице
-        if(this.state.catalogFiltersCollection.itemsOnPage != 20) {
+        if(this.state.catalogPageFilters.itemsOnPage != 20) {
             filters = [...filters, {
                 type: 'pp',
-                body: this.state.catalogFiltersCollection.itemsOnPage
+                body: this.state.catalogPageFilters.itemsOnPage
             }];
         }
 
         // Фильтр цветов
-        filters = _.concat(filters, _.map(this.state.catalogFiltersCollection.colorCodes, colorCode => {
+        filters = _.concat(filters, _.map(this.state.catalogPageFilters.colorCodes, colorCode => {
             return {
                 type: 'cl',
                 body: colorCode
@@ -114,29 +169,29 @@ class Controller extends React.Component {
         }));
 
         // Рэйтинг
-        if(this.state.catalogFiltersCollection.rating > 0) {
+        if(this.state.catalogPageFilters.rating > 0) {
             filters = [...filters, {
                 type: 'rt',
-                body: this.state.catalogFiltersCollection.rating
+                body: this.state.catalogPageFilters.rating
             }]
         }
 
         // Сортировка
         filters = [...filters, {
             type: 'dc',
-            body: `${this.state.catalogFiltersCollection.sortById}${this.state.catalogFiltersCollection.sortByDesc ? 1 : 0}`
+            body: `${this.state.catalogPageFilters.sortById}${this.state.catalogPageFilters.sortByDesc ? 1 : 0}`
         }];
 
         // Цена
-        if(this.state.catalogFiltersCollection.pricePerItemFrom != this.state.catalogFiltersCollection.pricePerItemTo) {
-            const minValue = this.props.catalogInfo.minPrice || 0;
-            const maxValue = this.props.catalogInfo.maxPrice || 5000;
+        if(this.state.catalogPageFilters.pricePerItemFrom != this.state.catalogPageFilters.pricePerItemTo) {
+            const minValue = this.state.catalogPage.minPrice || 0;
+            const maxValue = this.state.catalogPage.maxPrice || 5000;
             let values = '';
 
-            if(this.state.catalogFiltersCollection.pricePerItemFrom > minValue)
-                values += this.state.catalogFiltersCollection.pricePerItemFrom;
-            if(this.state.catalogFiltersCollection.pricePerItemTo < maxValue)
-                values += '_' + this.state.catalogFiltersCollection.pricePerItemTo;
+            if(this.state.catalogPageFilters.pricePerItemFrom > minValue)
+                values += this.state.catalogPageFilters.pricePerItemFrom;
+            if(this.state.catalogPageFilters.pricePerItemTo < maxValue)
+                values += '_' + this.state.catalogPageFilters.pricePerItemTo;
 
             if(values != '') {
                 filters = [...filters, {
@@ -147,7 +202,7 @@ class Controller extends React.Component {
         }
 
         // Каталог
-        filters = _.concat(filters, _.map(this.state.catalogFiltersCollection.catalogIds, catalogId => {
+        filters = _.concat(filters, _.map(this.state.catalogPageFilters.catalogIds, catalogId => {
             return {
                 type: 'ct',
                 body: catalogId
@@ -155,7 +210,7 @@ class Controller extends React.Component {
         }));
 
         // Сезонность
-        filters = _.concat(filters, _.map(this.state.catalogFiltersCollection.seasonsCodes, seasonCode => {
+        filters = _.concat(filters, _.map(this.state.catalogPageFilters.seasonsCodes, seasonCode => {
             return {
                 type: 'sn',
                 body: seasonCode
@@ -200,17 +255,19 @@ class Controller extends React.Component {
 
     analyzeFilters(location) {
         console.warn("Analyze path: begin", location);
-        let catalogFiltersCollection = new CatalogFiltersCollection();
+        let catalogPageFilters = new CatalogPageFilters();
 
         // Установка базовых цен для ползунка
-        catalogFiltersCollection.pricePerItemFrom = this.props.catalogInfo.minPrice || 0;
-        catalogFiltersCollection.pricePerItemTo = this.props.catalogInfo.maxPrice || 5000;
+        catalogPageFilters.pricePerItemFrom = this.state.catalogPage.minPrice || 0;
+        catalogPageFilters.pricePerItemTo = this.state.catalogPage.maxPrice || 5000;
+        catalogPageFilters.catalogPathNodes = location.pathname.substr(1).split('/');
 
-        var nodes = location.pathname.substr(1).replace(/\/$/, "").split('/');
-        var lastNode = _.last(nodes);
+        var lastNode = _.last(catalogPageFilters.catalogPathNodes);
 
         // Проверка на наличее фильтров
         if(lastNode.length >= 2 && lastNode.charAt(0) === 'f' && lastNode.charAt(1) === '-') {
+            catalogPageFilters.catalogPathNodes = _.initial(catalogPageFilters.catalogPathNodes);
+            console.warn('ANANANSDNASNDASNDASND', catalogPageFilters.catalogPathNodes);
             const filterProps = lastNode.substr(2).split('-');
             _.each(filterProps, filter => {
                 // Протокол фильтра
@@ -225,37 +282,37 @@ class Controller extends React.Component {
                     // Установка значений
                     switch(filterType) {
                         case 'pp': {
-                            catalogFiltersCollection.itemsOnPage = filterBody
+                            catalogPageFilters.itemsOnPage = filterBody
                         }; break;
                         case 'rt': {
-                            catalogFiltersCollection.rating = filterBody
+                            catalogPageFilters.rating = filterBody
                         }; break;
                         case 'cl': {
-                            catalogFiltersCollection.colorCodes = [
-                                ...catalogFiltersCollection.colorCodes, filterBody
+                            catalogPageFilters.colorCodes = [
+                                ...catalogPageFilters.colorCodes, filterBody
                             ]
                         } break;
                         case 'dc': {
-                            catalogFiltersCollection.sortById = Math.floor(filterBody / 10),
-                            catalogFiltersCollection.sortByDesc = filterBody % 10
+                            catalogPageFilters.sortById = Math.floor(filterBody / 10),
+                            catalogPageFilters.sortByDesc = filterBody % 10
                         } break;
                         case 'pi': {
                             const values = filterBody.split('_');
-                            const minValue = this.props.catalogInfo.minPrice || 0;
-                            const maxValue = this.props.catalogInfo.maxPrice || 5000;
+                            const minValue = this.state.catalogPage.minPrice || 0;
+                            const maxValue = this.state.catalogPage.maxPrice || 5000;
                             const leftValue = Math.max(Math.abs(parseFloat(values[0]) || minValue), minValue);
                             const rightValue = Math.min(Math.abs(parseFloat(values[1]) || maxValue), maxValue);
 
                             const correctLeftValue = Math.min(leftValue, rightValue);
                             const correctRightValue = Math.max(leftValue, rightValue);
 
-                            if(correctLeftValue > minValue) catalogFiltersCollection.pricePerItemFrom = correctLeftValue;
-                            if(correctRightValue < maxValue) catalogFiltersCollection.pricePerItemTo = correctRightValue;
+                            if(correctLeftValue > minValue) catalogPageFilters.pricePerItemFrom = correctLeftValue;
+                            if(correctRightValue < maxValue) catalogPageFilters.pricePerItemTo = correctRightValue;
                         } break;
                         case 'ct': {
                             // Подкатегории товаров
-                            catalogFiltersCollection.catalogIds = [
-                                ...catalogFiltersCollection.catalogIds, filterBody
+                            catalogPageFilters.catalogIds = [
+                                ...catalogPageFilters.catalogIds, filterBody
                             ]
                         } break;
                         case 'sn': {
@@ -263,8 +320,8 @@ class Controller extends React.Component {
                             if(filterBody.length >= 1) {
                                 var code = filterBody.toLowerCase().substr(0, 1);
                                 if(code.match(/[0-9a-f]/)) {
-                                    catalogFiltersCollection.seasonsCodes = [
-                                        ...catalogFiltersCollection.seasonsCodes, code
+                                    catalogPageFilters.seasonsCodes = [
+                                        ...catalogPageFilters.seasonsCodes, code
                                     ]
                                 }
                             }
@@ -274,24 +331,13 @@ class Controller extends React.Component {
             })
         }
 
-        // console.warn("After analyze: ", catalogFiltersCollection);
-        return catalogFiltersCollection;
+        this.setState({catalogPageFilters});
     }
 
     //  -- Хэндлеры событий ----------------
     handleChangeItemsOnPage(itemsOnPage) {
-        if(this.state.catalogFiltersCollection.itemsOnPage != itemsOnPage) {
+        if(this.state.catalogPageFilters.itemsOnPage != itemsOnPage) {
             this.setStateFilters({itemsOnPage: {$set: itemsOnPage}});
-        }
-    }
-
-    handleLoadMore() {
-        if(!this.props.fetchCatalogProducts) {
-            console.log("Infinity scroll: ", this.state.infinityScrollIndex);
-            this.props.catalogLoadProducts({
-                query: _.join(_.tail(this.props.location.pathname.substr(1).split('/')), '/'),
-                page: this.state.infinityScrollIndex++
-            });
         }
     }
 
@@ -307,7 +353,7 @@ class Controller extends React.Component {
             this.setStateFilters({catalogIds: {$push: [nodeId]}});
         } else {
             this.setStateFilters({catalogIds: {$splice: [
-                [_.findIndex(this.state.catalogFiltersCollection.catalogIds, x => x == nodeId), 1]
+                [_.findIndex(this.state.catalogPageFilters.catalogIds, x => x == nodeId), 1]
             ]}});
         }
     }
@@ -321,7 +367,7 @@ class Controller extends React.Component {
             this.setStateFilters({seasonsCodes: {$push: [seasonCode]}});
         } else {
             this.setStateFilters({seasonsCodes: {$splice: [
-                [_.findIndex(this.state.catalogFiltersCollection.seasonsCodes, x => x == seasonCode), 1]
+                [_.findIndex(this.state.catalogPageFilters.seasonsCodes, x => x == seasonCode), 1]
             ]}});
         }
     }
@@ -332,13 +378,13 @@ class Controller extends React.Component {
 
     handlePriceReset() {
         this.setState({
-            leftPrice: this.props.catalogInfo.minPrice,
-            rightPrice: this.props.catalogInfo.maxPrice
+            leftPrice: this.state.catalogPage.catalogPageInfo.minListPrice,
+            rightPrice: this.state.catalogPage.catalogPageInfo.maxListPrice
         });
     }
 
     handleColorCodesSelectChange(colorCode, selected) {
-        const index = _.findIndex(this.state.catalogFiltersCollection.colorCodes, x => x == colorCode);
+        const index = _.findIndex(this.state.catalogPageFilters.colorCodes, x => x == colorCode);
 
         if(index == -1) {
             this.setStateFilters({colorCodes: {$push: [colorCode]}})
@@ -360,8 +406,8 @@ class Controller extends React.Component {
     }
 
     handleSortByChange(id) {
-        if(this.state.catalogFiltersCollection.sortById == id) {
-            this.setStateFilters({sortByDesc: {$set: !this.state.catalogFiltersCollection.sortByDesc}});
+        if(this.state.catalogPageFilters.sortById == id) {
+            this.setStateFilters({sortByDesc: {$set: !this.state.catalogPageFilters.sortByDesc}});
         } else {
             this.setStateFilters({$merge: {
                 sortById: id,
@@ -375,47 +421,47 @@ class Controller extends React.Component {
             <div className="catalog">
                 <Grid.VerticalGrid>
                     <Grid.GridLine>
-                        <BreadCrumb nodes={this.props.catalogInfo.pathChain.nodes} />
-                        <PageHeader title={this.props.catalogInfo.title}/>
+                        <BreadCrumb nodes={this.state.catalogPage.pathChain.nodes} />
+                        <PageHeader title={this.state.catalogPage.title}/>
                     </Grid.GridLine>
                     <Grid.Row>
                         <Grid.Container>
                             <Grid.Col lg={3} md={3} sm={16} xs={16}>
                                 <FiltersContainer
-                                    sortByItems={this.state.catalogFiltersCollection.sortByItems}
-                                    sortBySelectedId={this.state.catalogFiltersCollection.sortById}
-                                    sortByDesc={this.state.catalogFiltersCollection.sortByDesc}
+                                    sortByItems={this.state.catalogPageFilters.sortByItems}
+                                    sortBySelectedId={this.state.catalogPageFilters.sortById}
+                                    sortByDesc={this.state.catalogPageFilters.sortByDesc}
                                     onSortByChange={this.handleSortByChange}>
                                         <Grid.VerticalGrid>
                                             {
-                                                this.props.catalogInfo.subCategories &&
-                                                this.props.catalogInfo.subCategories.length > 0 &&
+                                                this.state.catalogPage.catalogPageInfo.catalogSubPages &&
+                                                this.state.catalogPage.catalogPageInfo.catalogSubPages.length > 0 &&
                                                 <CatalogList
-                                                    productSubCategories={this.props.catalogInfo.subCategories}
-                                                    selectedNodes={this.state.catalogFiltersCollection.catalogIds}
+                                                    productSubCategories={this.state.catalogPage.catalogPageInfo.catalogSubPages}
+                                                    selectedNodes={this.state.catalogPageFilters.catalogIds}
                                                     onSelectNode={this.handleSelectNode}
                                                     onReset={this.handleSelectNodeReset}/>
                                             }
                                             <PriceRange
-                                                minValue={this.props.catalogInfo.listPrice.minListPrice}
-                                                maxValue={this.props.catalogInfo.listPrice.maxListPrice}
-                                                leftValue={this.state.catalogFiltersCollection.pricePerItemFrom}
-                                                rightValue={this.state.catalogFiltersCollection.pricePerItemTo}
+                                                minValue={this.state.catalogPage.catalogPageInfo.minListPrice}
+                                                maxValue={this.state.catalogPage.catalogPageInfo.maxListPrice}
+                                                leftValue={this.state.catalogPageFilters.pricePerItemFrom}
+                                                rightValue={this.state.catalogPageFilters.pricePerItemTo}
                                                 onValueChange={this.handlePriceValueChange}
                                                 onReset={this.handlePriceReset}/>
                                             <ColorPicker
-                                                selectedColors={this.state.catalogFiltersCollection.colorCodes}
-                                                avalibleColors={this.props.catalogInfo.getColorCodes()}
+                                                selectedColors={this.state.catalogPageFilters.colorCodes}
+                                                avalibleColors={this.state.catalogPage.catalogPageInfo.ColorCodes}
                                                 onSelectChange={this.handleColorCodesSelectChange}
                                                 onReset={this.handleColorCodesReset}/>
                                             <SeasonList
-                                                seasonsCodes={this.props.catalogInfo.seasons}
-                                                selectedSeasonsCodes={this.state.catalogFiltersCollection.seasonsCodes}
+                                                seasons={this.state.catalogPage.catalogPageInfo.Seasons}
+                                                selectedSeasonsCodes={this.state.catalogPageFilters.seasonsCodes}
                                                 onSelectChange={this.handleSeasonsCodesChange}
                                                 onReset={this.handleSeasonsCodesReset}/>
                                             <RatingSelect
-                                                rating={this.state.catalogFiltersCollection.rating}
-                                                maxAverageRating={this.props.catalogInfo.rating.maxAverageRating}
+                                                rating={this.state.catalogPageFilters.rating}
+                                                maxAverageRating={this.state.catalogPage.catalogPageInfo.maxAverageRating}
                                                 onRatingChange={this.handleRatingChange}
                                                 onReset={this.handleRatingReset}/>
                                         </Grid.VerticalGrid>
@@ -424,19 +470,19 @@ class Controller extends React.Component {
                             <Grid.Col lg={13} md={13} sm={16} xs={16}>
                                 <Grid.VerticalGrid>
                                     <CatalogHeader
-                                        title={this.props.catalogInfo.title}
-                                        itemsOnPage={this.state.catalogFiltersCollection.itemsOnPage}
-                                        itemsOnPageValues={this.state.catalogFiltersCollection.itemsOnPageValues}
+                                        title={this.state.catalogPage.title}
+                                        itemsOnPage={this.state.catalogPageFilters.itemsOnPage}
+                                        itemsOnPageValues={this.state.catalogPageFilters.itemsOnPageValues}
                                         onItemsOnPageChange={this.handleChangeItemsOnPage}
-                                        sortByItems={this.state.catalogFiltersCollection.sortByItems}
-                                        sortBySelectedId={this.state.catalogFiltersCollection.sortById}
-                                        sortByDesc={this.state.catalogFiltersCollection.sortByDesc}
+                                        sortByItems={this.state.catalogPageFilters.sortByItems}
+                                        sortBySelectedId={this.state.catalogPageFilters.sortById}
+                                        sortByDesc={this.state.catalogPageFilters.sortByDesc}
                                         onSortByChange={this.handleSortByChange}/>
                                     <CatalogGrid
-                                        catalogId={this.props.catalogInfo.productCategoryId}
-                                        products={this.props.catalogProducts}
-                                        loadMore={this.handleLoadMore}
-                                        hasMore={this.props.catalogProductsHasMore}
+                                        catalogId={this.state.catalogPage.catalogPageId}
+                                        productModels={this.state.productModels}
+                                        loadMore={this.loadProductModels}
+                                        hasMore={this.state.productModelsHasMore}
                                         onCartAdd={this.props.setCartOrderProduct}/>
                                 </Grid.VerticalGrid>
                             </Grid.Col>

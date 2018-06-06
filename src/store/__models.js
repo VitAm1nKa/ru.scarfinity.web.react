@@ -123,7 +123,7 @@ export class UserProductModelCartStat {
 }
 
 function downloadImage(url, callback) {
-    let path = `http://192.168.1.198:55139/${url}`;
+    let path = `http://localhost:50146/${url}`;
     if(url[0] != 'u')
         path = url;
 
@@ -213,23 +213,23 @@ export class Image {
     getPreview() {
         if(this.preview != null) {
             if(this.preview[0] == 'u')
-                return `http://192.168.1.198:55139/${this.preview}`;
+                return `http://localhost:50146/${this.preview}`;
 
             return this.preview
         }
 
-        return 'http://192.168.1.198:55139/uploads/tmp/scarf-3.jpg';
+        return 'http://localhost:50146/uploads/tmp/scarf-3.jpg';
     }
 
     getMain() {
         if(this.main != null) {
             if(this.main[0] == 'u')
-                return `http://192.168.1.198:55139/${this.main}`;
+                return `http://localhost:50146/${this.main}`;
 
             return this.main;
         }
 
-        return 'http://192.168.1.198:55139/uploads/tmp/scarf-3.jpg';
+        return 'http://localhost:50146/uploads/tmp/scarf-3.jpg';
     }
 }
 
@@ -409,22 +409,23 @@ export class ProductSmall {
     }
 }
 
-// -- Catalog
+// -- Catalog Page
 export class CatalogPage {
-    constructor(props = {}) {   
-        this.id = props.id;
-        this.title = props.title || '';
-        this.path = props.path || '';
-        this.productsCount = props.productsCount || 0;
-        this.minWholesale = props.minWholesale || 0;
-        this.maxWholesale = props.maxWholesale || 0;
-        this.minRetail = props.minRetail || 0;
-        this.maxRetail = props.maxRetail || 0;
-        this.colorCodes = props.colorCodes || [];
-        this.seasonsCodes = props.seasonsCodes || [];
-        this.nodes = props.nodes || [];
-        this.minPrice = props.minRetail || 0;
-        this.maxPrice = props.maxRetail || 0;
+    constructor(model = {}) {   
+        this.catalogPageId = model.catalogPageId;
+        this.seo = model.seo;
+        this.title = model.title || '';
+        this.path = model.path || '';
+        this.productsCount = model.productsCount || 0;
+        this.minWholesale = model.minWholesale || 0;
+        this.maxWholesale = model.maxWholesale || 0;
+        this.minRetail = model.minRetail || 0;
+        this.maxRetail = model.maxRetail || 0;
+        this.colorCodes = model.colorCodes || [];
+        this.seasonsCodes = model.seasonsCodes || [];
+        this.nodes = model.nodes || [];
+        this.minPrice = model.minRetail || 0;
+        this.maxPrice = model.maxRetail || 0;
 
         this.getColorCodes = this.getColorCodes.bind(this);
         this.getNormalPath = this.getNormalPath.bind(this);
@@ -452,6 +453,8 @@ export class CatalogPage {
         return _.map(this.colorCodes, info => info.code);
     }
 }
+
+
 
 export class ProductCategoryBase {
     constructor(model) {

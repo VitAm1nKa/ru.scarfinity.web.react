@@ -27,7 +27,7 @@ const Seasons = [
 class Controller extends React.Component {
     render() {
         const items = _.map(_.filter(Seasons, season => season.use), season => {
-            const itemInfo = _.find(this.props.seasonsCodes, i => i.code == season.code) || { count: 0 };
+            const itemInfo = _.find(this.props.seasons, i => i.code == season.code) || { count: 0 };
             const selected = _.includes(this.props.selectedSeasonsCodes, season.code);
 
             return {

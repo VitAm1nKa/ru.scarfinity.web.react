@@ -125,6 +125,11 @@ class Controller extends React.Component {
     }
 
     render() {
+        return (<Catalog
+        history={this.props.history}
+        match={this.props.match}
+        location={this.props.location}/>);
+
         const content = () => {
             if(this.state.viewState == ViewState.Catalog && this.props.catalogStore.catalogInfo.productCategoryId != null) {
                 // Отобразить каталог
