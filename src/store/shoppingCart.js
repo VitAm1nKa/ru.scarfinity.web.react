@@ -3,42 +3,38 @@ import { fetch, addTask }   from 'domain-task';
 import __request            from './__request';
 import qs                   from 'qs';
 
+import { ShoppingCart }     from '../models/ShoppingCart';
+
 import {
-    ShoppingCart,
     SalesOrder,
     ShipMethod
 }                           from './__models';
 
-export const actionCreators = {
-    getShoppingCart: () => (dispatch, getState) => {
-        const request = 
-            __request({url: 'api/shoppingCart'})
-            .then((response) => response.json())
-            .then(({type, data}) => {
-                if(type == 'success') {
-                    dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-                }
-            })
+import { __shoppingCart }   from './api-requests';
 
-        addTask(request);
+export const actionCreators = {
+    getShoppingCart: (createNewIsNull = false) => (dispatch, getState) => {
+        __shoppingCart.Get()(data => {
+            if(data == null && createNewIsNull) {
+                actionCreators.postShoppingCart()(dispatch, getState);
+            } else {
+                dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+            }
+        }, error => {});
+
         dispatch({type: 'SHOPPINGCART__REQUEST'});
     },
+    postShoppingCart: () => (dispatch, getState) => {
+        __shoppingCart.Post()(data => {
+            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+        }, error => {});
+
+        dispatch({ type: 'SHOPPINGCART__POST' });
+    },
     setProductQty: (productId, quantity) => (dispatch, getState) => { 
-        const request = 
-            __request({
-                url: 'api/shoppingCart',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({productId, quantity})
-            })
-            .then((response) => response.json())
-            .then(({type, message, data}) => {
-                if(type == 'success') {
-                    dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-                }
-            });
+        __shoppingCart.Put(productId, quantity)(data => {
+            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+        }, error => {});
 
         dispatch({ type: 'SHOPPINGCART__SETPRODUCTQTY' });
     },
@@ -110,10 +106,11 @@ export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
         case 'SHOPPINGCART__REQUEST': return update(state, {loading: {$set: true}});
+        case 'SHOPPINGCART__POST': return update(state, {loading: {$set: true}});
         case 'SHOPPINGCART__RECEIVE': {
             return update(state, {$merge: {
                 loading: false,
-                shoppingCart: new ShoppingCart(action.shoppingCartData)
+                shoppingCart: new ShoppingCart(action.shoppingCartData || {})
             }});
         }
         // Фетч спосбов доставки
