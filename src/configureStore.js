@@ -1,5 +1,6 @@
 // Global imports
 import _ from 'lodash';
+import './lib/polyfill';
 
 import {
     createStore,
