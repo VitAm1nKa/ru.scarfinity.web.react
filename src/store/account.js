@@ -2,6 +2,7 @@ import { fetch, addTask }   from 'domain-task';
 import update               from 'immutability-helper';
 import __request            from './__request';
 import * as ClientData      from '../lib/client-data';
+import { __authentication } from './api-requests';
 
 function login(email, onSuccess, onError) {
     const request = 
@@ -22,13 +23,11 @@ export const actionCreators = {
     continue: (role) => (dispatch, getState) => {
         dispatch({ type: 'ACCOUNT__AUTH__CONTINUE', role });
     },
-    login: (email) => (dispatch, getState) => {
-        login(email, 
-            data => {
-                dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true })
-            }, 
-            error => {
-                dispatch({ type: 'ACCOUNT__AUTH__ERROR', error })
+    authenticate: (email) => (dispatch, getState) => {
+        __authentication.Authenticate(email)(data => {
+            dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true })
+        }, error => {
+            dispatch({ type: 'ACCOUNT__AUTH__ERROR', error })
         });
 
         dispatch({ type: 'ACCOUNT__AUTH__REQUEST' });
@@ -36,43 +35,21 @@ export const actionCreators = {
     registration: (model) => (dispatch, getState) => {
         // Регистрация пользователя на основании данных хрянящихся в session storage
         // Model: email, password, [name]
-        const request = 
-            __request({
-                url: 'api/account/registration',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(model)
-            })
-            .then((response) => response.json())
-            .then(({type, message, data}) => {
-                if(type == 'success') {
-                    dispatch({ type: 'ACCOUNT__REGISTRATION__SUCCESS'});
-                    dispatch({ type: 'ACCOUNT__SIGNIN__SUCCESS', accountData: data });
-                } else {
-                    dispatch({ type: 'ACCOUNT__REGISTRATION__ERROR', error: { type, message } });
-                }
-            });
+        __authentication.SignUp(model.name, model.email, model.password)(data => {
+            dispatch({ type: 'ACCOUNT__REGISTRATION__SUCCESS'});
+            dispatch({ type: 'ACCOUNT__SIGNIN__SUCCESS', accountData: data });
+        }, error => {
+            dispatch({ type: 'ACCOUNT__REGISTRATION__ERROR', error: { type, message } });
+        });
 
         dispatch({ type: 'ACCOUNT__REGISTRATION__REQUEST' });
     },
     signIn: (model) => (dispatch, getState) => {
-        const request =
-            __request({
-                url: 'api/account/signIn',
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(model)
-            })
-            .then(response => response.json())
-            .then(({type, message, data}) => {
-                if(type == 'success') {
-                    dispatch({ type: 'ACCOUNT__SIGNIN__SUCCESS', accountData: data });
-                } else {
-                    dispatch({ type: 'ACCOUNT__SIGNIN__ERROR', error: { type, message } });
-                }
-            });
+        __authentication.SignIn(model.email, model.password)(data => {
+            dispatch({ type: 'ACCOUNT__SIGNIN__SUCCESS', accountData: data });
+        }, (type, message) => {
+            dispatch({ type: 'ACCOUNT__SIGNIN__ERROR', error: { type, message } });
+        });
 
         dispatch({ type: 'ACCOUNT__SIGNIN__REQUEST' });
     },
@@ -82,14 +59,11 @@ export const actionCreators = {
         // Необходимо поле name, в нем хранится информация о предыдущем анонимном пользователе
         // Это делается во избежании многократного создания пользователей в случае разлогинивания неанонимного пользователя
         const anonymousEmail = localStorage.getItem('user-name');
-
-        login(anonymousEmail || '', 
-            data => {
-                dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data: data, anonymous: true })
-        },
-            error => {
-                dispatch({ type: 'ACCOUNT__AUTH__ERROR' })
-        });
+        __authentication.Authenticate(anonymousEmail)(data => {
+            dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data: data, anonymous: true });
+        }, error => {
+            dispatch({ type: 'ACCOUNT__AUTH__ERROR' });
+        })
 
         dispatch({ type: 'ACCOUNT__SIGNOUT' });
         dispatch({ type: 'ACCOUNT__AUTH__REQUEST' })

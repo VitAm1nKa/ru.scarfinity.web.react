@@ -46,15 +46,14 @@ class Controller extends React.Component {
 
         if(userToken == null || userToken == '') {
             // Зарос на новый токен
-            this.props.login(userEmail);
+            this.props.authenticate(userEmail);
         } else {
             // Проверка токена
             // Проверка на тип пользователя и срок действия
             // Если срок действия не истек, просто получить информацию о пользователе
             const decoded = jwtDecoder(userToken);
             const datetime = Date.now();
-            const roles = _.flatten([decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']]) || [''];
-            console.log(roles);
+            const roles = _.flatten([decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '']);
             const role = (_.head(roles)).toUpperCase();
 
             if(decoded.exp * 1000 < datetime) {
@@ -66,7 +65,7 @@ class Controller extends React.Component {
                     this.props.signOut();
                 } else {
                     // Иначе, получить новый токен анонимного пользователя
-                    this.props.login(userEmail);
+                    this.props.authenticate(userEmail);
                 }
             } else {
                 this.props.continue(role);

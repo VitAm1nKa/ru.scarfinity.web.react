@@ -15,6 +15,8 @@ import {
 }                   from '../store/account';
 import __request    from '../store/__request';
 
+import { __authentication } from '../store/api-requests';
+
 import './Login.less';
 
 class Controller extends React.Component {
@@ -117,6 +119,12 @@ class Controller extends React.Component {
         }
     }
 
+    WHOAMI() {
+        __authentication.Me()(data => {
+            console.log(data);
+        });
+    }
+
     render() {
         const userEmail = this.props.cookies.get('user-email');
         const userToken = this.props.cookies.get('user-token');
@@ -124,6 +132,9 @@ class Controller extends React.Component {
         return(
             <Grid.Row>
                 <Grid.Container>
+                    <Grid.Col>
+                        <button onClick={this.WHOAMI}>{"WHOAMI"}</button>
+                    </Grid.Col>
                     <Grid.Col>
                         <div className="login">
                             <ul>
