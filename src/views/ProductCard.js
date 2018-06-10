@@ -7,6 +7,9 @@ import {
 }                                   from 'react-router-dom';
 import { actionCreators }	        from '../store/product';
 import {
+    actionCreators as ProductModelActions 
+}                                   from '../store/productModel';
+import {
     actionCreators as ShoppingCartActions
 }                                   from '../store/shoppingCart';
 import * as ReviewCollectionStore   from '../store/reviewCollection';
@@ -34,7 +37,7 @@ class Controller extends React.Component {
 
     componentWillMount() {
         // Реквест на получение спика отзывов о товаре
-        this.props.getReviewCollection(this.props.productData.reviewStats.reviewCollectionId);
+        this.props.getReviewCollection(this.props.productModel.reviewStats.reviewCollectionId);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -66,7 +69,7 @@ class Controller extends React.Component {
         // Необходимо знать, цвет который выбран
         // Это может быть либо, цвет полученный через строку браузера либо цвет первого(основного товара)
         // Исходя из этой логики, достаточно просто знать какой id товара выбран
-        const selectedProduct = this.props.productData.selectedProduct({colorCode, patternCode});
+        const selectedProduct = this.props.productModel.selectedProduct({colorCode, patternCode});
 
         // Количество товара в корзине
         // Необходимо сделать запрос в корзину, для получения текущего количества
@@ -75,7 +78,7 @@ class Controller extends React.Component {
 
         const productModelCard = <div className="product-card">
             <Product
-                productModel={this.props.productData}
+                productModel={this.props.productModel}
                 productSelected={selectedProduct}
                 productQuantity={productQuantity}
                 productInCart={productInCart}
@@ -112,9 +115,9 @@ class Controller extends React.Component {
         return(
             <Grid.GridLine>
                 <BreadCrumb
-                    seo={this.props.productData.productModelId}
-                    title={this.props.productData.title}
-                    nodes={this.props.productData.productCategoryPath.pathChain.nodes}/>
+                    seo={this.props.productModel.productModelId}
+                    title={this.props.productModel.title}
+                    nodes={this.props.productModel.productCategoryPath.pathChain.nodes}/>
                 <Grid.VerticalGrid>
                     {productModelCard}
                     {tabView}
@@ -126,6 +129,6 @@ class Controller extends React.Component {
     }
 }
 
-const mstp = state => Object.assign({}, state.product, state.reviewCollection, state.shoppingCart);
+const mstp = state => Object.assign({}, state.productModel, state.reviewCollection, state.shoppingCart);
 
-export default connect(mstp, Object.assign({}, actionCreators, ShoppingCartActions, ReviewCollectionStore.actionCreators))(Controller);
+export default connect(mstp, Object.assign({}, ProductModelActions, ShoppingCartActions, ReviewCollectionStore.actionCreators))(Controller);

@@ -8,6 +8,7 @@ import * as Navigation              from './navigation';
 import * as Review                  from './review';
 import * as ReviewCollection        from './reviewCollection';
 import * as Product                 from './product';
+import * as ProductModel            from './productModel';    
 import * as User                    from './user';
 import * as Person                  from './person';
 import * as SalesOrder              from './salesOrder';
@@ -22,6 +23,7 @@ import * as Values                  from './values';
 export var reducers = {
     account: Account.reducer,
     product: Product.reducer,
+    productModel: ProductModel.reducer,
     catalog: Catalog.reducer,
     filter: Filter.reducer,
     cart: Cart.reducer,

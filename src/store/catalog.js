@@ -1,121 +1,39 @@
 import update               from 'immutability-helper';
-import { fetch, addTask }   from 'domain-task';
-import __request            from './__request';
-import qs                   from 'qs';
-import {
-    CatalogPage,
-    ProductModel,
-    ProductCategory
-}                           from './__models';
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-// .netCore generated
+import { CatalogPage }      from '../models/CatalogPage';
+import { ProductModel }     from '../models/ProductModel';
+import { 
+    __productModel,
+    __catalogPage
+}                           from './api-requests';
 
 export const actionCreators = {
-    load: (params) => (dispatch, getState) => {
-        const {lastChunk, loading} = getState().catalog;
-        if(!loading) {
-            const catalogQuery = `ct=${params.ct || ""}&gp=${params.gp || ""}&tp=${params.tp || ""}`;
-            const chunksQuery = `chi=${lastChunk + 1}`;
-            const filterQuery = ``;
-            const query = _.join(_.compact([catalogQuery, chunksQuery, filterQuery]), '&');
-
-            let fetchTask = 
-                __request({
-                    method: 'GET',
-                    url: `api/catalog/?q=d&${query}`
-                })
-                .then(response => response.json())
-                .then(({data, type}) => {
-                    dispatch({ type: 'CATALOG__RECEIVE', data });
-                });
-
-                addTask(fetchTask); // Ensure server-side prerendering waits for this to complete
-                dispatch({ type: 'CATALOG__LOAD'});
-        }
-    },
-    load2: (params) => (dispatch, getState) => {
-        let fetchTask = 
-            __request({
-                method: 'POST',
-                url: `api/catalog`,
-                headers: {
-                    "Content-Type": "application/json"
+    //  -- Работа со списком товаров
+    loadCatalogProductModels: (catalogPageFilters, pageNumber) => (dispatch, getState) => {
+        if(!getState().catalog.productModelsLoading) {
+            __productModel.Get.Many(catalogPageFilters, pageNumber)(
+                data => {
+                    dispatch({ type: 'CATALOG_PRODUCTMODELS_FETCH_SUCCESS', data, productsOnPage: catalogPageFilters.itemsOnPage });
                 },
-                body: JSON.stringify({
-                    catalogPath: params.catalogPath
-                })
-            })
-            .then(response => response.json())
-            .then(({type, data}) => {
-                console.log("RELOAD", type, data);
-                if(type == 'not_found') {
-                    dispatch({ type: 'CATALOG__NOTFOUND' });
-                } else {
-                    dispatch({ type: 'CATALOG__RECEIVE', data });
-                }
-            });
+                error => {
+                    dispatch({ type: 'CATALOG_PRODUCTMODELS_FETCH_ERROR' });
+                }, true);
 
-            addTask(fetchTask);
-            dispatch({ type: 'CATALOG__RELOAD' });
-    },
-    loadMore: () => (dispatch, getState) => {
-        if(getState().catalog.nextHref != null && getState().catalog.fetchCatalog == false) {
-            let fetchTask = 
-                fetch(getState().catalog.nextHref)
-                .then(response => response.json())
-                .then(({type, data}) => {
-                    console.log("LOAD MORE", type, data);
-                    dispatch({ type: 'CATALOG__RECEIVE', data });
-                });
-
-            addTask(fetchTask);
-            dispatch({ type: 'CATALOG__LOAD', currentHref: getState().catalog.nextHref });
-        } else {
-            dispatch({ type: 'CATALOG__END' });
+            dispatch({ type: 'CATALOG_PRODUCTMODELS_FETCH' });
         }
     },
-    catalogTree: (catalogId) => (dispatch, getState) => {
-        const request = __request({
-            url: `api/catalog/${catalogId}`
-        })
-        .then(response => response.json())
-        .then(({type, data}) => {
-            console.log(data);
-            if(type == 'success') {
-                dispatch({ type: 'CATALOG__TREE__RECEIVE', nodes: data.nodes })
-            }
-        })
-    },
-    catalogLoad: (params = '') => (dispatch, getState) => {
-        console.log("Catalog info url: ", `api/catalog/info/${params}`);
-        const request = __request({
-            url: `api/catalog/info/${params}`
-        })
-        .then(response => response.json())
-        .then(({type, data}) => {
-            if(type == 'success') {
-                dispatch({ type: 'CATALOG__INFO__SUCCESS', productCategory: data });
-            }
-        })
+    //  -- Работа с информацией о каталоге
+    loadCatalogPageInfo: (catalogPageFilters) => (dispatch, getState) => {
+        if(!getState().catalog.cataloPageInfoLoading) {
+            __catalogPage.Get.Single(catalogPageFilters)(
+                data => {
+                    dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS', data });
+                },
+                error => {
+                    dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR' });
+                }, true);
 
-        dispatch({ type: 'CATALOG__INFO__FETCH' })
-    },
-    catalogLoadProducts: (catalogQuery) => (dispatch, getState) => {
-        var url = `api/catalog/fetch/${catalogQuery.query}?page=${catalogQuery.page}`;
-
-        console.warn("Catalog Fetch Url: ", url);
-
-        const request = __request({
-            url
-        })
-        .then(response => response.json())
-        .then(({type, data}) => {
-            dispatch({ type: 'CATALOG__PRODUCTS__SUCCESS', products: data.productModels })
-        })
-
-        dispatch({ type: 'CATALOG__PRODUCTS__FETCH' })
+            dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH' });
+        }
     }
 };
 
@@ -123,34 +41,58 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const initialState = {
-    catalogNotFound: false,
-    loading: false,
-    products: [],
-    nextHref: null,
-    currentHref: null,
-    catalogEnd: false,
-    nodes: [],
+    catalogPage: new CatalogPage(),
+    catalogPageLoading: false,
 
-    catalogInfoFetch: false,
-    catalogInfo: new ProductCategory(),
-    catalogInfoError: false,
-    catalogInfoErrorMessages: [],
-
-    fetchCatalogProducts: false,
-    catalogProducts: [],
-    catalogProductsHasMore: true
-}
-
-function fetchCatalogInfo(info) {
-    var cataloInfo = new CatalogPage(info);
-    if(cataloInfo.id != null) {
-
-    }
+    productModels: [],
+    productModelsHasMore: true,
+    productModelsLoading: false,
 }
 
 export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
+
+        case 'CATALOG_CATALOGPAGEINFO_FETCH': {
+            return update(state, {
+                catalogPageLoading: {$set: true},
+                productModels: {$set: []}
+            });
+        }
+        case 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS': {
+            return update(state, {$merge: {
+                catalogPageLoading: false,
+                catalogPage: new CatalogPage(action.data)
+            }});
+        }
+        case 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR': {
+            return state;
+        }
+
+        case 'CATALOG_PRODUCTMODELS_FETCH': {
+            return update(state, {productModelsLoading: {$set: true}});
+        }
+        case 'CATALOG_PRODUCTMODELS_FETCH_SUCCESS': {
+            return update(state, {$merge: {
+                productModelsLoading: false,
+                productModelsHasMore: action.data != null && action.data.length == action.productsOnPage },
+                productModels: {$push: _.map(action.data, productModel => new ProductModel(productModel))}
+            })
+        }
+        case 'CATALOG_PRODUCTMODELS_FETCH_EROOR': {
+            return state
+        }
+
+
+
+
+
+
+
+
+
+
+
         case 'CATALOG__RELOAD':
             return update(state, {$set: {
                 fetchCatalog: true,

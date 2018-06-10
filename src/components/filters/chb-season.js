@@ -7,7 +7,7 @@ import CheckBoxList         from '../utility/check-box-list';
 import FilterContainerView  from './filter-block';
 
 const Seasons = [
-    { code: '0', title: 'Всесезон', use: true },
+    { code: '15', title: 'Всесезон', use: true },
     { code: '5', title: 'Демисезон', use: true },
     { code: '1', title: 'Осень', use: false },
     { code: '2', title: 'Зима', use: true },
@@ -17,18 +17,18 @@ const Seasons = [
     { code: '6', title: '', use: false },
     { code: '7', title: '', use: false },
     { code: '9', title: '', use: false },
-    { code: 'a', title: '', use: false },
-    { code: 'b', title: '', use: false },
-    { code: 'c', title: '', use: false },
-    { code: 'd', title: '', use: false },
-    { code: 'e', title: '', use: false },
+    { code: '10', title: '', use: false },
+    { code: '11', title: '', use: false },
+    { code: '12', title: '', use: false },
+    { code: '13', title: '', use: false },
+    { code: '14', title: '', use: false },
 ];
 
 class Controller extends React.Component {
     render() {
         const items = _.map(_.filter(Seasons, season => season.use), season => {
             const itemInfo = _.find(this.props.seasons, i => i.code == season.code) || { count: 0 };
-            const selected = _.includes(this.props.selectedSeasonsCodes, season.code);
+            const selected = ((this.props.selectedSeasonsCodes & season.code) == season.code);// _.includes(this.props.selectedSeasonsCodes, season.code);
 
             return {
                 id: season.code,

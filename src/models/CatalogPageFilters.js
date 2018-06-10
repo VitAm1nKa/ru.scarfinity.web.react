@@ -10,7 +10,7 @@ export class CatalogPageFilters {
         this.colorCodes = [];
         this.colorCodesDefault = [];
         this.patternCodes = [];
-        this.seasonsCodes = [];
+        this.seasonsCodes = 0;
         this.sexesCodes = [];
         this.sortByItems = [
             { id: 0, title: 'По новизне' },
@@ -27,20 +27,8 @@ export class CatalogPageFilters {
         this._sexes = null;
     }
 
-    get Seasons() {
-        if(this._seasons == null) {
-            this._seasons = _.reduce(this.seasonsCodes, (s, n) => s + n, 0);
-        }
-
-        return this._seasons;
-    }
-
     get Sexes() {
-        if(this._sexes == null) {
-            this._sexes = _.reduce(this.sexes, (s, n) => s + n, 0);
-        }
-
-        return this._sexes;
+        return _.reduce(this.sexes, (s, n) => s + parseInt(n), 0);
     }
 
     get SortBy() {

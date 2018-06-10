@@ -1,6 +1,19 @@
 .price-range-widget {
     user-select: none;
 
+    &__titles {
+        display: flex;
+        justify-content: space-between;
+        padding: 0px 9px;
+        padding-bottom: 4px;
+        
+        &__value {
+            font-size: 12px;
+            font-weight: 500;
+            color: #808080;
+        }
+    }
+
     &__body {
         display: flex;
         flex-direction: row;

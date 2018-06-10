@@ -340,6 +340,10 @@ class PriceRangeWidget extends React.Component {
 
         return(
             <div className="price-range-widget">
+                <div className="price-range-widget__titles">
+                    <span className="price-range-widget__titles__value">{this.props.minValue}</span>
+                    <span className="price-range-widget__titles__value">{this.props.maxValue}</span>
+                </div>
                 <PriceRangeSliderController
                     height={18}
                     leftValue={normilizeLeftValue}

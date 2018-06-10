@@ -25,7 +25,7 @@ export class CatalogPageValues {
     }
 
     get Values() {
-        if(this._values = null) {
+        if(this._values == null) {
             this._values = _.map(this.values, value => value); 
         }
 
