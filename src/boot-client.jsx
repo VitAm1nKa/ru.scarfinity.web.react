@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
+import { HashRouter } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
@@ -19,7 +20,7 @@ const muiTheme = getMuiTheme({userAgent: 'all'});
 // Create browser history to use in the Redux store
 const base = document.getElementsByTagName('base')[0];
 const baseUrl = base != null ? base.getAttribute('href') : '/';
-const history = createBrowserHistory({ basename: baseUrl });
+const history = createBrowserHistory(/*{ basename: baseUrl }*/);
 
 // Get the application-wide store instance, prepopulating with state from the server where available.
 const initialState = window.initialReduxState;
@@ -32,7 +33,8 @@ function renderApp() {
         // <AppContainer>
             <Provider store={ store }>
                 <CookiesProvider>
-                    <ConnectedRouter history={ history } children={ routes } />
+                    <HashRouter children={ routes }/>
+                    {/* <ConnectedRouter history={ history } children={ routes } /> */}
                 </CookiesProvider>
             </Provider>,
         // </AppContainer>,
