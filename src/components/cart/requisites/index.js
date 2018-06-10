@@ -1,4 +1,5 @@
-import React from 'react';
+import React                    from 'react';
+import update                   from 'immutability-helper';
 
 import {
     BasicInput,
@@ -8,6 +9,8 @@ import PhoneInput               from '../../utility/input-phone'
 import RadioBoxGroup            from '../../utility/radio-box-group';
 import PriceCalculation         from '../../utility/price-calculation';
 import * as Grid                from '../../../lib/grid';
+
+import {  }                       from '../../../store/api-requests';
 
 import './requisites.less';
 
@@ -84,7 +87,7 @@ class Controller extends React.Component {
                             <RadioBoxGroup
                                 title={"Способы доставки"}
                                 items={_.map(this.props.shipMethods, shipMethod => ({
-                                    id: shipMethod.id,
+                                    id: shipMethod.shipMethodId,
                                     title: shipMethod.title,
                                     price: shipMethod.shipBase,
                                     subTitle: shipMethod.deliveryDue 

@@ -119,6 +119,16 @@ export const __catalogPage = {
     }
 }
 
+//  #region ShipMethods
+export const __shipMethod = {
+    Get: {
+        Many: () => {
+            return requestBuilder('ShipMethod', 'GET');
+        }
+    }
+}
+//  #endregion
+
 //  #region ShoppingCart
 export const __shoppingCart = {
     Get: () => {

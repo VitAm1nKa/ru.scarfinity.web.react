@@ -93,8 +93,7 @@ export const actionCreators = {
 const initialState = {
     loading: false,
     shoppingCart: new ShoppingCart(),
-    shipMethodsFetch: false,
-    shipMethods: [],
+
     post: false,
     postError: false,
     postErrorCode: '',

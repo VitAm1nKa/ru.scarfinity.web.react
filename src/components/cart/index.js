@@ -26,6 +26,9 @@ import {
     SalesOrderPost
 }                               from '../../store/__models';
 
+import { ShipMethod }           from '../../models/ShipMethod'; 
+import { __shipMethod }         from '../../store/api-requests';
+
 import './cart.less';
 
 class CartDataModel extends SalesOrderPost {
@@ -111,10 +114,16 @@ class Controller extends React.Component {
         // Информация об адресе доставки хранится в локальном стейте
         // Информация персоональные данные хранится в локальном стейте
         // Информация об способе доставки хранится в локальном стейте
+        this.state = {
+            shipMethods: null,
+            shipMethodsFetch: false
+        }
         // Информация об способе оплаты хранится в локальном стейте
 
         // Переменная, в которой хранится состояние данных, вводимых пользователем
         this.cartDataModel = new CartDataModel({orderType: 'r'});
+
+        this.getShipMethods = this.getShipMethods.bind(this);
 
         this.handleStep = this.handleStep.bind(this);
         this.handleQuantityChange = this.handleQuantityChange.bind(this);
@@ -138,8 +147,24 @@ class Controller extends React.Component {
         }  
     }
 
+    getShipMethods() {
+        this.setState({ shipMethodsFetch: true }, () => {
+            __shipMethod.Get.Many()(data => {
+                this.setState({
+                    shipMethodsFetch: false,
+                    shipMethods: _.map(data, m => new ShipMethod(m))
+                });
+            }, error => {
+                this.setState({
+                    shipMethodsFetch: false,
+                    shipMethods: []
+                });
+            })
+        });
+    }
+
     getShipMethodCost() {
-        const shipMethod = _.find(this.props.shoppingCartStore.shipMethods, m => m.id == this.cartDataModel.fieldValue('shipMethodId'));
+        const shipMethod = _.find(this.state.shipMethods, m => m.id == this.cartDataModel.fieldValue('shipMethodId'));
         return shipMethod ? shipMethod.shipBase : 0;
     }
 
@@ -183,7 +208,7 @@ class Controller extends React.Component {
             // Запрос на способы доставки
             // В дальнейшем необходимо передавать в метод инфо о городе, области, стране...
             // Для точного подбора способов доставки и их стоимости
-            this.props.getShipMethods();
+            this.getShipMethods();
 
             // Перерисовка компонента
             this.forceUpdate();
@@ -280,8 +305,8 @@ class Controller extends React.Component {
         const requisites = {
             header: <HeaderNavigation step={1} />,
             body: <Requisites
-                shipMethods={this.props.shoppingCartStore.shipMethods}
-                shipMethodsFetch={this.props.shoppingCartStore.shipMethodsFetch}
+                shipMethods={this.state.shipMethods}
+                shipMethodsFetch={this.state.shipMethodsFetch}
                 productsTotal={productSubTotal}
                 deliveryTotal={shipMethodCost}
                 fieldValue={this.cartDataModel.fieldValue}
