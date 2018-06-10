@@ -210,10 +210,14 @@ export class Image {
         }
     }
 
+    getImageQuery(id, {preview = false, size = 1024}) {
+        return `http://localhost:50146/api/image/${id}?type=preview`
+    }
+
     getPreview() {
         if(this.preview != null) {
             if(this.preview[0] == 'u')
-                return `http://localhost:50146/${this.preview}`;
+                return `http://localhost:50146/api/image/${1}?type=preview`;
 
             return this.preview
         }
@@ -224,7 +228,7 @@ export class Image {
     getMain() {
         if(this.main != null) {
             if(this.main[0] == 'u')
-                return `http://localhost:50146/${this.main}`;
+            return `http://localhost:50146/api/image/${1}?type=preview`;
 
             return this.main;
         }
