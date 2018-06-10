@@ -109,7 +109,7 @@ class Controller extends React.Component {
             // Получение данных пользователя
             this.props.getUserInfo();
             // Загрузка данных корзины
-            this.props.getShoppingCart();
+            this.props.getShoppingCart(true);
         }    
     }
 
