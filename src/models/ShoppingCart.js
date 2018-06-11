@@ -7,7 +7,7 @@ export class ShoppingCart {
         this.lastModified = model.lastModified;
         this.userId = model.userId;
         this.userStatusId = model.userStatusId;
-        this.subTotal = model.subTotal;
+        this.subTotal = model.subTotal || 0;
         this.lines = _.map(model.lines, line => new ShoppingCartLine(line));
 
         this.getProductQuantity = this.getProductQuantity.bind(this);

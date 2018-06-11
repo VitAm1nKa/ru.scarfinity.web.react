@@ -1,5 +1,6 @@
 import { Address }  from './Address';
 import { Person }   from './Person';
+import { Customer } from './Customer';
 
 export class SalesOrder {
     constructor(model = {}) {
@@ -52,13 +53,13 @@ export class OrderInfo {
 export class SalesOrderPost {
     constructor(model = {}) {
         this.orderType = model.orderType;
-        this.userId = model.userId;
-        this.menagerId = model.menagerId;
+        this.userId = model.userId || 'self';
+        this.menagerId = model.menagerId || 1;
         this.shoppingCartId = model.shoppingCartId;
         this.shipMethodId = model.shipMethodId;
         this.paymentMethodId = model.paymentMethodId;
         this.shipToAddress = new Address(model.shipToAddress || {});
-        this.billingAddress = new Address(model.billingAddress || {});
+        this.billToAddress = new Address(model.billToAddress || {});
         this.person = new Person(model.person || {}); 
         this.customer = new Customer({ person: this.person });
     }
