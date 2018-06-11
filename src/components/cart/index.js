@@ -10,6 +10,9 @@ import qs                       from 'qs';
 import {
     actionCreators as ShoppingCartActions
 }                               from '../../store/shoppingCart';
+import {
+    salesOrderActionCreators
+}                               from '../../store/salesOrder'
 
 import Paper                    from 'material-ui/Paper';
 
@@ -22,10 +25,7 @@ import BottomNavigation         from './bottom-navigation';
 
 import Validate                 from '../../lib/validation';
 
-import {
-    SalesOrderPost
-}                               from '../../store/__models';
-
+import { SalesOrderPost }       from '../../models/SalesOrder';
 import { ShipMethod }           from '../../models/ShipMethod'; 
 import { __shipMethod }         from '../../store/api-requests';
 
@@ -61,14 +61,14 @@ class CartDataModel extends SalesOrderPost {
             case 'shoppingCartId': this.shoppingCartId = value; break;
             case 'lastname': this.person.lastName = value; break;
             case 'firstname': this.person.firstName = value; break;
-            case 'email': this.person.emailAddress.emailAddress = value; break;
+            case 'email': this.person.emailAddress.emailAddress = value; this.person.emailAddress.email = value; break;
             case 'phone': this.person.phoneNumber = value; break;
-            case 'stateProvinceId': this.shipToAddress.stateProvinceId = value; break;
-            case 'city': this.shipToAddress.city = value; break;
-            case 'address1': this.shipToAddress.addressLine1 = value; break;
-            case 'address2': this.shipToAddress.addressLine2 = value; break;
-            case 'postalCode': this.shipToAddress.postalCode = value; break;
-            case 'side': this.shipToAddress.side = value; break;
+            case 'stateProvinceId': this.shipToAddress.stateProvinceId = value; this.billToAddress.stateProvinceId = value; break;
+            case 'city': this.shipToAddress.city = value; this.billToAddress.city = value; break;
+            case 'address1': this.shipToAddress.addressLine1 = value; this.billToAddress.addressLine1 = value; break;
+            case 'address2': this.shipToAddress.addressLine2 = value; this.billToAddress.addressLine2 = value; break;
+            case 'postalCode': this.shipToAddress.postalCode = value; this.billToAddress.postalCode = value; break;
+            case 'side': this.shipToAddress.side = value; this.billToAddress.side = value; break;
             case 'shipMethodId': this.shipMethodId = value; break;
             case 'paymentMethodId': this.paymentMethodId = value; break;
         }
@@ -136,7 +136,7 @@ class Controller extends React.Component {
     componentWillMount() {
         // Базовые загрузки данный
         // Необходимо получить информацию о способох доставки(базовых)
-        this.props.getShipMethods();
+        // this.getShipMethods();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -333,11 +333,11 @@ class Controller extends React.Component {
         const postOrder = {
             header: null,
             body: <PostOrder
-                post={this.props.shoppingCartStore.post}
-                postError={this.props.shoppingCartStore.postError}
-                postErrorCode={this.props.shoppingCartStore.postErrorCode}
-                postErrorMessage={this.props.shoppingCartStore.postErrorMessage}
-                salesOrder={this.props.shoppingCartStore.salesOrder}
+                post={this.props.salesOrderStore.post}
+                postError={this.props.salesOrderStore.postError}
+                postErrorCode={this.props.salesOrderStore.postErrorCode}
+                postErrorMessage={this.props.salesOrderStore.postErrorMessage}
+                salesOrder={this.props.salesOrderStore.salesOrder}
                 onPostOrder={this.postOrder} />,
             bottom: null
         }
@@ -368,5 +368,6 @@ class Controller extends React.Component {
 export default connect((state, ownProps) => {
     return {
         shoppingCartStore: state.shoppingCart,
+        salesOrderStore: state.salesOrder
     }
-}, Object.assign({}, ShoppingCartActions))(Controller);
+}, Object.assign({}, ShoppingCartActions, salesOrderActionCreators))(Controller);

@@ -119,6 +119,15 @@ export const __catalogPage = {
     }
 }
 
+//  #region SalesOrder
+export const __salesOrder = {
+    Get: {
+        Single: (salesOrderId) => requestBuilder(`SalesOrder/${salesOrderId}`, 'GET', true)
+    },
+    Post: (salesOrderData) => requestBuilder('SalesOrder', 'POST', { body: salesOrderData })
+}
+//  #endregion
+
 //  #region ShipMethods
 export const __shipMethod = {
     Get: {

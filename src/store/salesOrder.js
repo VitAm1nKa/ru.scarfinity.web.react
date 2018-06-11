@@ -3,65 +3,46 @@ import { fetch, addTask }   from 'domain-task';
 import __request            from './__request';
 import qs                   from 'qs';
 
+import { SalesOrder }       from '../models/SalesOrder';
+import { __salesOrder }     from './api-requests';
 import {
-    SalesOrder
-}                           from './__models';
+    actionCreators 
+} from './shoppingCart';
 
-export const actionCreators = {
+export const salesOrderActionCreators = {
     getSalesOrder: (salesOrderId) => (dispatch, getState) => {
-        const request = 
-        __request({url: `api/salesOrder/${salesOrderId}`})
-        .then((response) => response.json())
-        .then(({type, data}) => {
-            switch(type) {
-                case 'success': dispatch({ type: 'SALESORDER__RECEIVE', salesOrder: data }); break;
-                case 'not_found': dispatch({ type: 'SALESORDER__RECEIVE__NOTFOUND' }); break;
-            }
-        })
+        __salesOrder.Get.Single(salesOrderId)(data => {
+            dispatch({ type: 'SALESORDER__RECEIVE', salesOrder: data });
+        }, error => {
+            dispatch({ type: 'SALESORDER__RECEIVE__NOTFOUND' })
+        });
 
-        addTask(request);
         dispatch({type: 'SALESORDER__REQUEST'});
     },
     postSalesOrder: (salesOrderPost) => (dispatch, getState) => {
+        console.warn("Sales order Post: ", salesOrderPost);
         // самый важный метод на всем сайте
         // подойти с максимальной ответсвенностью
-        const request = 
-            __request({
-                url: 'api/salesOrder',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(salesOrderPost)
-            })
-            .then((response) => response.json())
-            .then(({type, message, data}) => {
-                switch(type) {
-                    // В случае успешного проведения заказа, в ответ получаем информацию о вновь созданом заказе
-                    case 'success': dispatch({ type: 'SALESORDERPOST__SUCCESS', salesOrder: data.salesOrder });
-                    case 'OrderTypeNotProvided':
-                    case 'OrderTypeNotExists':
-                    case 'ShoppingCartNotProvided':
-                    case 'ShoppingCartNotExists':
-                    case 'ShoppingCartNoItems':
-                    case 'ShipMethodNotProvided':
-                    case 'ShipMethodNotExists':
-                    case 'PersonFirstNameNotExists':
-                    case 'PersonLastNameNotExists':
-                    case 'PersonEmailNotExists':
-                    case 'PersonPhoneNotExists':
-                            dispatch({ type: 'SALESORDERPOST__ERROR', error: { type, message} });
-                    default: ;
-                }
-            })
+        __salesOrder.Post(salesOrderPost)(data => {
+            // В случае успешного проведения заказа, в ответ получаем информацию о вновь созданом заказе
+            dispatch({ type: 'SALESORDER__POST__SUCCESS', salesOrder: data });
+            // Так же следует, обновить информацию о корзине.
+            // На стороне сервера, она очищается после размещения заказа
+            // После диспатча события о успешном размещении заказа, локальный стейте Redux очищает инфо о корзине
+            // И делается запрос на сервер, за обновленной информацией
+            actionCreators.getShoppingCart()(dispatch, getState);
+        }, (type, message) => {
+            // В случае, неудачного размещения зака, обрабоать все ошибки
+            // Данная реализация упрощена, и все ошибки обрабатываются одним диспатчем
+            // За анализ ошибки отвечает компонент, которыйй и отоброжает инфо об ошибках
+            dispatch({ type: 'SALESORDER__POST__ERROR', error: { type, message} });
+        });
 
-        dispatch({ type: 'SALESORDERPOST' });
+        dispatch({ type: 'SALESORDER__POST' });
     }
 };
 
 const initialState = {
-    fetch: false,
-    fetchError: false,
     post: false,
     postError: false,
     postErrorCode: '',
@@ -72,6 +53,46 @@ const initialState = {
 export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
+        case 'SALESORDER__POST': {
+            return update(state, {$merge: {
+                post: true,
+                postError: false,
+                postErrorCode: '',
+                postErrorMessage: '',
+                salesOrder: null
+            }});
+        }
+        case 'SALESORDER__POST__SUCCESS': {
+            return update(state, {$merge: {
+                post: false,
+                postError: false,
+                postErrorCode: '',
+                postErrorMessage: '',
+                salesOrder: action.salesOrder
+            }})
+        }
+        case 'SALESORDER__POST__ERROR': {
+            return update(state, {$merge: {
+                post: false,
+                postError: true,
+                postErrorCode: action.error.type,
+                postErrorMessage: action.error.message,
+                salesOrder: null
+            }})
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         case 'SALESORDER__REQUEST': {
             return update(state, {$merge: {
                 fetch: true,
