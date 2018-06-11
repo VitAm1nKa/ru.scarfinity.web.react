@@ -2,80 +2,10 @@ import React    from 'react';
 import update   from 'immutability-helper';
 
 import './input-phone.less';
-import { PhoneNumber } from '../../store/__models';
-
-function makeMask(mask) {
-    return mask.split(',');
-}
-
-var masks = {
-    'ru': {
-        name: 'Россия',
-        code: '+7',
-        mask: makeMask('(x,x,x), x,x,x, x,x,-x,x'),
-        count: 10
-    },
-    'az': {
-        name: 'Азербайджан',
-        code: '+994',
-        mask: makeMask('x,x,-x,x,x,-x,x,-x,x'),
-        count: 9
-    },
-    'am': {
-        name: 'Армения',
-        code: '+374',
-        mask: makeMask('x,x,-x,x,x,-x,x,x'),
-        count: 8
-    },
-    'by': {
-        name: 'Белорусия',
-        code: '+375',
-        mask: makeMask('(x,x), x,x,x-,x,x,-x,x'),
-        count: 9
-    },
-    'ge': {
-        name: 'Грузия',
-        code: '+995',
-        mask: makeMask('(x,x,x), x,x,x,-x,x,x'),
-        count: 9
-    },
-    'kz': {
-        name: 'Казахстан',
-        code: '+7',
-        mask: makeMask('(x,x,x), x,x,x,-x,x,-x,x'),
-        count: 10
-    },
-    'kg': {
-        name: 'Кыргызстан',
-        code: '+996',
-        mask: makeMask('(x,x,x), x,x,x,-x,x,x'),
-        count: 9
-    },
-    'tj': {
-        name: 'Таджикистан',
-        code: '+992',
-        mask: makeMask('x,x,-x,x,x,-x,x,x,x'),
-        count: 9
-    },
-    'tm': {
-        name: 'Туркменистан',
-        code: '+993',
-        mask: makeMask('x,x,-x,x,-x,x,-x,x'),
-        count: 8
-    },
-    'ua': {
-        name: 'Украина',
-        code: '+380',
-        mask: makeMask('(x,x), x,x,x,-x,x,-x,x'),
-        count: 9
-    },
-    'uz': {
-        name: 'Узбекистан',
-        code: '+998',
-        mask: makeMask('x,x,-x,x,x,-x,x,x,x'),
-        count: 9
-    }
-}
+import { 
+    PhoneNumber,
+    PhoneNumberMask
+ } from '../../models/PhoneNumber';
 
 class InputPhoneDropdown extends React.Component {
     constructor(props) {
@@ -158,7 +88,7 @@ class Controller extends React.Component {
             lastKeyCode: -1
         }
 
-        this.masksArray = _.toPairs(masks);
+        this.masksArray = _.toPairs(PhoneNumberMask);
 
         this.clear = this.clear.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -186,12 +116,12 @@ class Controller extends React.Component {
 
     decorate(value, countryCode = 'ru') {
         return _.reduce(this.state.value, (sum, digit, index) => {
-            return sum + this.mapper(masks[countryCode].mask[index], digit);
+            return sum + this.mapper(PhoneNumberMask[countryCode].mask[index], digit);
         }, '');
     }
 
     clear(value, countryCode) {
-        return (value.replace(new RegExp(/[^\d]/, 'g'), '')).substring(0, masks[countryCode || this.state.countryCode].count);
+        return (value.replace(new RegExp(/[^\d]/, 'g'), '')).substring(0, PhoneNumberMask[countryCode || this.state.countryCode].count);
     }
 
     setStateCallback(options) {
@@ -204,7 +134,8 @@ class Controller extends React.Component {
                         name: this.props.name,
                         value: update(this.props.value, {$merge: {
                             phoneNumber: this.state.value,
-                            countryCode: this.state.countryCode
+                            countryCode: this.state.countryCode,
+                            number: this.state.value
                         }})
                     }
                 });
@@ -253,7 +184,7 @@ class Controller extends React.Component {
                 this.props.valid == false ? " input-phone--error" : ""}`}>
                     <InputPhoneDropdown
                         options={_.map(this.masksArray, m => ({id: m[0], value: m[1]}))}
-                        value={masks[this.state.countryCode].code}
+                        value={PhoneNumberMask[this.state.countryCode].code}
                         countryCode={this.state.countryCode}
                         onSelect={this.handleTypeChange}/>
                     <input
