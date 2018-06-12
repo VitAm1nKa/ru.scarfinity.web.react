@@ -1,7 +1,7 @@
 import { PathChain } from "./PathChain";
 
 export class CatalogPageBase {
-    constructor(model) {
+    constructor(model = {}) {
         this.catalogPageId = model.catalogPageId;
         this.seo = model.seo || '';
         this.title = model.title || '';
@@ -74,5 +74,14 @@ export class CatalogPage extends CatalogPageBase {
 
         this.pathChain = new PathChain(model.pathChain || {});
         this.catalogPageInfo = new CatalogPageInfo(model.catalogPageInfo || {});
+    }
+}
+
+export class CatalogPageSchemaNode extends CatalogPageBase {
+    constructor(model = {}) {
+        super(model);
+
+        this.nodes = _.map(model.nodes, node => new CatalogPageSchemaNode(node));
+        this.NodesCount = () => (this.nodes || []).length;
     }
 }

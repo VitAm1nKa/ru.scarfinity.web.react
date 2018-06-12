@@ -20,9 +20,11 @@ import {
     BreadCrumbs
 }                           from '../../components/navigation/bread-crumbs'
 import Footer               from '../../components/navigation/footer';
-import {
-    actionCreators as navigationActions
-}                           from '../../store/navigation';
+
+import { 
+    catalogSchemaActionCreators 
+}                           from '../../store/catalog';
+
 import {
     actionCreators as shopActions                     
 }                           from '../../store/shop';
@@ -97,7 +99,7 @@ class Layout extends React.Component {
         // this.props.getShops();
 
         // Получение данных о структуре каталога
-        // this.props.requestCatalogNodes();
+        this.props.loadCatalogPageSchema();
 
         // Создание ошибочной ситуации
         useDOM({clientSide: () => {
@@ -125,7 +127,7 @@ class Layout extends React.Component {
                     <Route
                         path='/'
                         render={props => <MainMenu
-                            catalogNodes={this.props.navigation.catalogNodes}
+                            catalogNodes={this.props.catalogPageSchema.schema}
                             {...props}/>} />
                     <Route path='/' component={MobileMainMenu} />
                     <GridLine><BreadCrumbs /></GridLine>
@@ -143,9 +145,9 @@ class Layout extends React.Component {
 }
 
 export default withRouter(connect((state, ownProps) => ({
-    navigation: state.navigation,
-    ttt: ownProps
-}), Object.assign({},
-    navigationActions,
-    shopActions))
-(Layout));
+    catalogPageSchema: {
+        schema: state.catalog.catalogPageSchema,
+        fetch: state.catalog.catalogPageSchemaFetch,
+        error: state.catalog.catalogPageSchemaError
+    }
+}), Object.assign({}, catalogSchemaActionCreators, shopActions))(Layout));

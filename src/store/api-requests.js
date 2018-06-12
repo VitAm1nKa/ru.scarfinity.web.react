@@ -101,6 +101,7 @@ export const __productModel = {
 
 export const __catalogPage = {
     Get: {
+        Many: () => requestBuilder('CatalogPage', 'GET', {}, true),
         Single: (catalogPageFilters) => {
             const catalogPagePath = _.join(catalogPageFilters.catalogPathNodes, '/');
             const query = {
@@ -122,8 +123,8 @@ export const __catalogPage = {
 //  #region SalesOrder
 export const __salesOrder = {
     Get: {
-        Many: () => requestBuilder('SalesOrder', 'GET', true),
-        Single: (salesOrderId) => requestBuilder(`SalesOrder/${salesOrderId}`, 'GET', true)
+        Many: () => requestBuilder('SalesOrder', 'GET', {}, true),
+        Single: (salesOrderId) => requestBuilder(`SalesOrder/${salesOrderId}`, 'GET', {}, true)
     },
     Post: (salesOrderData) => requestBuilder('SalesOrder', 'POST', { body: salesOrderData })
 }

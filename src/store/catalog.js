@@ -1,10 +1,29 @@
 import update               from 'immutability-helper';
-import { CatalogPage }      from '../models/CatalogPage';
+import { 
+    CatalogPage, 
+    CatalogPageSchemaNode 
+}                           from '../models/CatalogPage';
 import { ProductModel }     from '../models/ProductModel';
 import { 
     __productModel,
     __catalogPage
 }                           from './api-requests';
+
+export const catalogSchemaActionCreators = {
+    loadCatalogPageSchema: () => (dispatch, getState) => {
+        if(!getState().catalog.catalogPageSchemaFetch) {
+            __catalogPage.Get.Many()(
+                data => {
+                    dispatch({ type: 'CATALOG_SCHEMA_FETCH_SUCCESS', data });
+                },
+                error => {
+                    dispatch({ type: 'CATALOG_SCHEMA_FETCH_ERROR', error });
+                });
+
+            dispatch({ type: 'CATALOG_SCHEMA_FETCH' });
+        }  
+    }
+}
 
 export const actionCreators = {
     //  -- Работа со списком товаров
@@ -37,10 +56,11 @@ export const actionCreators = {
     }
 };
 
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-
 const initialState = {
+    catalogPageSchema: new CatalogPageSchemaNode(),
+    catalogPageSchemaFetch: false,
+    catalogPageSchemaError: null,
+
     catalogPage: new CatalogPage(),
     catalogPageLoading: false,
 
@@ -53,6 +73,28 @@ export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
 
+        //  #region CatalogPageSchema
+        case 'CATALOG_SCHEMA_FETCH': {
+            return update(state, {$merge: {
+                catalogPageSchemaFetch: true,
+                catalogPageSchemaError: null
+            }});
+        }
+        case 'CATALOG_SCHEMA_FETCH_SUCCESS': {
+            return update(state, {$merge: {
+                catalogPageSchemaFetch: false,
+                catalogPageSchemaError: null,
+                catalogPageSchema: new CatalogPageSchemaNode(action.data)
+            }});
+        }
+        case 'CATALOG_SCHEMA_FETCH_ERROR': {
+            return update(state, {$merge: {
+                catalogPageSchemaFetch: false,
+                catalogPageSchemaError: action.error.type
+            }});
+        }
+        //  #endregion
+        //  #region CatalogPage
         case 'CATALOG_CATALOGPAGEINFO_FETCH': {
             return update(state, {
                 catalogPageLoading: {$set: true},
@@ -68,7 +110,8 @@ export const reducer = (state, incomingAction) => {
         case 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR': {
             return state;
         }
-
+        //  #endregion
+        //  #region ProductModels
         case 'CATALOG_PRODUCTMODELS_FETCH': {
             return update(state, {productModelsLoading: {$set: true}});
         }
@@ -82,7 +125,7 @@ export const reducer = (state, incomingAction) => {
         case 'CATALOG_PRODUCTMODELS_FETCH_EROOR': {
             return state
         }
-
+        //  #endregion
 
 
 
