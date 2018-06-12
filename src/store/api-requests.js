@@ -39,7 +39,7 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
             .then(response => response.json())
             .then(({type, message, data}) => {
                 if(type == 'success' && onSuccess != null) onSuccess(data);
-                else if(onError != null) onError(type, message);
+                else if(onError != null) onError({type, message});
             })
             .catch(e => {
                 console.error(e);
@@ -122,6 +122,7 @@ export const __catalogPage = {
 //  #region SalesOrder
 export const __salesOrder = {
     Get: {
+        Many: () => requestBuilder('SalesOrder', 'GET', true),
         Single: (salesOrderId) => requestBuilder(`SalesOrder/${salesOrderId}`, 'GET', true)
     },
     Post: (salesOrderData) => requestBuilder('SalesOrder', 'POST', { body: salesOrderData })

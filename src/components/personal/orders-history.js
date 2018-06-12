@@ -39,7 +39,7 @@ class Controller extends React.Component {
 
     componentWillMount() {
         // Загрузка заказов пользователя
-        this.props.getSalesOrders();
+        // this.props.getSalesOrders();
     }
 
     handleChange(event) {
@@ -54,7 +54,7 @@ class Controller extends React.Component {
                 <PageHeader title="Мои заказы"/>  
                 <Switch>
                     <Route exact path={this.props.match.path} component={OrderList} />
-                    <Route path={`${this.props.match.path}/:id`} component={Order} />
+                    <Route path={`${this.props.match.path}/:salesOrderId`} component={Order} />
                 </Switch>
             </Grid.VerticalGrid>
         )

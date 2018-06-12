@@ -1,6 +1,7 @@
-import { Address }  from './Address';
-import { Person }   from './Person';
-import { Customer } from './Customer';
+import { Address }      from './Address';
+import { Person }       from './Person';
+import { Customer }     from './Customer';
+import { ProductSmall } from './ProductModel';
 
 export class SalesOrder {
     constructor(model = {}) {

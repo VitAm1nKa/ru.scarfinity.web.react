@@ -1,11 +1,13 @@
-import React        from 'react';
-import { connect }  from 'react-redux';
+import React            from 'react';
 import {
     NavLink
-}                   from 'react-router-dom';
-import * as Grid    from '../../lib/grid';
-import Currency     from '../utility/currency';
-import OrderCard    from '../utility/order-card';
+}                       from 'react-router-dom';
+import * as Grid        from '../../lib/grid';
+import Currency         from '../utility/currency';
+import OrderCard        from '../utility/order-card';
+
+import { SalesOrder }   from '../../models/SalesOrder';
+import { __salesOrder } from '../../store/api-requests';
 
 import './orders-history-orders.less';
 
@@ -105,14 +107,56 @@ const View1 = (props) => {
 class Controller extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            salesOrdersFetch: false,
+            salesOrders: null,
+            salesOrderError: null
+        }
+
+        this.reloadSalesOrders = this.reloadSalesOrders.bind(this);
+    }
+
+    componentWillMount() {
+        this.reloadSalesOrders();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.reloadSalesOrders();
+    }
+
+    reloadSalesOrders() {
+        if(!this.state.salesOrdersFetch) {
+            this.setState({
+                salesOrdersFetch: true,
+                salesOrdersError: null
+            }, () => {
+                __salesOrder.Get.Many()(data => {
+                    this.setState({
+                        salesOrdersFetch: false,
+                        salesOrders: _.map(data, o => new SalesOrder(o))
+                    })
+                }, error => {
+                    this.setState({
+                        salesOrdersFetch: false,
+                        salesOrdersError: error.type
+                    })
+                })
+            })
+        }
     }
 
     render() {
+        if(this.state.salesOrdersFetch == true) {
+            return (<div>Loading...</div>)
+        } else if(this.state.salesOrderError != null) {
+            return (<div>{'Error' + this.state.salesOrderError}</div>)
+        } else {
         return(
             <Grid.Row>
                 <Grid.Container>
                     {
-                        _.map(this.props.salesOrders, salesOrder =>
+                        _.map(this.state.salesOrders, salesOrder =>
                             <Grid.Col
                                 key={salesOrder.salesOrderId}
                                 grid={12} lg={3} md={3} sm={4} xs={12}>
@@ -124,9 +168,10 @@ class Controller extends React.Component {
                     }
                 </Grid.Container>
             </Grid.Row>
-        )
+            )
+        }
     }
 }
 
-export default connect(state => state.salesOrders)(Controller);
+export default Controller;
 
