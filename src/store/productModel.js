@@ -25,7 +25,7 @@ const initialState = {
         success: false,
         error: "no error"
     },
-    productModel: null
+    productModel: new ProductModel()
 }
 
 export const reducer = (state, incomingAction) => {

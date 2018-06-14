@@ -80,6 +80,7 @@ export const __productModel = {
         Many: (catalogPageFilters, pageNumber) => {
             const catalogPagePath = _.join(catalogPageFilters.catalogPathNodes, '_');
             const query = {
+                cp: catalogPagePath,
                 pn: pageNumber,
                 pp: catalogPageFilters.itemsOnPage,
                 ct: catalogPageFilters.catalogIds,

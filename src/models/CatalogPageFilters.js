@@ -32,6 +32,6 @@ export class CatalogPageFilters {
     }
 
     get SortBy() {
-        return '10';
+        return `${this.sortById}${this.sortByDesc ? '1' : '0'}`;
     }
 }
