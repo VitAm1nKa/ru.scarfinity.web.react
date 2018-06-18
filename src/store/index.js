@@ -1,6 +1,7 @@
 import * as Redux       from 'redux';
 
 import * as Account                 from './account';
+import * as Environment             from './environment';
 import * as Catalog                 from './catalog';
 import * as Filter                  from './filter';
 import * as Cart                    from './cart';
@@ -22,6 +23,7 @@ import * as Values                  from './values';
 
 export var reducers = {
     account: Account.reducer,
+    environment: Environment.reducer,
     product: Product.reducer,
     productModel: ProductModel.reducer,
     catalog: Catalog.reducer,

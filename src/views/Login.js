@@ -17,6 +17,12 @@ import __request    from '../store/__request';
 
 import { __authentication } from '../store/api-requests';
 
+import {
+    EnvironmentMeta
+} from './Environment';
+
+
+
 import './Login.less';
 
 class Controller extends React.Component {
@@ -130,6 +136,8 @@ class Controller extends React.Component {
         const userToken = this.props.cookies.get('user-token');
 
         return(
+            <div>
+            <EnvironmentMeta title="Login Page" />
             <Grid.Row>
                 <Grid.Container>
                     <Grid.Col>
@@ -157,6 +165,7 @@ class Controller extends React.Component {
                     </Grid.Col>
                 </Grid.Container>
             </Grid.Row>
+            </div>
         )
     }
 }

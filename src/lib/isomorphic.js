@@ -20,3 +20,9 @@ export function useDOM({clientSide, serverSide, bothSides, onError, afterComplet
         if(afterComplete != null) afterComplete();
     }
 }
+
+export function isomorph(callback) {
+    if(callback) {
+        useDOM({ clientSide: callback });
+    }
+}

@@ -19,6 +19,10 @@ import {
     BreadCrumb,
     BreadCrumbs
 }                           from '../../components/navigation/bread-crumbs'
+import {
+    EnvironmentCore,
+    EnvironmentMeta
+}                           from '../Environment';
 import Footer               from '../../components/navigation/footer';
 
 import { 
@@ -131,10 +135,12 @@ class Layout extends React.Component {
                             {...props}/>} />
                     <Route path='/' component={MobileMainMenu} />
                     <GridLine><BreadCrumbs /></GridLine>
+                    <EnvironmentCore />
                 </header>
                 {/* <Route path='/' render={props => <PageWrap children={this.props.children} {...props} /> } /> */}
                 <main>
                     <Route path="/" component={ScrollToTop} />
+                    <EnvironmentMeta title="Главная страница Scarfinity Site" />
                     <BreadCrumb seo='' title='Главная' />
                     {this.props.children}
                 </main>
