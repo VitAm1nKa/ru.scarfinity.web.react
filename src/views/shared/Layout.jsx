@@ -22,7 +22,7 @@ import {
 import {
     EnvironmentCore,
     EnvironmentMeta
-}                           from '../Environment';
+}                           from '../../components/navigation/page-meta';
 import Footer               from '../../components/navigation/footer';
 
 import { 

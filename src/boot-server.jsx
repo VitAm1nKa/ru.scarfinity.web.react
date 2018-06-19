@@ -10,11 +10,6 @@ import { routes } from './routes';
 import { CookiesProvider } from 'react-cookie';
 import Cookies from 'universal-cookie';
 
-// -- -------------------------------------------------------
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme      from 'material-ui/styles/getMuiTheme';
-const muiTheme = getMuiTheme({userAgent: 'all'});
-
 export default createServerRenderer(params => {
     return new Promise((resolve, reject) => {
         // Prepare Redux store with in-memory history, and dispatch a navigation event

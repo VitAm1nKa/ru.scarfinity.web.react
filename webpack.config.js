@@ -17,8 +17,7 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.(js|jsx)$/, include: /src/, use: 'babel-loader' },
-                { test: /\.less$/, include: /src/, use: ExtractTextPlugin.extract({ 
-                    fallback: 'style-loader', 
+                { test: /\.less$/, include: /src/, use: ExtractTextPlugin.extract({
                     use: isDevBuild ? ['css-loader', 'postcss-loader', 'less-loader'] : ['css-loader?minimize', 'postcss-loader', 'less-loader'] })},
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
             ]

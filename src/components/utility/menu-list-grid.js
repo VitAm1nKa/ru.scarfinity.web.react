@@ -15,7 +15,7 @@ class Controller extends React.Component {
     compactList(list, max = 0) {
         if(max == 0) {
             list.nodes = null;
-        } else if(list.NodesCount() - max > 0) {
+        } else if(list.NodesCount - max > 0) {
             list.nodes = (_.take(list.nodes, max - 1));
             list.more = true;
         }
@@ -28,7 +28,7 @@ class Controller extends React.Component {
             return null;
 
         // Отсортировать элементы по количеству 
-        var items = _.reverse(_.sortBy(nodes, node => node.NodesCount()));
+        var items = _.reverse(_.sortBy(nodes, node => node.NodesCount));
         var chunks = Math.ceil(items.length / 3);
 
         let columns = [[], [], []];
@@ -38,15 +38,15 @@ class Controller extends React.Component {
             const index = i % 3;
             const item = items[i];
             if(index == 0) {
-                if(_.reduce(columns[1], (sum, n) => sum + n.NodesCount(), 0) < 13 && columns[1].length < Math.min(3, chunks)) {
+                if(_.reduce(columns[1], (sum, n) => sum + n.NodesCount, 0) < 13 && columns[1].length < Math.min(3, chunks)) {
                     columns[1].push(item);
-                } else if(_.reduce(columns[0], (sum, n) => sum + n.NodesCount(), 0) < 13 && columns[0].length < Math.min(3, chunks)) {
+                } else if(_.reduce(columns[0], (sum, n) => sum + n.NodesCount, 0) < 13 && columns[0].length < Math.min(3, chunks)) {
                     columns[0].push(item);
                 } else {
                     columns[2].push(item);
                 }
             } else if(index == 1) {
-                if(_.reduce(columns[0], (sum, n) => sum + n.NodesCount(), 0) < 13 && columns[0].length < Math.min(3, chunks)) {
+                if(_.reduce(columns[0], (sum, n) => sum + n.NodesCount, 0) < 13 && columns[0].length < Math.min(3, chunks)) {
                     columns[0].push(item);
                 } else {
                     columns[2].push(item);
@@ -69,7 +69,7 @@ class Controller extends React.Component {
                 column[0] = this.compactList(column[0], 13);
             }
             if(count == 2) {
-                const r = column[0].NodesCount() / column[1].NodesCount();
+                const r = column[0].NodesCount / column[1].NodesCount;
                 if(r <= 6 / 5) {
                     column[0] = this.compactList(column[0], 6);
                     column[1] = this.compactList(column[1], 5);

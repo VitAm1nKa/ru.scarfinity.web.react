@@ -17,15 +17,10 @@ var config = (env) => {
         module: {
             rules: [
                 { test: /\.(js|jsx)$/, include: /src/, use: 'babel-loader' },
-                { test: /\.less$/, include: /src/, use: ExtractTextPlugin.extract({ 
-                    fallback: 'style-loader', 
-                    use: isDevBuild ? ['css-loader', 'postcss-loader', 'less-loader'] : ['css-loader?minimize', 'postcss-loader', 'less-loader'] })},
+                { test: /\.less$/, include: /src/, use: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader'] },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }
             ]
-        },
-        plugins: [
-            new ExtractTextPlugin('site.css')
-        ]
+        }
     });
 
     // Configuration for client-side bundle suitable for running in browsers

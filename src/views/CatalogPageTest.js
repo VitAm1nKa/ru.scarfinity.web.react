@@ -1,68 +1,36 @@
-import React                from 'react';
-import PropTypes            from 'prop-types';
-import { connect }          from 'react-redux';
-import { Route }            from 'react-router-dom';
-import { fetch, addTask }   from 'domain-task';
-import InfiniteScroll       from 'react-infinite-scroller';
-
-import * as Grid            from '../lib/grid';
-import ProductCard          from '../components/utility/catalog-product-card';
-import LazyLoader           from '../components/utility/lazy-loader';
-
-import { ProductModel }     from '../store/__models';
-
-import { 
-    __productModel,
-    __catalogPage
-}   from '../store/api-requests';
-
-import Catalog              from './Catalog';
-
-import { actionCreators }   from '../store/values';
+import React    from 'react';
+import {
+    Switch,
+    Route,
+    NavLink
+}               from 'react-router-dom';
+import {
+    EnvironmentMeta
+}               from '../components/navigation/page-meta';
 
 class Controller extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            pageNumber: 0,
-            productsOnPage: 20,
-            productModels: [],
-            hasMore: true,
-            loading: false,
-            data: []
-        }
-        this.handleProductOnCartAdd = this.handleProductOnCartAdd.bind(this);
-    }
-
-    componentWillMount() {
-        this.props.getValues();
-    }
-
-    componentWillReceiveProps(props) {
-        console.log(props);
-        this.setState({
-            data: props.values
-        })
-    }
-
-    handleProductOnCartAdd(productModelId, productId) {
-
     }
 
     render() {
+        const id = parseInt(this.props.match.params['id']) || 0;
+        const title = `Page ${id}`;
         return(
             <div>
-                {
-                    _.map(this.props.values, d => {
-                        return(<h1>{d}</h1>)
-                    })
-                }
+                <div style={{ display: 'flex' }}>
+                    <NavLink to={`${this.props.location.pathname}/${id + 1}`}>{"Go deep..."}</NavLink>
+                </div>
+                <h1>{title}</h1>
+                <EnvironmentMeta title={title} />
+                <div style={{ border: '1px solid #f7f7f7' }} >
+                    <Switch>
+                        <Route path={`${this.props.match.path}/:id`} component={Controller} />
+                    </Switch>
+                </div>
             </div>
         )
     }
 }
 
-export default connect(state => ({
-    values: state.values
-}), Object.assign({}, actionCreators))(Controller);
+export default Controller;

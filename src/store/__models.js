@@ -500,7 +500,10 @@ export class ProductCategorySchemaNode extends ProductCategoryBase {
         super(model);
 
         this.nodes = _.map(model.nodes, node => new ProductCategorySchemaNode(node));
-        this.NodesCount = () => (this.nodes || []).length;
+    }
+
+    get NodesCount() {
+        return (this.nodes || []).length
     }
 }
 
