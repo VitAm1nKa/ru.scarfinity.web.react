@@ -1,5 +1,3 @@
-import * as Redux       from 'redux';
-
 import * as Account                 from './account';
 import * as Environment             from './environment';
 import * as Catalog                 from './catalog';

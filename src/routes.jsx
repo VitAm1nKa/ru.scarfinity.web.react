@@ -7,6 +7,7 @@ import ErrorPage            from './views/shared/Error';
 import * as DefPages        from './views/DefaultPages';
 import Home                 from './views/Home';
 import CatalogOverview      from './views/CatalogOverview';
+import CatalogRedirect      from './views/CatalogRedirect';
 import Catalog              from './views/Catalog';
 import CatalogWrap          from './views/CatalogWrap';
 import ProductCard          from './views/ProductCard';
@@ -32,7 +33,7 @@ export const routes =
             <Route path='/' exact component={Home} />
             <Route path='/dev' component={Develop} />
             <Route path='/catalog' exact component={CatalogOverview} />
-            <Route path='/catalog/:search' component={CatalogWrap} />
+            <Route path='/catalog/:search' component={CatalogRedirect} />
             <Route path='/cart' component={Cart} />
             <Route path='/personal' component={Personal} />
             <Route path='/contacts' exact component={Contacts} />

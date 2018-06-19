@@ -121,6 +121,16 @@ export const __catalogPage = {
     }
 }
 
+//  #region Review
+export const __review = {
+    Get : {
+        Many: (reviewCollectionId) => requestBuilder(`Review`, 'GET', { query: {
+            rc: reviewCollectionId
+        }})
+    }
+}
+//  #endregion
+
 //  #region SalesOrder
 export const __salesOrder = {
     Get: {

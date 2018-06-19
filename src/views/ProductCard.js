@@ -24,24 +24,57 @@ import * as TabView                 from '../components/utility/tab-view';
 import InfoList                     from '../components/utility/info-list';
 import ProductRow                   from '../components/utility/product-row';
 
+import { Review }                   from '../models/Review';
+
+import { __review }                 from '../store/api-requests';
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log("Product card: init");
-        console.log("Product card: load review collection")
+        this.state = {
+            productModelFetch: false,
+            reviewsFetch: false,
+            reviews: []
+        }
 
+        console.warn("Product card: init");
+        console.warn("Product card: load review collection")
+
+        this.reloadProductModel = this.reloadProductModel.bind(this);
+        this.loadReviews = this.loadReviews.bind(this);
         this.handleColorChange = this.handleColorChange.bind(this);
         this.handleReviewPost = this.handleReviewPost.bind(this);
     }
 
+    reloadProductModel(peoductModelNumber) {
+        if(!this.state.productModelFetch) {
+            this.setState({ productModelFetch: true }, () => {
+                this.props.getProductModel(peoductModelNumber);
+            });
+        }
+    }
+
     componentWillMount() {
-        // Реквест на получение спика отзывов о товаре
-        this.props.getReviewCollection(this.props.productModel.reviewStats.reviewCollectionId);
+        this.reloadProductModel(_.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')));
     }
 
     componentWillReceiveProps(nextProps) {
         console.log("Product card: receive props", nextProps);
+        if(nextProps.productModelFetch != this.props.productModelFetch && this.props.productModelFetch == true) {
+            this.setState({ productModelFetch: false }, () => {
+                if(nextProps.productModel.productModelId != null) {
+                    // Реквест на получение спика отзывов о товаре
+                    this.loadReviews(this.props.productModel.reviewStats.reviewCollectionId);
+                }
+            });
+        }
+
+        var lastNodeOld = _.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/'));
+        var lastNodeNew = _.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/'));
+        if(lastNodeOld != lastNodeNew) {
+            this.reloadProductModel(lastNodeNew);
+        }
     }
 
     handleColorChange(colorCode) {
@@ -56,11 +89,48 @@ class Controller extends React.Component {
         }
     }
 
+    loadReviews(reviewCollectionId) {
+        if(!this.state.reviewsFetch) {
+            this.setState({reviewsFetch: true}, () => {
+                __review.Get.Many(reviewCollectionId)(
+                    data => {
+                        this.setState({
+                            reviewsFetch: false,
+                            reviews: _.map(data, review => new Review(review))
+                        });
+                    },
+                    error => {
+                        this.setState({
+                            reviewsFetch: false,
+                            reviews: []
+                        });
+                    }
+                )
+            });
+        }
+    }
+
     handleReviewPost(postBody) {
         
     }
 
     render() {
+        if(this.state.productModelFetch) {
+            console.error("Product model loading...");
+            return(
+                <div>{"Product model loading..."}</div>
+            )
+        }
+        else if (this.props.productModel == null || this.props.productModel.productModelId == null) {
+            return(
+                <div>{"Product model not found!"}</div>
+            )
+        }
+        else if(_.trimEnd(this.props.location.pathname, '/') != this.props.productModel.path()) {
+            console.log("Redirect product render");
+            return <Redirect to={`${this.props.productModel.path()}${this.props.location.search}`} />
+        }
+
         // Формирование карточки модели товара
         // Необходимо получить информацию об выбраном цвете товара и узоре
         const colorCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).cl || '';
@@ -88,7 +158,7 @@ class Controller extends React.Component {
         </div>;
 
         // Формирование отзывов
-        const reviewsController =
+        const reviewsController = 
             <ReviewsContainer
                 reviewCollection={this.props.reviewCollection}
                 handleReviewPost={this.handleReviewPost}/>
@@ -129,6 +199,8 @@ class Controller extends React.Component {
     }
 }
 
-const mstp = state => Object.assign({}, state.productModel, state.reviewCollection, state.shoppingCart);
-
-export default connect(mstp, Object.assign({}, ProductModelActions, ShoppingCartActions, ReviewCollectionStore.actionCreators))(Controller);
+export default connect(state => ({
+    productModel: state.productModel.productModel,
+    productModelFetch: state.productModel.loading,
+    shoppingCart: state.shoppingCart.shoppingCart
+}), Object.assign({}, ProductModelActions, ShoppingCartActions, ReviewCollectionStore.actionCreators))(Controller);
