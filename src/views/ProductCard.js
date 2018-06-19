@@ -187,6 +187,8 @@ class Controller extends React.Component {
         // Формирование отзывов
         const reviewsController = 
             <ReviewsContainer
+                reviews={this.state.reviews}
+                reviewsFetch={this.state.reviewsFetch}
                 reviewCollection={this.props.reviewCollection}
                 handleReviewPost={this.handleReviewPost}/>
 

@@ -26,9 +26,8 @@ function apiUrl(apiMethodName) {
 }
 
 function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
-    console.warn("API Fetch: ", `${method} : ${apiMethod}`);
-    console.log(body, _.includes(['POST', 'PUT'], method) ? body : null);
     const queryString = qs.stringify(query, { addQueryPrefix: true });
+    console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
     return function(onSuccess, onError, domainTask = _domainTask) {
         let fetchTask = fetch(
             request({

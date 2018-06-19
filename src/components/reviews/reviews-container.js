@@ -2,7 +2,9 @@ import React            from 'react';
 import {connect}        from 'react-redux';
 import * as ReviewState from '../../store/review';
 
-import RaisedButton     from 'material-ui/RaisedButton';
+import {
+    LeaveReviewButton
+}                       from '../utility/buttons';
 import Review           from './review';
 import RatingBox        from '../utility/rating-box';
 
@@ -62,6 +64,7 @@ class LeaveReview extends React.Component {
 }
 
 const NoReviews = (props) => {
+    return null;
     return(
         <div className="review-container-noreviews">
             <div className="review-container-noreviews__text">
@@ -75,17 +78,30 @@ const NoReviews = (props) => {
 }
 
 const ReviewList = (props) => {
+    if(props.reviews == null || props.reviews.length == 0) {
+        return(
+            <div className="review-container-noreviews">
+                <div className="review-container-noreviews__text">
+                    {"Пока что никто не писал отзыв об этом товаре."}
+                </div>
+                <div
+                    className="review-container-noreviews__link"
+                    onClick={props.onAddReview}>{"Написать отзыв"}</div>
+            </div>
+        )
+    }
+
     return(
         <div className="review-container-list">
             {
                 _.map(props.reviews, review => {
                     return(
                         <div
-                            key={review.reviewCollectionItemId}
+                            key={review.reviewId}
                             className="review-container-list__item">
                                 <Review
-                                    review={review}
-                                    onClick={useful => {props.onClick(review.reviewCollectionItemId, useful)}} />
+                                    review={review} />
+                                    {/* onClick={useful => {props.onClick(review.reviewCollectionItemId, useful)}} /> */}
                         </div>
                     )
                 })
@@ -105,28 +121,22 @@ const ReviewList = (props) => {
 }
 
 const Header = (props) => {
-    var leaveReviewPrerender = 
+    return(
         <div className={`review-container-header`}>
-            <span className="review-container-header__title">Оставить отзыв</span>
+            <span className="review-container-header__title">
+                {
+                    props.leave ? 'Оставить отзыв' : 'Отзывы'
+                }
+            </span>
+            <div className="review-container-header__review-count">{props.reviewsCount || 0}</div>
             <div style={{flex: 1, textAlign: 'right'}}>
-                <RaisedButton 
-                    onClick={() => {props.onClick("leave")}}
-                    label="К отзывам"/>
+                <LeaveReviewButton
+                    iddleTitle={"Написать отзыв"}
+                    backTitle={"К отзывам"}
+                    onClick={props.onClick("leave")} />
             </div>
         </div>
-
-    var reviewListPrerender = 
-        <div className={`review-container-header`}>
-        <span className="review-container-header__title">Отзывы</span>
-        <div className="review-container-header__review-count">{props.reviewsCount || 0}</div>
-        <div style={{flex: 1, textAlign: 'right'}}>
-            <RaisedButton 
-                onClick={() => {props.onClick("reviews")}}
-                label="Написать отзыв"/>
-        </div>
-    </div>
-
-    return props.leave === true ? leaveReviewPrerender : reviewListPrerender;
+    )
 }
 
 class ReviewsContainer extends React.Component {
@@ -135,26 +145,44 @@ class ReviewsContainer extends React.Component {
 
         this.state = {
             leave: false,
+            reviewPages: [],
             currentPage: 1,
         }
 
+        this.updateReviews = this.updateReviews.bind(this);
+        this.handleIndexChange = this.handleIndexChange.bind(this);
+        this.handleReviewEvaluationClick = this.handleReviewEvaluationClick.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
 
     componentWillMount() {
+        this.updateReviews(this.props);
+    }
 
+    componentWillReceiveProps(nextProps) {
+        this.updateReviews(nextProps);
+    }
+
+    updateReviews(props) {
+        console.log(props);
+        if(!props.reviewsFetch) {
+            const pages = _.chunk(props.reviews, props.pageSize || 3);
+            this.setState({
+                reviewPages: pages,
+                currentPage: Math.max(Math.min(this.state.currentPage, pages.length), 1)
+            })
+        }
     }
 
     handleClick(type) {
-        this.setState({
-            leave: type == 'reviews' ? true : false
-        });
+        // console.log("###############################################");
+        // this.setState({
+        //     leave: type == 'reviews' ? true : false
+        // });
     }
 
     handleIndexChange(index) {
-        this.setState({
-            currentPage: index
-        });
+        this.setState({ currentPage: index });
     }
 
     handleReviewEvaluationClick(reviewId, useful) {
@@ -162,37 +190,23 @@ class ReviewsContainer extends React.Component {
         // this.props.postReviewEvaluation(collectionId, reviewId, useful);
     }
 
-    renderReviewList() {
-        const reviewCollection = new ReviewCollection(this.props.reviewCollection);
-
-        if(reviewCollection.reviewsCount > 0) {
-            const reviewPage = reviewCollection.getReviewPage(this.state.currentPage);
-            return <ReviewList
-                reviews={reviewPage.reviews}
-                pagesCount={reviewPage.pagesCount}
-                currentPage={this.state.currentPage}
-                onIndexChange={this.handleIndexChange.bind(this)}
-                onClick={this.handleReviewEvaluationClick.bind(this)} />
-        }
-
-        return <NoReviews onClick={this.handleClick}/>;
-    }
-    
     render() {
-        const reviewCollection = new ReviewCollection(this.props.reviewCollection);
-
         return(
             <div className="review-container">
                 <Header
-                    reviewsCount={reviewCollection.reviewsCount}
+                    reviewsCount={this.props.reviewsCount}
                     leave={this.state.leave}
                     onClick={this.handleClick} />
                 {
-                    this.state.leave == false ?
-                    this.renderReviewList() :
-                    <LeaveReview
-                        onClick={this.props.handleReviewPost}/>
+                    this.state.leave == false &&
+                    <ReviewList
+                        reviews={this.state.reviewPages[this.state.currentPage - 1]}
+                        pagesCount={this.state.reviewPages.length}
+                        currentPage={this.state.currentPage}
+                        onIndexChange={this.handleIndexChange}
+                        onClick={this.handleReviewEvaluationClick} />
                 }
+                { this.state.leave && <LeaveReview /> }
             </div>
         )
     }

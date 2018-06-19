@@ -45,9 +45,9 @@ function renderApp() {
 renderApp();
 
 // Allow Hot Module Replacement
-if (module.hot) {
-    module.hot.accept('./routes', () => {
-        routes = require('./routes').routes;
-        renderApp();
-    });
-}
+// if (module.hot) {
+//     module.hot.accept('./routes', () => {
+//         routes = require('./routes').routes;
+//         renderApp();
+//     });
+// }

@@ -179,3 +179,25 @@ export class GrayButton extends React.Component {
         )
     }
 }
+
+export class LeaveReviewButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <button
+                className="button-leave-review">
+                    {
+                        this.props.state == "iddle"
+                        ? this.props.iddleTitle || ''
+                        : this.props.backTitle || ''
+                    }
+            </button>
+        )
+    }
+}
+LeaveReviewButton.defaultProps = {
+    state: 'iddle'
+}
