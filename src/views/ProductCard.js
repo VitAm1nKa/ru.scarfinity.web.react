@@ -26,7 +26,8 @@ import ProductRow                   from '../components/utility/product-row';
 
 import { Review }                   from '../models/Review';
 
-import { __review }                 from '../store/api-requests';
+import { __review, __relatedProductModel }                 from '../store/api-requests';
+import { ProductModel } from '../models/ProductModel';
 
 class Controller extends React.Component {
     constructor(props) {
@@ -35,7 +36,9 @@ class Controller extends React.Component {
         this.state = {
             productModelFetch: false,
             reviewsFetch: false,
-            reviews: []
+            reviews: [],
+            relatedProductModelFetch: false,
+            relatedProductModel: []
         }
 
         console.warn("Product card: init");
@@ -43,6 +46,7 @@ class Controller extends React.Component {
 
         this.reloadProductModel = this.reloadProductModel.bind(this);
         this.loadReviews = this.loadReviews.bind(this);
+        this.loadRelatedProductModel = this.loadRelatedProductModel.bind(this);
         this.handleColorChange = this.handleColorChange.bind(this);
         this.handleReviewPost = this.handleReviewPost.bind(this);
     }
@@ -65,7 +69,9 @@ class Controller extends React.Component {
             this.setState({ productModelFetch: false }, () => {
                 if(nextProps.productModel.productModelId != null) {
                     // Реквест на получение спика отзывов о товаре
-                    this.loadReviews(this.props.productModel.reviewStats.reviewCollectionId);
+                    this.loadReviews(nextProps.productModel.reviewStats.reviewCollectionId);
+                    // Related product models
+                    this.loadRelatedProductModel(nextProps.productModel.productModelId);
                 }
             });
         }
@@ -104,6 +110,27 @@ class Controller extends React.Component {
                             reviewsFetch: false,
                             reviews: []
                         });
+                    }
+                )
+            });
+        }
+    }
+
+    loadRelatedProductModel(productModelId) {
+        if(!this.state.relatedProductModelFetch) {
+            this.setState({ relatedProductModelFetch: true }, () => {
+                __relatedProductModel.Get(productModelId)(
+                    data => {
+                        this.setState({
+                            relatedProductModelFetch: false,
+                            relatedProductModel: _.map(data, productModel => new ProductModel(productModel))
+                        });
+                    },
+                    error => {
+                        this.setState({
+                            relatedProductModelFetch: false,
+                            relatedProductModel: []
+                        })
                     }
                 )
             });
@@ -179,7 +206,7 @@ class Controller extends React.Component {
                 <TabView.Tab title={"Описание"}>3</TabView.Tab>
             </TabView.TabView>;
 
-        const relatedProducts = <ProductRow title="Похожие товары" products={[]}/>
+        const relatedProducts = <ProductRow title="Похожие товары" products={this.state.relatedProductModel}/>
         const additionalProducts = <ProductRow title="Сопутсвующие товары" products={[]}/>
         
         return(

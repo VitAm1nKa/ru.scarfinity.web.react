@@ -121,9 +121,15 @@ export const __catalogPage = {
     }
 }
 
+//  #region RelatedProductModel
+export const __relatedProductModel = {
+    Get: (productModelId) => requestBuilder(`RelatedProductModel/${productModelId}`, 'GET', {}) 
+}
+//  #endregion
+
 //  #region Review
 export const __review = {
-    Get : {
+    Get: {
         Many: (reviewCollectionId) => requestBuilder(`Review`, 'GET', { query: {
             rc: reviewCollectionId
         }})
