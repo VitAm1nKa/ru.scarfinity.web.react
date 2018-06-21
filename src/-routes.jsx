@@ -1,8 +1,10 @@
 import React                from 'react';
 import { Switch, Route }    from 'react-router-dom';
 import Layout               from './views/shared/Layout';
+import ErrorPage            from './views/shared/Error';
 
 // -- Views -------------------------------------------------
+import * as DefPages        from './views/DefaultPages';
 import Home                 from './views/Home';
 import CatalogOverview      from './views/CatalogOverview';
 import CatalogRedirect      from './views/CatalogRedirect';
@@ -23,7 +25,7 @@ const muiTheme = getMuiTheme({userAgent: 'all'});
 
 export const routes =
 <MuiThemeProvider muiTheme={muiTheme}>
-    <Layout>
+    <Layout test={"Hello"}>
         <Switch>
             <Route path='/' exact component={Home} />
             <Route path='/dev' component={Develop} />
@@ -38,6 +40,7 @@ export const routes =
             <Route path='/bread' component={BreadCrumbs} />
             <Route path='/empty' component={EmptyPage} />
             <Route path='/cc' component={CC} />
+            {/* <Route component={RouteComponents} /> */}
         </Switch>
     </Layout>
 </MuiThemeProvider>

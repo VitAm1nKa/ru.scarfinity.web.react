@@ -8,7 +8,6 @@ import {
     withRouter
 }                           from 'react-router-dom';
 import { GridLine }         from '../../lib/grid';
-import { useDOM }           from '../../lib/isomorphic';
 
 import Account              from '../Account';
 import TopMenu              from '../../components/navigation/top-menu';
@@ -35,12 +34,6 @@ import {
 import { Default404 }       from '../DefaultPages';
 
 
-const CatalogTopOffset = (props) => {
-    return(
-        <div className="catalog-top-offset"></div>
-    )
-}
-
 class ScrollToTop extends React.Component {
     componentDidMount() {
         scroll(0, 0);
@@ -59,42 +52,6 @@ class ScrollToTop extends React.Component {
     }
 }
 
-class PageWrap extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            pageNotFound: false
-        }
-
-        this.pageNotFound = this.pageNotFound.bind(this);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (this.props.location.pathname !== nextProps.location.pathname) {
-            this.setState({pageNotFound: false});
-        }
-    }
-
-    pageNotFound() {
-        this.setState({pageNotFound: true});
-    }
-
-    render() {
-        return(
-            <main>
-                <ScrollToTop location={this.props.location} />
-                {
-                    this.state.pageNotFound == false ?
-                    React.Children.map(this.props.children, child => 
-                        React.cloneElement(child, { pageNotFound: this.pageNotFound })
-                    ) : <Default404 />
-                }
-            </main>
-        )
-    }
-}
-
 class Layout extends React.Component {
     componentWillMount() {
         // this.props.requestNavigation();
@@ -104,21 +61,6 @@ class Layout extends React.Component {
 
         // Получение данных о структуре каталога
         this.props.loadCatalogPageSchema();
-
-        // Создание ошибочной ситуации
-        useDOM({clientSide: () => {
-            var error = document.getElementById("id");
-        }, serverSide: () => {
-            // serverSide
-        }, bothSides: () => {
-            // bothSides
-        }, onError: () => {
-            // onError
-        }, afterComplete: () => {
-            // afterComplete  
-        }})
-
-        console.warn("Layout props", this.props);
     }
 
     render() {
@@ -150,7 +92,7 @@ class Layout extends React.Component {
     }
 }
 
-export default withRouter(connect((state, ownProps) => ({
+export default withRouter(connect(state => ({
     catalogPageSchema: {
         schema: state.catalog.catalogPageSchema,
         fetch: state.catalog.catalogPageSchemaFetch,
