@@ -79,11 +79,10 @@ class Layout extends React.Component {
                     <GridLine><BreadCrumbs /></GridLine>
                     <EnvironmentCore />
                 </header>
-                {/* <Route path='/' render={props => <PageWrap children={this.props.children} {...props} /> } /> */}
                 <main>
                     <Route path="/" component={ScrollToTop} />
                     <EnvironmentMeta title="Главная страница Scarfinity Site" />
-                    <BreadCrumb seo='' title='Главная' />
+                    <BreadCrumb seo='' title='Главная' isRoot />
                     {this.props.children}
                 </main>
                 <Footer />

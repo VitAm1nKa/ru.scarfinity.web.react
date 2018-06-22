@@ -48,193 +48,20 @@ export const actionCreators = {
 };
 
 export const breadCrumbsActions = {
-    breadCrumbsPush: (node) => (dispatch, getState) => {
+    breadCrumbsClear: () => (dispatch) => {
+        dispatch({ type: 'BREADCRUMBS__CLEAR' });
+    },
+    breadCrumbsPush: (node) => (dispatch) => {
         dispatch({ type: 'BREADCRUMBS__PUSH', node });
     },
-    breadCrumbsPop: (node) => (dispatch, getState) => {
+    breadCrumbsPop: (node) => (dispatch) => {
         dispatch({ type: 'BREADCRUMBS__POP', node });
     }
 }
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-
-const develop = {
-    "id": 1,
-    "title": "Главная",
-    "seo": "",
-    "path": "/",
-    "nodes": [
-        {
-            "id": 2,
-            "title": "Каталог",
-            "seo": "catalog",
-            "path": "/catalog",
-            "nodes": [
-                {
-                    "id": 10,
-                    "title": "Женщинам",
-                    "seo": "ladies",
-                    "path": "/catalog/ladies",
-                    "nodes": [
-                        {
-                            "id": 16,
-                            "title": "Шарфы",
-                            "seo": "sharfy",
-                            "path": "/catalog/ladies/sharfy",
-                            "nodes": [
-                                {
-                                    "id": 25,
-                                    "title": "Шарф-вязанный",
-                                    "seo": "sharf_vyzanniy",
-                                    "path": "/catalog/ladies/sharfy/sharf_vyzanniy",
-                                    "nodes": []
-                                }
-                            ]
-                        },
-                        {
-                            "id": 17,
-                            "title": "Платки",
-                            "seo": "platki",
-                            "path": "/catalog/ladies/platki",
-                            "nodes": []
-                        },
-                        {
-                            "id": 18,
-                            "title": "Палантины",
-                            "seo": "palantiny",
-                            "path": "/catalog/ladies/palantiny",
-                            "nodes": []
-                        },
-                        {
-                            "id": 19,
-                            "title": "Снуды",
-                            "seo": "snudi",
-                            "path": "/catalog/ladies/snudi",
-                            "nodes": []
-                        },
-                        {
-                            "id": 23,
-                            "title": "Косынки",
-                            "seo": "kosinky",
-                            "path": "/catalog/ladies/kosinky",
-                            "nodes": []
-                        },
-                        {
-                            "id": 24,
-                            "title": "Парео",
-                            "seo": "pareo",
-                            "path": "/catalog/ladies/pareo",
-                            "nodes": []
-                        }
-                    ]
-                },
-                {
-                    "id": 11,
-                    "title": "Мужчинам",
-                    "seo": "gentlemen",
-                    "path": "/catalog/gentlemen",
-                    "nodes": [
-                        {
-                            "id": 20,
-                            "title": "Шарфы",
-                            "seo": "sharfi",
-                            "path": "/catalog/gentlemen/sharfi",
-                            "nodes": []
-                        },
-                        {
-                            "id": 21,
-                            "title": "Косынки",
-                            "seo": "kosinky",
-                            "path": "/catalog/gentlemen/kosinky",
-                            "nodes": []
-                        },
-                        {
-                            "id": 22,
-                            "title": "Арафатка",
-                            "seo": "arafatka",
-                            "path": "/catalog/gentlemen/arafatka",
-                            "nodes": []
-                        }
-                    ]
-                },
-                {
-                    "id": 12,
-                    "title": "Детям",
-                    "seo": "kids",
-                    "path": "/catalog/kids",
-                    "nodes": []
-                },
-                {
-                    "id": 13,
-                    "title": "Аксессуары",
-                    "seo": "accessories",
-                    "path": "/catalog/accessories",
-                    "nodes": []
-                },
-                {
-                    "id": 14,
-                    "title": "Бижутерия",
-                    "seo": "bijouterie",
-                    "path": "/catalog/bijouterie",
-                    "nodes": []
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "title": "Новинки",
-            "seo": "new",
-            "path": "/new",
-            "nodes": []
-        },
-        {
-            "id": 4,
-            "title": "Акции",
-            "seo": "stock",
-            "path": "/stock",
-            "nodes": []
-        },
-        {
-            "id": 5,
-            "title": "Теги",
-            "seo": "tags",
-            "path": "/tags",
-            "nodes": []
-        },
-        {
-            "id": 6,
-            "title": "Компания",
-            "seo": "company",
-            "path": "/company",
-            "nodes": []
-        },
-        {
-            "id": 7,
-            "title": "Корзина",
-            "seo": "cart",
-            "path": "/cart",
-            "nodes": []
-        },
-        {
-            "id": 8,
-            "title": "Информация",
-            "seo": "info",
-            "path": "/info",
-            "nodes": []
-        },
-        {
-            "id": 9,
-            "title": "Помощь",
-            "seo": "help",
-            "path": "/help",
-            "nodes": []
-        }
-    ]
-}
-
 const initialState = {
-    root: develop,
     isLoading: false,
     pageNotFound: false,
     pageLoading: true,
@@ -269,6 +96,10 @@ export const reducer = (state, incomingAction) => {
             };
         case "PAGE__NOTFOUND": return update(state, {pageNotFound: {$set: true}});
 
+
+        case 'BREADCRUMBS__CLEAR': {
+            return update(state, {breadCrumbs: {$set: []}});
+        }
         case 'BREADCRUMBS__PUSH': {
             return update(state, {breadCrumbs: {$set: 
                 [...state.breadCrumbs, {

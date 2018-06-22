@@ -22,33 +22,57 @@ class EnvironmentMetaController extends React.Component {
         super(props);
 
         this.state = {
-            pageId: pageId()
+            pageId: pageId(),
+            prevPageMeta: null
         }
     }
 
     componentWillMount() {
-        // Add page meta to heap
-        this.props.addPageMeta(new PageMeta({
+        // Когда компонент создается, он получает данные о текужем состоянии меты
+        // Компонент сохраняет предыдущее состояние в стейт
+        // И заменяет в сторе своими данными
+        this.state.prevPageMeta = this.props.meta;
+        this.props.setPageMeta(new PageMeta({
             title: this.props.title,
             metaTags: this.props.metaTags,
             pageId: this.state.pageId
         }));
+
+
+    //     // Add page meta to heap
+    //     if(this.props.isRoot === true) {
+    //         this.props.clearPageMeta();
+    //     }
+
+    //     this.props.addPageMeta(new PageMeta({
+    //         title: this.props.title,
+    //         metaTags: this.props.metaTags,
+    //         pageId: this.state.pageId
+    //     }));
+    // }
     }
 
     componentWillReceiveProps(nextProps) {
-        // Update page meta
-        this.props.updatePageMeta(new PageMeta({
-            title: nextProps.title,
-            metaTags: nextProps.metaTags,
-            pageId: nextProps.pageId
-        }));
+        // this.props.setPageMeta(new PageMeta({
+        //     title: nextProps.title,
+        //     metaTags: nextProps.metaTags,
+        //     pageId: nextProps.pageId
+        // }));
+
+        // // Update page meta
+        // this.props.updatePageMeta(new PageMeta({
+        //     title: nextProps.title,
+        //     metaTags: nextProps.metaTags,
+        //     pageId: nextProps.pageId
+        // }));
     }
 
     componentWillUnmount() {
         // Remove page meta
-        this.props.removePageMeta(new PageMeta({
-            pageId: this.state.pageId
-        }));
+        this.props.setPageMeta(this.state.prevPageMeta);
+        // this.props.removePageMeta(new PageMeta({
+        //     pageId: this.state.pageId
+        // }));
     }
 
     render() {
@@ -56,22 +80,23 @@ class EnvironmentMetaController extends React.Component {
     }
 }
 
-export const EnvironmentMeta = connect(state => {}, environmentActionCreators)(EnvironmentMetaController);
+export const EnvironmentMeta = connect(state => ({
+    meta: state.environment.meta
+}), environmentActionCreators)(EnvironmentMetaController);
 
 class EnvironmentCoreController extends React.Component {
     componentWillMount() {
-        this.updateEnvironmentData(this.props);
+        this.updateEnvironmentData(this.props.meta);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateEnvironmentData(nextProps);
+        this.updateEnvironmentData(nextProps.meta);
     }
 
-    updateEnvironmentData(props) {
-        var pageMeta = _.last(props.meta);
-        if(pageMeta != null) {
+    updateEnvironmentData(meta) {
+        if(meta != null) {
             isomorph(() => {
-                document.title = pageMeta.title || document.title;
+                document.title = meta.title || document.title;
             });
         }
     }
@@ -84,7 +109,6 @@ class EnvironmentCoreController extends React.Component {
 export const EnvironmentCore = connect(state => ({
     meta: state.environment.meta
 }))(withRouter(EnvironmentCoreController));
-
 
 /*
 

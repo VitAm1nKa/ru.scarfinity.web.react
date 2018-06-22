@@ -35,6 +35,10 @@ class BreadCrumbController extends React.Component {
     }
 
     componentWillMount() {
+        if(this.props.isRoot === true) {
+            this.props.breadCrumbsClear();
+        }
+
         this.process(this.props.breadCrumbsPush);
     }
 

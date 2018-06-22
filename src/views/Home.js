@@ -23,8 +23,7 @@ const View = (props) => {
             </Grid.Row>
             <AboutUs />
             <StoresLine />
-        </Grid.VerticalGrid>
-        
+        </Grid.VerticalGrid>   
     )
 }
 

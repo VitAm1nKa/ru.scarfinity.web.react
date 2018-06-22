@@ -1,9 +1,12 @@
-import React from 'react';
+import React    from 'react';
+import View     from './shared/View';
 
 class Controller extends React.Component {
     render() {
         return(
-            <h1>{"Blank"}</h1>
+            <View title="Hello world. Blank">
+                <h1>{"Blank"}</h1>
+            </View>
         )
     }
 }

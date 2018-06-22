@@ -58,7 +58,7 @@ export const actionCreators = {
         // При разлогинивании пользователя, необходима взять инфрмацию и стора
         // Необходимо поле name, в нем хранится информация о предыдущем анонимном пользователе
         // Это делается во избежании многократного создания пользователей в случае разлогинивания неанонимного пользователя
-        const anonymousEmail = localStorage.getItem('user-name');
+        const anonymousEmail = ClientData.cookieGetData('user-name');
         __authentication.Authenticate(anonymousEmail)(data => {
             dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data: data, anonymous: true });
         }, error => {

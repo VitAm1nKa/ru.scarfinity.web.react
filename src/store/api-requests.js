@@ -29,22 +29,30 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
     const queryString = qs.stringify(query, { addQueryPrefix: true });
     console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
     return function(onSuccess, onError, domainTask = _domainTask) {
-        let fetchTask = fetch(
-            request({
-                url: apiUrl(apiMethod) + queryString,
-                method,
-                body: _.includes(['POST', 'PUT'], method) ? body : null
-            }))
-            .then(response => response.json())
-            .then(({type, message, data}) => {
-                if(type == 'success' && onSuccess != null) onSuccess(data);
-                else if(onError != null) onError({type, message});
-            })
-            .catch(e => {
-                console.error(e);
-            });
+        try {
+            let fetchTask = fetch(
+                request({
+                    url: apiUrl(apiMethod) + queryString,
+                    method,
+                    body: _.includes(['POST', 'PUT'], method) ? body : null
+                }))
+                .then(response => response.json())
+                .then(({type, message, data}) => {
+                    if(type == 'success' && onSuccess != null) onSuccess(data);
+                    else if(onError != null) onError({type, message});
+                })
+                .catch(e => {
+                    console.error(e);
+                });
 
-        if (domainTask) addTask(fetchTask);
+            if (domainTask) addTask(fetchTask);
+        }
+        catch(e) {
+            if(onError != null) onError({type: 'Error', message: 'Error'});
+        }
+        finally {
+            // do on finaly
+        }
     }
 }
 

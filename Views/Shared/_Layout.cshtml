@@ -1,23 +1,41 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="ru" class="no-js">
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - scarfinity_react</title>
     <base href="~/" />
 
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700' type='text/css'>  
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css' type='text/css'>  
+    <title>@ViewData["title"]</title>
+
+    <meta name="description" content="@ViewData["description"]">
+    <meta name="keywords" content="@ViewData["keywords"]">
+    <meta name="author" content="@ViewData["author"]">
+
+    <meta name="robots" content="index, follow">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <meta property="og:title" content="@ViewData["og:title"]">
+    <meta property="og:image" content="@ViewData["og:image"]">
+    <meta property="og:description" content="@ViewData["og:description"]">
+    <meta property="og:url" content="@ViewData["og:url"]">
+    <meta property="og:site_name" content="@ViewData["og:site_name"]">
+    <meta property="og:type" content="@ViewData["og:type"]">
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700' type='text/css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css' type='text/css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
     <link rel="stylesheet" href="~/dist/vendor.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/dist/site.css" asp-append-version="true" />
 </head>
-<body>
-    @RenderBody()
+    <body>
+        @RenderBody()
 
-    <script src="~/dist/vendor.js" asp-append-version="true"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1Dr0Ll-JLvTrYDz20dE86cdqXCzK-ID8&libraries=places"></script>
-    @RenderSection("scripts", required: false)
-</body>
+        <script src="~/dist/vendor.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1Dr0Ll-JLvTrYDz20dE86cdqXCzK-ID8&libraries=places"></script>
+        @RenderSection("scripts", required: false)
+    </body>
 </html>
