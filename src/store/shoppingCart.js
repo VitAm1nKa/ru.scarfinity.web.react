@@ -92,8 +92,6 @@ export const reducer = (state, incomingAction) => {
                 salesOrder: null
             }})
         }
-        default: 
-            const exhaustiveCheck = action;
     }
 
     return state || initialState;

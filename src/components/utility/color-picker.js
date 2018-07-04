@@ -114,7 +114,7 @@ class Controller extends React.Component {
         const { width } = this.state.dimensions;
 
         // Количество кружков в линии, при заданной ширине кружка
-        const lineCountConstWidth = width / Math.max(this.props.itemWidth, 26);
+        const lineCountConstWidth = Math.max(width / Math.max(this.props.itemWidth, 26), 12);
         // Приблезительное и точное значение
         const calcLineCount = this.props.estimate ? Math.floor(lineCountConstWidth) : Math.round(lineCountConstWidth);
         const lineCount = Math.min(Math.min(calcLineCount, this.props.lineCount == null ? calcLineCount : this.props.lineCount), 32);

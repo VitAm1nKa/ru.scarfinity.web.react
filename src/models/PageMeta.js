@@ -1,5 +1,6 @@
 export class PageMeta {
     constructor(model = {}) {
+        this.seo = model.seo;
         this.title = model.title;
         this.description = model.description;
         this.keywords = model.keywords;

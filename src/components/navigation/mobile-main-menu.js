@@ -1,6 +1,5 @@
 import React                from 'react';
 import { connect }          from 'react-redux';
-import { Portal }           from 'react-portal';
 
 import { count__cartItems }	from '../../lib/currying'; 
 import * as CartS			from '../../store/cart';
@@ -8,6 +7,7 @@ import * as CartS			from '../../store/cart';
 import MobileCatalogMenu    from './mobile-catalog-menu';
 import ImageContainer       from '../utility/image-container'; 
 import Currency             from '../utility/currency';
+import Modal                from '../utility/modal';
 import IconButton           from 'material-ui/IconButton';
 import Cancel               from 'material-ui/svg-icons/navigation/cancel';
 import ExpandLess           from 'material-ui/svg-icons/navigation/expand-less';
@@ -15,6 +15,7 @@ import RaisedButton         from 'material-ui/RaisedButton';
 // import {green}         from '../basic/SRaisedButton.js';
 
 import './mobile-main-menu.less';
+import { CatalogPageSchemaNode } from '../../models/CatalogPage';
 
 
 // import menuDataJSON from '../../develop/menuMap.json';
@@ -865,41 +866,39 @@ class Controller extends React.Component {
         } catch(e) {}
 
         return(
-            <Portal>
-                <div className={`mobile-nav${
-                    menuToggle ? ' mobile-nav--open': ''
-                }`}>
-                    <Header
-                        shiftItems={this.state.shiftItems}
-                        shiftIndex={this.state.shiftIndex}
-                        leftToggle={this.state.leftMenuToggle}
-                        cartToggle={this.state.cartMenuToggle}
-                        cartBageValue={this.props.shoppingCartStore.shoppingCart.lines.length}
-                        onLeftToggle={this.handleLeftToggle}
-                        onMidlToggle={this.handleMiddleToggle}
-                        onCartToggle={this.handleCartToggle}/>
-                    <div
-                        className={`mobile-nav__content${
-                            menuToggle ? ' mobile-nav__content--open' : ''
-                        }`}>
-                        <LeftMenu
-                            menuData={letfMenuData}
-                            toggle={this.state.leftMenuToggle}
-                            onTransitionEnd={this.handleTransitionEnd}/>
-                        <MiddleMenu 
-                            catalogNodes={this.props.catalogNodes}
-                            menuData={middleMenuData}
-                            toggle={this.state.middleMenuToggle}
-                            onTransitionEnd={this.handleTransitionEnd} />
-                        <Cart
-                            shoppingCart={this.props.shoppingCartStore.shoppingCart}
-                            items={this.state.cartItems}
-                            onItemRemove={this.handleCartItemRemove} 
-                            toggle={this.state.cartMenuToggle}
-                            onTransitionEnd={this.handleTransitionEnd}/>
-                    </div>
+            <div className={`mobile-nav${
+                menuToggle ? ' mobile-nav--open': ''
+            }`}>
+                <Header
+                    shiftItems={this.state.shiftItems}
+                    shiftIndex={this.state.shiftIndex}
+                    leftToggle={this.state.leftMenuToggle}
+                    cartToggle={this.state.cartMenuToggle}
+                    cartBageValue={this.props.shoppingCartStore.shoppingCart.lines.length}
+                    onLeftToggle={this.handleLeftToggle}
+                    onMidlToggle={this.handleMiddleToggle}
+                    onCartToggle={this.handleCartToggle}/>
+                <div
+                    className={`mobile-nav__content${
+                        menuToggle ? ' mobile-nav__content--open' : ''
+                    }`}>
+                    <LeftMenu
+                        menuData={letfMenuData}
+                        toggle={this.state.leftMenuToggle}
+                        onTransitionEnd={this.handleTransitionEnd}/>
+                    <MiddleMenu 
+                        catalogNodes={this.props.catalogPageSchema.nodes}
+                        menuData={middleMenuData}
+                        toggle={this.state.middleMenuToggle}
+                        onTransitionEnd={this.handleTransitionEnd} />
+                    <Cart
+                        shoppingCart={this.props.shoppingCartStore.shoppingCart}
+                        items={this.state.cartItems}
+                        onItemRemove={this.handleCartItemRemove} 
+                        toggle={this.state.cartMenuToggle}
+                        onTransitionEnd={this.handleTransitionEnd}/>
                 </div>
-            </Portal>
+            </div>
         );
     }
 }
@@ -928,7 +927,7 @@ const getSubMenu = (index) => {
 
 const mstp = state => {
 	return {
-        catalogNodes: state.navigation.catalogNodes,
+        catalogPageSchema: new CatalogPageSchemaNode(state.catalog.catalogPageSchema),
 		root: state.navigation.root,
 		shoppingCartStore: state.shoppingCart,
 		cartOrder: state.cart.order

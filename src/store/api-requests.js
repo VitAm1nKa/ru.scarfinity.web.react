@@ -45,7 +45,8 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
                     console.error(e);
                 });
 
-            if (domainTask) addTask(fetchTask);
+            // if (domainTask) addTask(fetchTask);
+            addTask(fetchTask);
         }
         catch(e) {
             if(onError != null) onError({type: 'Error', message: 'Error'});
@@ -103,7 +104,7 @@ export const __productModel = {
 
             return requestBuilder('ProductModel', 'GET', { query }, true);
         },
-        Single: (productModelNumber) => requestBuilder(`ProductModel/${productModelNumber}`, 'GET')
+        Single: (productModelId) => requestBuilder(`ProductModel/${productModelId}`, 'GET', {}, true)
     }
 }
 
@@ -130,7 +131,7 @@ export const __catalogPage = {
 
 //  #region RelatedProductModel
 export const __relatedProductModel = {
-    Get: (productModelId) => requestBuilder(`RelatedProductModel/${productModelId}`, 'GET', {}) 
+    Get: (productModelId) => requestBuilder(`RelatedProductModel/${productModelId}`, 'GET', {}, true) 
 }
 //  #endregion
 

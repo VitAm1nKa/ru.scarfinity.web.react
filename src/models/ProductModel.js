@@ -41,6 +41,7 @@ export class ProductModel {
             this.productModelNumber = model.productModelNumber;
             this.title = model.title || '';
             this.description = model.description || '';
+            this.description = 'Dolore occaecat sunt minim officia ea aliqua quis consectetur fugiat Lorem reprehenderit. Consectetur magna nisi aliquip aute nisi ullamco adipisicing quis excepteur.';
             this.seo = model.seo || '';
             this.seoDescription = model.seoDescription || '';
             this.listPrice = model.listPrice || 0;
@@ -71,6 +72,14 @@ export class ProductModel {
         this.patternCodes = this.patternCodes.bind(this);
         this.firstProduct = this.firstProduct.bind(this);
         this.getProduct = this.getProduct.bind(this);
+    }
+
+    get ReviewCollectionId() {
+        return this.reviewStats.reviewCollectionId || 0;
+    }
+
+    get Path() {
+        return `${this.productCategoryPath.path}/${this.productModelNumber}`;
     }
 
     selectedProduct(filter) {

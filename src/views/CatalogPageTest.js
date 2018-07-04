@@ -1,36 +1,44 @@
-import React    from 'react';
+import React        from 'react';
+import { connect }  from 'react-redux';
 import {
-    Switch,
-    Route,
-    NavLink
-}               from 'react-router-dom';
-import {
-    EnvironmentMeta
-}               from '../components/navigation/page-meta';
+    breadCrumbsActions
+}                   from '../store/navigation';
+
+import Dialog       from '../components/utility/dialog';
 
 class Controller extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            dialogOpen: false
+        }
+
+        this.openDialog = this.openDialog.bind(this);
+        this.closeDialog = this.closeDialog.bind(this);
+    }
+
+    openDialog() {
+        this.setState({ dialogOpen: true });
+    }
+
+    closeDialog() {
+        this.setState({ dialogOpen: false });
     }
 
     render() {
-        const id = parseInt(this.props.match.params['id']) || 0;
-        const title = `Page ${id}`;
         return(
             <div>
-                <div style={{ display: 'flex' }}>
-                    <NavLink to={`${this.props.location.pathname}/${id + 1}`}>{"Go deep..."}</NavLink>
-                </div>
-                <h1>{title}</h1>
-                <EnvironmentMeta title={title} />
-                <div style={{ border: '1px solid #f7f7f7' }} >
-                    <Switch>
-                        <Route path={`${this.props.match.path}/:id`} component={Controller} />
-                    </Switch>
-                </div>
+                <button onClick={this.openDialog}>{"Open dialog"}</button>
+                <Dialog
+                    open={this.state.dialogOpen}
+                    onCloseRequest={this.closeDialog}>
+                        <div>{"Dialog"}</div>
+                </Dialog>
             </div>
         )
     }
 }
 
-export default Controller;
+export const View = connect(state => ({}), breadCrumbsActions)(Controller);
+export default View;

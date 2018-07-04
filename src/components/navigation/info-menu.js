@@ -1,5 +1,5 @@
 import React        from 'react';
-import NavLink      from 'react-router-dom/NavLink';
+import { NavLink }  from 'react-router-dom';
 import * as Grid    from '../../lib/grid';
 
 import './info-menu.less';
@@ -15,6 +15,7 @@ class Controller extends React.Component {
                             <NavLink to={"/"}>{"Олата"}</NavLink>
                             <NavLink to={"/"}>{"Доставка"}</NavLink>
                             <NavLink to={"/"}>{"Опт"}</NavLink>
+                            <NavLink to={"/"}>{"Вопрос-ответ"}</NavLink>
                         </div>
                     </Grid.Col>
                 </Grid.Container>

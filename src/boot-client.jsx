@@ -3,11 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import { HashRouter } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
-import { ApplicationState }  from './store';
 import * as RoutesModule from './routes';
 import { CookiesProvider } from 'react-cookie';
 let routes = RoutesModule.routes;
@@ -32,7 +30,6 @@ function renderApp() {
         <AppContainer>
             <Provider store={ store }>
                 <CookiesProvider>
-                    {/* <HashRouter children={ routes }/> */}
                     <ConnectedRouter history={ history } children={ routes } />
                 </CookiesProvider>
             </Provider>

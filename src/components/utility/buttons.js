@@ -188,12 +188,9 @@ export class LeaveReviewButton extends React.Component {
     render() {
         return(
             <button
-                className="button-leave-review">
-                    {
-                        this.props.state == "iddle"
-                        ? this.props.iddleTitle || ''
-                        : this.props.backTitle || ''
-                    }
+                className="button-leave-review"
+                onClick={this.props.onClick} >
+                    {this.props.label}
             </button>
         )
     }

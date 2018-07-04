@@ -1,40 +1,23 @@
-import React        from 'react';
-import { Portal }   from 'react-portal';
+import React from 'react';
+import Modal from './modal';
 
 import './dialog.less';
 
 class Controller extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    componentWillMount() {
-        if(this.props.open == true) {
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    componentWillUnmount() {
-        if(document) {
-            document.body.style.overflow = '';
-        }
-    }
-
     render() {
-        return(
-            <Portal>
+        const dialog = this.props.open ? (
+            <Modal>
                 <div
-                    className={`dialog ${this.props.open ? 'dialog--open': ''}`}
+                    className="dialog"
                     onClick={this.props.onCloseRequest}>
                         <div className="dialog__container" onClick={e => e.stopPropagation()}>
-                            {
-                                this.props.open &&
-                                this.props.children
-                            }
+                            {this.props.children}
                         </div>
                 </div>
-            </Portal>
-        )
+            </Modal>
+        ) : null;
+
+        return dialog;
     }
 }
 

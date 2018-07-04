@@ -1,9 +1,9 @@
 import React                from 'react';
+import { withRouter }       from 'react-router-dom'
 import { connect }          from 'react-redux';
 import qs                   from 'qs';
 import jwtDecoder           from 'jwt-decode';
 import sha1                 from 'sha1';
-import Redirect             from 'react-router-dom/Redirect';
 
 import Dialog               from '../components/utility/dialog';
 import SignForm             from '../components/utility/sign-form';
@@ -178,4 +178,4 @@ const mdtp = Object.assign({},
     ShoppingCartActions,
     UserStore.actionCreators);
 
-export default connect(mstp, mdtp)(Controller);
+export default connect(mstp, mdtp)(withRouter(Controller));

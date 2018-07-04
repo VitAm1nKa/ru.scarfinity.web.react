@@ -24,10 +24,12 @@ import {
 }                           from '../../components/navigation/page-meta';
 import Footer               from '../../components/navigation/footer';
 
-import { 
-    catalogSchemaActionCreators 
+import {
+    breadCrumbsActions
+}                           from '../../store/navigation';
+import {
+    catalogSchemaActionCreators
 }                           from '../../store/catalog';
-
 import {
     actionCreators as shopActions                     
 }                           from '../../store/shop';
@@ -54,6 +56,8 @@ class ScrollToTop extends React.Component {
 
 class Layout extends React.Component {
     componentWillMount() {
+        this.props.breadCrumbsPush({ seo: '', title: 'Главная' });
+
         // this.props.requestNavigation();
 
         // Получение информации о магазинах(на земле)
@@ -63,6 +67,10 @@ class Layout extends React.Component {
         this.props.loadCatalogPageSchema();
     }
 
+    componentWillUnmount() {
+        this.props.breadCrumbsPop({ seo: '', title: 'Главная' });
+    }
+
     render() {
         return(
             <div className="site-layout">
@@ -70,19 +78,14 @@ class Layout extends React.Component {
                     <Route path='/' component={Account} />
                     <InfoMenu />
                     <Route path='/' component={TopMenu} />
-                    <Route
-                        path='/'
-                        render={props => <MainMenu
-                            catalogNodes={this.props.catalogPageSchema.schema}
-                            {...props}/>} />
+                    <Route path='/' component={MainMenu} />
                     <Route path='/' component={MobileMainMenu} />
                     <GridLine><BreadCrumbs /></GridLine>
                     <EnvironmentCore />
                 </header>
                 <main>
                     <Route path="/" component={ScrollToTop} />
-                    <EnvironmentMeta title="Главная страница Scarfinity Site" />
-                    <BreadCrumb seo='' title='Главная' isRoot />
+                    <EnvironmentMeta title="Главная страница Scarfinity Site" seo="site_root" />
                     {this.props.children}
                 </main>
                 <Footer />
@@ -92,9 +95,9 @@ class Layout extends React.Component {
 }
 
 export default withRouter(connect(state => ({
-    catalogPageSchema: {
-        schema: state.catalog.catalogPageSchema,
-        fetch: state.catalog.catalogPageSchemaFetch,
-        error: state.catalog.catalogPageSchemaError
-    }
-}), Object.assign({}, catalogSchemaActionCreators, shopActions))(Layout));
+
+}), Object.assign({},
+    breadCrumbsActions,
+    catalogSchemaActionCreators,
+    shopActions
+))(Layout));

@@ -11,17 +11,19 @@ import {
 
 export const catalogSchemaActionCreators = {
     loadCatalogPageSchema: () => (dispatch, getState) => {
-        if(!getState().catalog.catalogPageSchemaFetch) {
-            __catalogPage.Get.Many()(
-                data => {
-                    dispatch({ type: 'CATALOG_SCHEMA_FETCH_SUCCESS', data });
-                },
-                error => {
-                    dispatch({ type: 'CATALOG_SCHEMA_FETCH_ERROR', error });
-                });
+        if(getState().catalog.catalogPageSchemaLoaded == false) {
+            if(!getState().catalog.catalogPageSchemaFetch) {
+                __catalogPage.Get.Many()(
+                    data => {
+                        dispatch({ type: 'CATALOG_SCHEMA_FETCH_SUCCESS', data });
+                    },
+                    error => {
+                        dispatch({ type: 'CATALOG_SCHEMA_FETCH_ERROR', error });
+                    });
 
-            dispatch({ type: 'CATALOG_SCHEMA_FETCH' });
-        }  
+                dispatch({ type: 'CATALOG_SCHEMA_FETCH' });
+            }  
+        }
     }
 }
 
@@ -58,6 +60,7 @@ export const actionCreators = {
 
 const initialState = {
     catalogPageSchema: new CatalogPageSchemaNode(),
+    catalogPageSchemaLoaded: false,
     catalogPageSchemaFetch: false,
     catalogPageSchemaError: null,
 
@@ -83,6 +86,7 @@ export const reducer = (state, incomingAction) => {
         case 'CATALOG_SCHEMA_FETCH_SUCCESS': {
             return update(state, {$merge: {
                 catalogPageSchemaFetch: false,
+                catalogPageSchemaLoaded: true,
                 catalogPageSchemaError: null,
                 catalogPageSchema: new CatalogPageSchemaNode(action.data)
             }});
@@ -90,6 +94,7 @@ export const reducer = (state, incomingAction) => {
         case 'CATALOG_SCHEMA_FETCH_ERROR': {
             return update(state, {$merge: {
                 catalogPageSchemaFetch: false,
+                catalogPageSchemaLoaded: true,
                 catalogPageSchemaError: action.error.type
             }});
         }

@@ -15,6 +15,7 @@ import { count__cartItems }	from '../../lib/currying';
 import * as CartS			from '../../store/cart';
 
 import './main-menu.less';
+import { CatalogPageSchemaNode } from '../../models/CatalogPage';
 
 // 
 class MainMenuNavigationCart extends React.Component{
@@ -197,7 +198,7 @@ class Controller extends React.Component {
 								onMouseUp={this.handleClearHover}>
 									{"Каталог товаров"}
 									<MainMenuLeftMenu
-										catalogNodes={this.props.catalogNodes}
+										catalogNodes={this.props.catalogPageSchema.nodes}
 										onClearHover={this.handleClearHover}/>
 							</span>
 						</Grid.Col>
@@ -231,7 +232,8 @@ const mstp = state => {
 	return {
 		root: state.navigation.root,
 		shoppingCartStore: state.shoppingCart,
-		cartOrder: state.cart.order
+		cartOrder: state.cart.order,
+		catalogPageSchema: new CatalogPageSchemaNode(state.navigation.catalogPageSchema)
 	}
 }
 

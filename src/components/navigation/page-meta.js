@@ -31,48 +31,29 @@ class EnvironmentMetaController extends React.Component {
         // Когда компонент создается, он получает данные о текужем состоянии меты
         // Компонент сохраняет предыдущее состояние в стейт
         // И заменяет в сторе своими данными
-        this.state.prevPageMeta = this.props.meta;
-        this.props.setPageMeta(new PageMeta({
-            title: this.props.title,
-            metaTags: this.props.metaTags,
-            pageId: this.state.pageId
-        }));
-
-
-    //     // Add page meta to heap
-    //     if(this.props.isRoot === true) {
-    //         this.props.clearPageMeta();
-    //     }
-
-    //     this.props.addPageMeta(new PageMeta({
-    //         title: this.props.title,
-    //         metaTags: this.props.metaTags,
-    //         pageId: this.state.pageId
-    //     }));
-    // }
+        if(this.props.seo != this.props.meta.seo) {
+            this.state.prevPageMeta = this.props.meta;
+            this.props.setPageMeta(new PageMeta({
+                seo: this.props.seo,
+                title: this.props.title,
+                metaTags: this.props.metaTags
+            }));
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        // this.props.setPageMeta(new PageMeta({
-        //     title: nextProps.title,
-        //     metaTags: nextProps.metaTags,
-        //     pageId: nextProps.pageId
-        // }));
-
-        // // Update page meta
-        // this.props.updatePageMeta(new PageMeta({
-        //     title: nextProps.title,
-        //     metaTags: nextProps.metaTags,
-        //     pageId: nextProps.pageId
-        // }));
+        if(this.props.meta.seo == nextProps.seo) {
+            this.props.setPageMeta(new PageMeta({
+                seo: this.props.seo,
+                title: this.props.title,
+                metaTags: this.props.metaTags
+            }));
+        }
     }
 
     componentWillUnmount() {
         // Remove page meta
         this.props.setPageMeta(this.state.prevPageMeta);
-        // this.props.removePageMeta(new PageMeta({
-        //     pageId: this.state.pageId
-        // }));
     }
 
     render() {

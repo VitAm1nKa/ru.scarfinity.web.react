@@ -17,7 +17,14 @@ import * as ReviewCollectionStore   from '../store/reviewCollection';
 import * as DefPages                from './DefaultPages';
 import * as Grid                    from '../lib/grid';
 
-import { BreadCrumb }               from '../components/navigation/bread-crumbs';
+import {
+    breadCrumbsActions
+} from '../store/navigation';
+
+import {
+    BreadCrumb,
+    BreadCrumbsBuilderController
+}               from '../components/navigation/bread-crumbs';
 import ReviewsContainer             from '../components/reviews/reviews-container';
 import Product                      from '../components/product';
 import * as TabView                 from '../components/utility/tab-view';
@@ -28,6 +35,7 @@ import { Review }                   from '../models/Review';
 
 import { __review, __relatedProductModel }                 from '../store/api-requests';
 import { ProductModel } from '../models/ProductModel';
+import { ShoppingCart } from '../models/ShoppingCart';
 
 class Controller extends React.Component {
     constructor(props) {
@@ -35,14 +43,17 @@ class Controller extends React.Component {
 
         this.state = {
             productModelFetch: false,
+
+
+            reviewCollectionId: null,
             reviewsFetch: false,
-            reviews: [],
+            reviews: null,
+
             relatedProductModelFetch: false,
             relatedProductModel: []
         }
 
         console.warn("Product card: init");
-        console.warn("Product card: load review collection")
 
         this.reloadProductModel = this.reloadProductModel.bind(this);
         this.loadReviews = this.loadReviews.bind(this);
@@ -51,36 +62,32 @@ class Controller extends React.Component {
         this.handleReviewPost = this.handleReviewPost.bind(this);
     }
 
-    reloadProductModel(peoductModelNumber) {
+    reloadProductModel(productModelNumber) {
         if(!this.state.productModelFetch) {
             this.setState({ productModelFetch: true }, () => {
-                this.props.getProductModel(peoductModelNumber);
+                this.props.getProductModel(productModelNumber);
             });
         }
     }
 
     componentWillMount() {
-        this.reloadProductModel(_.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')));
+        // Load product model
+        var productModelNumber = _.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/'));
+        this.props.getProductModel(productModelNumber, (data) => {
+            this.props.breadCrumbsPush({seo: 'gsdfgsdfg', title: 'FSDFG123'});
+            // dispatch({ type: 'BREADCRUMBS__PUSH', node: {seo: 'gsdfgsdfg', title: 'FSDFG'} })
+        });
+        this.loadReviews(this.props);
+        // this.loadReviews(this.props);
+        // this.loadRelatedProductModel();
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Product card: receive props", nextProps);
-        if(nextProps.productModelFetch != this.props.productModelFetch && this.props.productModelFetch == true) {
-            this.setState({ productModelFetch: false }, () => {
-                if(nextProps.productModel.productModelId != null) {
-                    // Реквест на получение спика отзывов о товаре
-                    this.loadReviews(nextProps.productModel.reviewStats.reviewCollectionId);
-                    // Related product models
-                    this.loadRelatedProductModel(nextProps.productModel.productModelId);
-                }
-            });
-        }
-
-        var lastNodeOld = _.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/'));
-        var lastNodeNew = _.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/'));
-        if(lastNodeOld != lastNodeNew) {
-            this.reloadProductModel(lastNodeNew);
-        }
+        // Update product model(reload)
+        var productModelNumber = _.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/'));
+        this.props.getProductModel(productModelNumber);
+        // this.loadReviews(nextProps);
+        // this.loadRelatedProductModel();
     }
 
     handleColorChange(colorCode) {
@@ -95,9 +102,10 @@ class Controller extends React.Component {
         }
     }
 
-    loadReviews(reviewCollectionId) {
-        if(!this.state.reviewsFetch) {
-            this.setState({reviewsFetch: true}, () => {
+    loadReviews(props) {
+        var reviewCollectionId = props.productModel.ReviewCollectionId;
+        if(this.state.reviewCollectionId != reviewCollectionId) {
+            this.setState({reviewsFetch: true, reviewCollectionId: reviewCollectionId}, () => {
                 __review.Get.Many(reviewCollectionId)(
                     data => {
                         this.setState({
@@ -142,21 +150,23 @@ class Controller extends React.Component {
     }
 
     render() {
-        if(this.state.productModelFetch) {
+        if(this.props.productModelFetch) {
             console.error("Product model loading...");
             return(
                 <div>{"Product model loading..."}</div>
             )
         }
-        else if (this.props.productModel == null || this.props.productModel.productModelId == null) {
+        else if (this.props.productModel.productModelId == null) {
             return(
                 <div>{"Product model not found!"}</div>
             )
         }
-        else if(_.trimEnd(this.props.location.pathname, '/') != this.props.productModel.path()) {
-            console.log("Redirect product render");
-            return <Redirect to={`${this.props.productModel.path()}${this.props.location.search}`} />
+        else if(_.trimEnd(this.props.location.pathname, '/') != this.props.productModel.Path) {
+            console.warn("Redirect product render", this.props.productModel);
+            return <Redirect to={`${this.props.productModel.Path}${this.props.location.search}`} />
         }
+
+        // this.props.breadCrumbsPush({seo: 'productCard', title: 'ProductCard'});
 
         // Формирование карточки модели товара
         // Необходимо получить информацию об выбраном цвете товара и узоре
@@ -170,7 +180,7 @@ class Controller extends React.Component {
 
         // Количество товара в корзине
         // Необходимо сделать запрос в корзину, для получения текущего количества
-        const productQuantity = this.props.shoppingCart.getProductQuantity(selectedProduct.productId);
+        const productQuantity = ShoppingCart.getProductQuantity(this.props.shoppingCart, selectedProduct.productId);
         const productInCart = productQuantity > 0;
 
         const productModelCard = <div className="product-card">
@@ -213,10 +223,10 @@ class Controller extends React.Component {
         
         return(
             <Grid.GridLine>
-                <BreadCrumb
+                {/* <BreadCrumb
                     seo={this.props.productModel.productModelId}
                     title={this.props.productModel.title}
-                    nodes={this.props.productModel.productCategoryPath.pathChain.nodes}/>
+                    nodes={this.props.productModel.productCategoryPath.pathChain.nodes}/> */}
                 <Grid.VerticalGrid>
                     {productModelCard}
                     {tabView}
@@ -229,7 +239,7 @@ class Controller extends React.Component {
 }
 
 export default connect(state => ({
-    productModel: state.productModel.productModel,
+    productModel: new ProductModel(state.productModel.productModel),
     productModelFetch: state.productModel.loading,
     shoppingCart: state.shoppingCart.shoppingCart
-}), Object.assign({}, ProductModelActions, ShoppingCartActions, ReviewCollectionStore.actionCreators))(Controller);
+}), Object.assign({}, ProductModelActions, ShoppingCartActions, ReviewCollectionStore.actionCreators, breadCrumbsActions))(Controller);

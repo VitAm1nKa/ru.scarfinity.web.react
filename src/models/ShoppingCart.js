@@ -9,14 +9,14 @@ export class ShoppingCart {
         this.userStatusId = model.userStatusId;
         this.subTotal = model.subTotal || 0;
         this.lines = _.map(model.lines, line => new ShoppingCartLine(line));
-
-        this.getProductQuantity = this.getProductQuantity.bind(this);
     }
 
-    getProductQuantity(productId) {
-        const line = _.find(this.lines, line => line.product.productId == productId);
-        if(line)
-            return line.quantity;
+    static getProductQuantity(shoppingCart, productId) {
+        if(shoppingCart != null) {
+            const line = _.find(shoppingCart.lines, line => line.product.productId == productId);
+            if(line)
+                return line.quantity;
+        }
 
         return 0;
     }

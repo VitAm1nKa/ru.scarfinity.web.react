@@ -2,9 +2,11 @@ import update       from 'immutability-helper';
 import { PageMeta } from '../models/PageMeta';
 
 export const environmentActionCreators = {
-    setPageMeta: (pageMeta) => (dispatch) => {
-        dispatch({ type: 'ENVIRONMENT_SET', pageMeta });
-        return 'test';
+    setPageMeta: (pageMeta) => (dispatch, getState) => {
+        const currentMeta = getState().environment.meta;
+        if(currentMeta.seo != pageMeta.seo || currentMeta.title != pageMeta.title) {
+            dispatch({ type: 'ENVIRONMENT_SET', pageMeta });
+        }
     },
     clearPageMeta: () => (dispatch) => {
         dispatch({ type: 'ENVIRONMENT_CLEAR' });
@@ -12,7 +14,7 @@ export const environmentActionCreators = {
 };
 
 const initialState = {
-    meta: null
+    meta: { seo: '' }
 }
 
 export const reducer = (state, incomingAction) => {

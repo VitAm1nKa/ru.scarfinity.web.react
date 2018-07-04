@@ -4,6 +4,7 @@ import {
 }                   from 'react-router-dom';
 import Catalog      from './Catalog';
 import ProductCard  from './ProductCard';
+import PCT          from './ProductCardTest';
 
 class Controller extends React.Component {
     componentWillReceiveProps(nextProps) {
@@ -11,12 +12,12 @@ class Controller extends React.Component {
     }
 
     render() {
-        console.log('Catalog redirect: Render', this.props);
         const lastNode = _.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')) || '';
 
         // Товар
         if(!isNaN(lastNode.charAt(0))) {
-            return <Route path={this.props.location.pathname} component={ProductCard} />
+            return <Route path={this.props.location.pathname} component={PCT} />
+            // return <Route path={this.props.location.pathname} component={ProductCard} />
         }
 
         // Каталог

@@ -102,10 +102,9 @@ class Controller extends React.Component {
 					<div className="product-card__product-info-container">
 						<div className="product-card__product-title">
 							<div className="product-card__product-title__title-block">
-								<span className="product-card-title">{this.props.productModel.title}</span>
+								<h1 className="product-card-title">{this.props.productModel.title}</h1>
 							</div>
 							<div className="product-card__product-title__review-block">
-
 								<RaitingBox currentValue={this.props.productModel.reviewStats.averageRating} />
 								<span className="product-card__product-title__review-block__review">
 									{`${this.props.productModel.reviewStats.reviewsCount} ${count__reviews(this.props.productModel.reviewStats.reviewsCount)}`}

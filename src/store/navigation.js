@@ -47,15 +47,33 @@ export const actionCreators = {
     },
 };
 
+//  ------------------------------------------------------------------------
+function currentNode(source) {
+    if(source.seo != null && source.title != null) {
+        return {
+            seo: source.seo,
+            title: source.title,
+            topOffset: source.topOffset || 0
+        }
+    }
+
+    return null;
+};
+
+function nodes(source) {
+    return _.compact(_.concat(source.nodes, this.currentNode(source)));
+}
+
 export const breadCrumbsActions = {
-    breadCrumbsClear: () => (dispatch) => {
-        dispatch({ type: 'BREADCRUMBS__CLEAR' });
+    breadCrumbsPush: (nodes) => (dispatch, getState) => {
+        _.forEach(_.flatten([nodes]), node => {
+            if(_.findIndex(getState().navigation.breadCrumbs, bn => bn.seo == node.seo) == -1) {
+                dispatch({ type: 'BREADCRUMBS__PUSH', node });
+            }
+        });
     },
-    breadCrumbsPush: (node) => (dispatch) => {
-        dispatch({ type: 'BREADCRUMBS__PUSH', node });
-    },
-    breadCrumbsPop: (node) => (dispatch) => {
-        dispatch({ type: 'BREADCRUMBS__POP', node });
+    breadCrumbsPop: (nodes) => (dispatch) => {
+        dispatch({ type: 'BREADCRUMBS__POP', nodes: _.flatten([nodes]) });
     }
 }
 
@@ -96,10 +114,6 @@ export const reducer = (state, incomingAction) => {
             };
         case "PAGE__NOTFOUND": return update(state, {pageNotFound: {$set: true}});
 
-
-        case 'BREADCRUMBS__CLEAR': {
-            return update(state, {breadCrumbs: {$set: []}});
-        }
         case 'BREADCRUMBS__PUSH': {
             return update(state, {breadCrumbs: {$set: 
                 [...state.breadCrumbs, {
@@ -112,7 +126,7 @@ export const reducer = (state, incomingAction) => {
         }
         case 'BREADCRUMBS__POP': {
             return update(state, {breadCrumbs: {$set:
-                _.filter(state.breadCrumbs, c => c.seo != action.node.seo)
+                _.differenceBy(state.breadCrumbs, action.nodes, 'seo')
             }});
         }
 

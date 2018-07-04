@@ -1,6 +1,4 @@
 import React            from 'react';
-import {connect}        from 'react-redux';
-import * as ReviewState from '../../store/review';
 
 import {
     LeaveReviewButton
@@ -9,7 +7,6 @@ import Review           from './review';
 import RatingBox        from '../utility/rating-box';
 
 import Pagination       from '../utility/pagination';
-import { ReviewCollection } from '../../store/__models';
 
 import './reviews-container.less';
 
@@ -51,30 +48,16 @@ class LeaveReview extends React.Component {
                 </div>
                 <div className="review-container-leave__bottom-row">
                     <div className="review-container-leave__bottom-row__button">
-                        <RaisedButton
+                        {/* <LeaveReviewButton
                             label="Оставить отзыв"
                             disabled={this.state.disabled}
-                            onClick={() => {if(this.bodyValidate) this.props.onClick(this.state.value)}} />
+                            onClick={() => {if(this.bodyValidate) this.props.onClick(this.state.value)}} /> */}
                     </div>
                     <div className="review-container-leave__bottom-row__notice">Минимальная длина: 20 символов</div>
                 </div>
             </div>
         );
     }
-}
-
-const NoReviews = (props) => {
-    return null;
-    return(
-        <div className="review-container-noreviews">
-            <div className="review-container-noreviews__text">
-                {"Пока что никто не писал отзыв об этом товаре."}
-            </div>
-            <div
-                className="review-container-noreviews__link"
-                onClick={props.onClick}>{"Написать отзыв"}</div>
-        </div>
-    )
 }
 
 const ReviewList = (props) => {
@@ -122,18 +105,13 @@ const ReviewList = (props) => {
 
 const Header = (props) => {
     return(
-        <div className={`review-container-header`}>
-            <span className="review-container-header__title">
-                {
-                    props.leave ? 'Оставить отзыв' : 'Отзывы'
-                }
-            </span>
-            <div className="review-container-header__review-count">{props.reviewsCount || 0}</div>
-            <div style={{flex: 1, textAlign: 'right'}}>
+        <div className="review-container-header">
+            <span className="review-container-header__title">{props.title}</span>
+            <div className="review-container-header__count">{props.reviewsCount || 0}</div>
+            <div className="review-container-header__button">
                 <LeaveReviewButton
-                    iddleTitle={"Написать отзыв"}
-                    backTitle={"К отзывам"}
-                    onClick={props.onClick("leave")} />
+                    label={props.buttonLabel}
+                    onClick={props.onClick}/>
             </div>
         </div>
     )
@@ -164,7 +142,6 @@ class ReviewsContainer extends React.Component {
     }
 
     updateReviews(props) {
-        console.log(props);
         if(!props.reviewsFetch) {
             const pages = _.chunk(props.reviews, props.pageSize || 3);
             this.setState({
@@ -174,11 +151,8 @@ class ReviewsContainer extends React.Component {
         }
     }
 
-    handleClick(type) {
-        // console.log("###############################################");
-        // this.setState({
-        //     leave: type == 'reviews' ? true : false
-        // });
+    handleClick() {
+        this.setState({ leave: !this.state.leave });
     }
 
     handleIndexChange(index) {
@@ -191,22 +165,30 @@ class ReviewsContainer extends React.Component {
     }
 
     render() {
-        return(
-            <div className="review-container">
-                <Header
-                    reviewsCount={this.props.reviewsCount}
-                    leave={this.state.leave}
-                    onClick={this.handleClick} />
-                {
-                    this.state.leave == false &&
+        const reviewsCount = this.props.reviews != null ? (
+            this.props.reviews.length
+        ) : 0;
+
+        const reviewListContent = 
+            !this.state.leave ? (
+                !this.props.reviewsFetch ? (
                     <ReviewList
                         reviews={this.state.reviewPages[this.state.currentPage - 1]}
                         pagesCount={this.state.reviewPages.length}
                         currentPage={this.state.currentPage}
                         onIndexChange={this.handleIndexChange}
                         onClick={this.handleReviewEvaluationClick} />
-                }
-                { this.state.leave && <LeaveReview /> }
+                ) : <div>{"Loading..."}</div>
+            ) : <LeaveReview />;
+
+        return (
+            <div className="review-container">
+                <Header
+                    title={this.state.leave ? 'Оставить отзыв' : 'Отзывы'}
+                    reviewsCount={reviewsCount}
+                    buttonLabel={this.state.leave ? 'К отзывам' : 'Оставить отзыв'}
+                    onClick={this.handleClick}/>
+                {reviewListContent}
             </div>
         )
     }
