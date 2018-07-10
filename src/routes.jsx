@@ -9,6 +9,7 @@ import CatalogRedirect      from './views/CatalogRedirect';
 import Cart                 from './views/Cart';
 import Personal             from './views/Personal';
 import Contacts             from './views/Contacts';
+import Help                 from './views/Help';
 import Tmp                  from './views/Tmp';
 import Login                from './views/Login';
 import BreadCrumbs          from './views/BreadCrumbs';
@@ -32,6 +33,7 @@ export const routes =
             <Route path='/cart' component={Cart} />
             <Route path='/personal' component={Personal} />
             <Route path='/contacts' exact component={Contacts} />
+            <Route path='/help' component={Help} />
             <Route path='/contacts/:id' component={Contacts} />
             <Route path='/tmp' component={Tmp} />
             <Route path='/login' component={Login} />

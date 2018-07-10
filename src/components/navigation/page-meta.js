@@ -31,14 +31,14 @@ class EnvironmentMetaController extends React.Component {
         // Когда компонент создается, он получает данные о текужем состоянии меты
         // Компонент сохраняет предыдущее состояние в стейт
         // И заменяет в сторе своими данными
-        if(this.props.seo != this.props.meta.seo) {
-            this.state.prevPageMeta = this.props.meta;
-            this.props.setPageMeta(new PageMeta({
-                seo: this.props.seo,
-                title: this.props.title,
-                metaTags: this.props.metaTags
-            }));
-        }
+        // if(this.props.seo != this.props.meta.seo) {
+        //     this.state.prevPageMeta = this.props.meta;
+        //     this.props.setPageMeta(new PageMeta({
+        //         seo: this.props.seo,
+        //         title: this.props.title,
+        //         metaTags: this.props.metaTags
+        //     }));
+        // }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -65,19 +65,32 @@ export const EnvironmentMeta = connect(state => ({
     meta: state.environment.meta
 }), environmentActionCreators)(EnvironmentMetaController);
 
+
+
+
+
+
 class EnvironmentCoreController extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     componentWillMount() {
-        this.updateEnvironmentData(this.props.meta);
+        this.updateEnvironmentData(this.props.pages);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.updateEnvironmentData(nextProps.meta);
+        this.updateEnvironmentData(nextProps.pages);
     }
 
-    updateEnvironmentData(meta) {
-        if(meta != null) {
+    updateEnvironmentData(pages) {
+        const lastPage = _.last(pages);
+        if(lastPage != null) {
             isomorph(() => {
-                document.title = meta.title || document.title;
+                const meta = lastPage.pageMeta;
+                if(meta != null) {
+                    document.title = meta.title || document.title;
+                }
             });
         }
     }
@@ -88,8 +101,8 @@ class EnvironmentCoreController extends React.Component {
 }
 
 export const EnvironmentCore = connect(state => ({
-    meta: state.environment.meta
-}))(withRouter(EnvironmentCoreController));
+    pages: state.environment.pageMetaList
+}))(EnvironmentCoreController);
 
 /*
 

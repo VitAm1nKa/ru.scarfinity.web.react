@@ -171,7 +171,7 @@ class ReviewsContainer extends React.Component {
 
         const reviewListContent = 
             !this.state.leave ? (
-                !this.props.reviewsFetch ? (
+                this.props.reviewsFetch == false ? (
                     <ReviewList
                         reviews={this.state.reviewPages[this.state.currentPage - 1]}
                         pagesCount={this.state.reviewPages.length}

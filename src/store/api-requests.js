@@ -45,7 +45,7 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
                     console.error(e);
                 });
 
-            // if (domainTask) addTask(fetchTask);
+            //if (domainTask) addTask(fetchTask);
             addTask(fetchTask);
         }
         catch(e) {
@@ -161,6 +161,14 @@ export const __shipMethod = {
         Many: () => {
             return requestBuilder('ShipMethod', 'GET');
         }
+    }
+}
+//  #endregion
+
+//  #region SitePage
+export const __sitePage = {
+    Get: {
+        Single: (seo) => requestBuilder(`SitePage/${seo}`, 'GET', {}, true)
     }
 }
 //  #endregion

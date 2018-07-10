@@ -1,12 +1,11 @@
 import React                from 'react';
-import {connect} 	        from 'react-redux';
-import {
+import { connect } 	        from 'react-redux';
+import { 
     Route,
-    Redirect,
-    Switch,
-    NavLink,
     withRouter
 }                           from 'react-router-dom';
+import { withPage }         from './Page';
+
 import { GridLine }         from '../../lib/grid';
 
 import Account              from '../Account';
@@ -14,6 +13,7 @@ import TopMenu              from '../../components/navigation/top-menu';
 import InfoMenu             from '../../components/navigation/info-menu';
 import MainMenu             from '../../components/navigation/main-menu';
 import MobileMainMenu       from '../../components/navigation/mobile-main-menu';
+import LoadingBar           from '../../components/navigation/loading-bar';
 import {
     BreadCrumb,
     BreadCrumbs
@@ -33,42 +33,29 @@ import {
 import {
     actionCreators as shopActions                     
 }                           from '../../store/shop';
-import { Default404 }       from '../DefaultPages';
 
+class Layout extends React.Component {
+    // componentWillMount() {
 
-class ScrollToTop extends React.Component {
+    //     // this.props.requestNavigation();
+
+    //     // Получение информации о магазинах(на земле)
+    //     // this.props.getShops();
+
+    //     // Получение данных о структуре каталога
+    //     this.props.loadCatalogPageSchema();
+    // }
+
     componentDidMount() {
         scroll(0, 0);
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.location.pathname !== prevProps.location.pathname) {
-            //console.clear();
+            console.clear();
             console.warn('Page changed.');
             scroll(0, 0);
         }
-    }
-
-    render() {
-        return null;
-    }
-}
-
-class Layout extends React.Component {
-    componentWillMount() {
-        this.props.breadCrumbsPush({ seo: '', title: 'Главная' });
-
-        // this.props.requestNavigation();
-
-        // Получение информации о магазинах(на земле)
-        // this.props.getShops();
-
-        // Получение данных о структуре каталога
-        this.props.loadCatalogPageSchema();
-    }
-
-    componentWillUnmount() {
-        this.props.breadCrumbsPop({ seo: '', title: 'Главная' });
     }
 
     render() {
@@ -82,10 +69,9 @@ class Layout extends React.Component {
                     <Route path='/' component={MobileMainMenu} />
                     <GridLine><BreadCrumbs /></GridLine>
                     <EnvironmentCore />
+                    {/* <LoadingBar /> */}
                 </header>
                 <main>
-                    <Route path="/" component={ScrollToTop} />
-                    <EnvironmentMeta title="Главная страница Scarfinity Site" seo="site_root" />
                     {this.props.children}
                 </main>
                 <Footer />
@@ -100,4 +86,4 @@ export default withRouter(connect(state => ({
     breadCrumbsActions,
     catalogSchemaActionCreators,
     shopActions
-))(Layout));
+))(withPage(Layout), 'root'));

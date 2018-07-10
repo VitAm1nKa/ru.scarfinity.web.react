@@ -156,7 +156,7 @@ class Controller extends React.Component {
                 <div>{"Product model loading..."}</div>
             )
         }
-        else if (this.props.productModel.productModelId == null) {
+        else if (this.props.productModel == null) {
             return(
                 <div>{"Product model not found!"}</div>
             )
@@ -223,10 +223,6 @@ class Controller extends React.Component {
         
         return(
             <Grid.GridLine>
-                {/* <BreadCrumb
-                    seo={this.props.productModel.productModelId}
-                    title={this.props.productModel.title}
-                    nodes={this.props.productModel.productCategoryPath.pathChain.nodes}/> */}
                 <Grid.VerticalGrid>
                     {productModelCard}
                     {tabView}

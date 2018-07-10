@@ -65,15 +65,43 @@ function nodes(source) {
 }
 
 export const breadCrumbsActions = {
-    breadCrumbsPush: (nodes) => (dispatch, getState) => {
-        _.forEach(_.flatten([nodes]), node => {
-            if(_.findIndex(getState().navigation.breadCrumbs, bn => bn.seo == node.seo) == -1) {
-                dispatch({ type: 'BREADCRUMBS__PUSH', node });
-            }
-        });
+    breadCrumbsPush: (pageId, breadCrumbs) => (dispatch, getState) => {
+        if(_.find(getState().navigation.breadCrumbPage, b => b.pageId === pageId) == null) {
+            dispatch({ type: 'BREADCRUMBS__PUSH', breadCrumbPage: { pageId, breadCrumbs } });
+        }
     },
-    breadCrumbsPop: (nodes) => (dispatch) => {
-        dispatch({ type: 'BREADCRUMBS__POP', nodes: _.flatten([nodes]) });
+    breadCrumbsPop: (pageId) => (dispatch, getState) => {
+        const index = _.findIndex(getState().navigation.breadCrumbPage, b => b.pageId === pageId);
+        if(index != null) {
+            dispatch({ type: 'BREADCRUMBS__POP', index });
+        }
+    },
+    breadCrumbsSet: (pageId, breadCrumbs) => (dispatch, getState) => {
+        const index = _.findIndex(getState().navigation.breadCrumbPage, b => b.pageId === pageId);
+        if(index != null) {
+            dispatch({ type: 'BREADCRUMBS__SET', index, breadCrumbPage: { pageId, breadCrumbs } });
+        }
+    }
+}
+
+export const pageLoadingActions = {
+    pageLoadingStart: () => (dispatch, getState) => {
+        if(getState().navigation.pageLoading == false) {
+            dispatch({ type: 'PAGELOADING__START' });
+        }
+    },
+    pageLoadingProgress: (progress) => (dispatch, getState) => {
+        if(getState().navigation.pageLoading) {
+            // dispatch({ type: 'PAGELOADING__PROGRESS', progress });
+            // if(getState().navigation.pageLoadingProgress < progress) {
+            //     dispatch({ type: 'PAGELOADING__PROGRESS', progress });
+            // }
+        }
+    },
+    pageLoadingEnd: () => (dispatch, getState) => {
+        if(getState().navigation.pageLoading) {
+            dispatch({ type: 'PAGELOADING__END' });
+        }
     }
 }
 
@@ -88,6 +116,10 @@ const initialState = {
     catalogNodes: {},
 
     breadCrumbs: [],
+
+    pageLoadingProgress: 0,
+
+    pageBreadCrumbs: []
 }
 
 export const reducer = (state, incomingAction) => {
@@ -114,22 +146,32 @@ export const reducer = (state, incomingAction) => {
             };
         case "PAGE__NOTFOUND": return update(state, {pageNotFound: {$set: true}});
 
+        // case 'BREADCRUMBS__PUSH': {
+        //     return update(state, {breadCrumbs: {$push: 
+        //         [...state.breadCrumbs, {
+        //             seo: action.node.seo,
+        //             title: action.node.title,
+        //             path: _.trim(`${_.reduce(state.breadCrumbs, (path, node) => `${path}/${node.seo}`, '')}/${action.node.seo}`, '/'),
+        //             topOffset: action.node.topOffset || 0
+        //         }]
+        //     }});
+        // }
+
         case 'BREADCRUMBS__PUSH': {
-            return update(state, {breadCrumbs: {$set: 
-                [...state.breadCrumbs, {
-                    seo: action.node.seo,
-                    title: action.node.title,
-                    path: _.trim(`${_.reduce(state.breadCrumbs, (path, node) => `${path}/${node.seo}`, '')}/${action.node.seo}`, '/'),
-                    topOffset: action.node.topOffset || 0
-                }]
-            }});
+            return update(state, {breadCrumbs: {$push: [action.breadCrumbPage]}});
         }
         case 'BREADCRUMBS__POP': {
-            return update(state, {breadCrumbs: {$set:
-                _.differenceBy(state.breadCrumbs, action.nodes, 'seo')
-            }});
+            return update(state, {breadCrumbs: {$splice: [[action.index, 1]] }});
+        }
+        case 'BREADCRUMBS__SET': {
+            return update(state, {breadCrumbs: {[action.index]: {$set: action.breadCrumbPage}}});
         }
 
+
+
+        case 'PAGELOADING__PROGRESS': {
+            return update(state, {pageLoadingProgress: {$set: action.progress}});
+        }
 
         default: 
             const exhaustiveCheck = action;

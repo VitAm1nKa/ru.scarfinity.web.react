@@ -2,6 +2,9 @@ import React            from 'react';
 import { connect }      from 'react-redux';
 import { withRouter }   from 'react-router-dom';
 import qs               from 'qs';
+
+import { withPage }     from './shared/Page';
+
 import {
     actionCreators
 }                       from '../store/productModel';
@@ -26,6 +29,7 @@ import ReviewsContainer from '../components/reviews/reviews-container';
 import * as TabView     from '../components/utility/tab-view';
 import InfoList         from '../components/utility/info-list';
 import ProductRow       from '../components/utility/product-row';
+import { OpenGraphMeta } from '../models/PageMeta';
 
 class Controller extends React.Component {
     constructor(props) {
@@ -43,7 +47,6 @@ class Controller extends React.Component {
 
         this.proccessProductModel = this.proccessProductModel.bind(this);
         this.loadReviews = this.loadReviews.bind(this);
-        this.setBreadCrumbs = this.setBreadCrumbs.bind(this);
         this.handleColorChange = this.handleColorChange.bind(this);
     }
 
@@ -55,8 +58,19 @@ class Controller extends React.Component {
         return null;
     }
 
-    setBreadCrumbs(nodes) {
-        this.props.breadCrumbsPush(nodes);
+    productModelToPageMeta(data) {
+        var productModel = new ProductModel(data);
+        return ({
+            title: productModel.title,
+            seo: productModel.productModelId,
+            description: productModel.description,
+            openGraphMeta: new OpenGraphMeta({
+                title: productModel.title,
+                description: productModel.description,
+                image: productModel.thumbnail,
+                url: productModel.Path
+            })
+        });
     }
 
     //  #region Reviews
@@ -66,12 +80,14 @@ class Controller extends React.Component {
                 this.setState({reviewsFetch: true, reviewCollectionId: this.state.productModel.ReviewCollectionId}, () => {
                     __review.Get.Many(this.state.reviewCollectionId)(
                         data => {
+                            // console.log("SDFGSDFGSDFGSDFGSDFGSDFGSDFGSDFG");
                             this.setState({
                                 reviewsFetch: false,
                                 reviews: _.map(data, review => new Review(review))
                             });
                         },
                         error => {
+                            // console.log("ERROROROROROROR");
                             this.setState({
                                 reviewsFetch: false,
                                 reviews: []
@@ -85,49 +101,68 @@ class Controller extends React.Component {
     //  #endregion
 
     proccessProductModel(props) {
-        this.setBreadCrumbs([...this.state.productModel.productCategoryPath.pathChain.nodes, {
+        this.props.updateBreadCrumbs([...this.state.productModel.productCategoryPath.pathChain.nodes, {
             seo: this.state.productModel.productModelId,
             title: this.state.productModel.title
         }]);
 
+        // Установить значения мета тегов страницы
+        this.props.updatePageMeta(this.productModelToPageMeta(this.state.productModel));
+
         // Реквестим загрузку отзывов
         this.loadReviews();
+
+        this.props.pageLoadingProcess(null, 70);
 
         // Проверка на редирект
         if(_.trimEnd(props.location.pathname, '/') != this.state.productModel.Path) {
             props.history.push(`${this.state.productModel.Path}${props.location.search}`);
+            this.props.pageLoadingProcess(null, 85);
+        } else {
+            this.props.pageLoadingProcess(null, 100);
+            this.props.pageLoadingEnd();
         }
     }
 
     componentWillMount() {
+        
+    }
+
+    componentWillMount() {
         // Первая загрузка. Получаем номер модели и реквестим в сторе запрос на данную модель
+        this.props.pageLoadingStart();
         this.state.productModelId = this.productModelId(_.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')));
         if(this.state.productModelId != null) {
-            this.props.getProductModel(this.state.productModelId, data => {
-                // Поскольку асинхронные запросы на сервере не форсят апдейт
-                // Необходимо обновить данные об странице колбеком из стора
-                if(data != null && this.state.productModelId == data.productModelId) {
-                    this.setBreadCrumbs([...data.productCategoryPath.pathChain.nodes, {
-                        seo: data.productModelId,
-                        title: data.title
-                    }]);
-                }
-            });
-
-            this.props.getRelatedProductModels(this.state.productModelId);
-
-            // Сравниваем с текущим номером
-            if(this.props.productModelId == this.state.productModelId) {
-                // Если в сторе уже есть данные о моделе
-                if(this.props.productModel != null) {
+            // Модель не грузится в стор
+            if(this.props.productModelFetch == false) {
+                // Модель в сторе отсутствует, начать загружать
+                if(this.props.productModel == null) {
+                    this.props.getProductModel(this.state.productModelId, data => {
+                        // Поскольку асинхронные запросы на сервере не форсят апдейт
+                        // Необходимо обновить данные об странице колбеком из стора
+                        if(data != null && this.state.productModelId == data.productModelId) {
+                            // Установить значения мета тегов страницы
+                            this.props.setPageMeta(this.productModelToPageMeta(data));
+                            // Установить значения хлебных крошек
+                            this.props.setBreadCrumbs([...data.productCategoryPath.pathChain.nodes, {
+                                seo: data.productModelId,
+                                title: data.title
+                            }]);
+                        }
+                    });
+                } else {
                     this.state.productModel = new ProductModel(this.props.productModel);
                     this.proccessProductModel(this.props);
                 }
-
-                if(this.props.relatedProductModels != null) {
-                    this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
-                }
             }
+
+            if(this.props.relatedProductModels == null) {
+                this.props.getRelatedProductModels(this.state.productModelId);
+            } else {
+                this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
+            }
+        } else {
+
         }
     }
 
@@ -136,6 +171,7 @@ class Controller extends React.Component {
         var nextProductModelId = this.productModelId(_.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/')));
         if(nextProductModelId != null) {
             if(this.state.productModelId != nextProductModelId) {
+                this.props.pageLoadingStart();
                 this.state.productModelId = nextProductModelId;
                 // Реквест на загрузку модели
                 this.props.getProductModel(this.state.productModelId);
@@ -144,25 +180,23 @@ class Controller extends React.Component {
 
             // Сравниваем с текущим номером
             if(this.props.productModelId == this.state.productModelId) {
-                if(this.props.productModel != null) {
-                    if(this.state.productModel == null || this.state.productModel.productModelId != this.props.productModel.productModelId) {
-                        this.state.productModel = new ProductModel(this.props.productModel);
-                        this.proccessProductModel(this.props);
-                    }
-                }
-
-                if(this.props.relatedProductModels != null) {
-                    this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
+                if(nextProps.productModelFetch == false) {
+                    this.setState({ productModelFetch: false }, () => {
+                        if(nextProps.productModel != null) {
+                            if(this.state.productModel == null || this.state.productModel.productModelId != this.props.productModel.productModelId) {
+                                this.state.productModel = new ProductModel(this.props.productModel);
+                                this.proccessProductModel(this.props);
+                            }
+                        } else {
+                            this.state.productModel = null;
+                        }
+                    });
                 }
             }
-        }
-    }
 
-    componentWillUnmount() {
-        if(this.state.productModel != null) {
-            this.props.breadCrumbsPop([...this.state.productModel.productCategoryPath.pathChain.nodes, {
-                seo: this.state.productModel.productModelId
-            }]);
+            if(this.props.relatedProductModels != null) {
+                this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
+            }
         }
     }
 
@@ -179,29 +213,31 @@ class Controller extends React.Component {
     }
 
     render() {
-        // Формирование карточки модели товара
-        // Необходимо получить информацию об выбраном цвете товара и узоре
-        const colorCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).cl || '';
-        const patternCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).pt || '';
+        const productModelLoading = this.props.productModelFetch;
+        const productModelNotFound = !productModelLoading && this.state.productModel == null;
 
-        // Необходимо знать, цвет который выбран
-        // Это может быть либо, цвет полученный через строку браузера либо цвет первого(основного товара)
-        // Исходя из этой логики, достаточно просто знать какой id товара выбран
-        // Количество товара в корзине
-        // Необходимо сделать запрос в корзину, для получения текущего количества
-        let selectedProduct = -1;
-        let productQuantity = 0;
-        let productInCart = false;
+        if(productModelNotFound == false) {
+            // Формирование карточки модели товара
+            // Необходимо получить информацию об выбраном цвете товара и узоре
+            const colorCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).cl || '';
+            const patternCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).pt || '';
 
-        if(this.state.productModel != null ) {
-            selectedProduct = this.state.productModel.selectedProduct({colorCode, patternCode});
-            productQuantity = ShoppingCart.getProductQuantity(this.props.shoppingCart, selectedProduct.productId);
-            productInCart = productQuantity > 0;
-        }
+            // Необходимо знать, цвет который выбран
+            // Это может быть либо, цвет полученный через строку браузера либо цвет первого(основного товара)
+            // Исходя из этой логики, достаточно просто знать какой id товара выбран
+            // Количество товара в корзине
+            // Необходимо сделать запрос в корзину, для получения текущего количества
+            let selectedProduct = -1;
+            let productQuantity = 0;
+            let productInCart = false;
 
-        const productModelCard = this.state.productModel == null ?
-            <div>{"Loading..."}</div> :        
-            <div className="product-card">
+            if(this.state.productModel != null ) {
+                selectedProduct = this.state.productModel.selectedProduct({colorCode, patternCode});
+                productQuantity = ShoppingCart.getProductQuantity(this.props.shoppingCart, selectedProduct.productId);
+                productInCart = productQuantity > 0;
+            }
+
+            const productModelCard = <div className="product-card">
                 <Product
                     productModel={this.state.productModel}
                     productSelected={selectedProduct}
@@ -212,49 +248,56 @@ class Controller extends React.Component {
                     setUserProductModelPreferences={this.props.setUserProductModelPreferences}/>
             </div>
 
-        // Формирование отзывов
-        const reviewsController = 
-            <ReviewsContainer
-                reviews={this.state.reviews}
-                reviewsFetch={this.state.reviewsFetch}
-                reviewCollection={this.props.reviewCollection}
-                handleReviewPost={this.handleReviewPost}/>
+            // Формирование отзывов
+            const reviewsController = 
+                <ReviewsContainer
+                    reviews={this.state.reviews}
+                    reviewsFetch={this.state.reviewsFetch}
+                    reviewCollection={this.props.reviewCollection}
+                    handleReviewPost={this.handleReviewPost}/>
 
-        const infoListItems = [
-            {title: "Категория", value: "Женщинам"},
-            {title: "Пол", value: "Женский"},
-            {title: "Артикул", value: "АРТ123"},
-            {title: "Страна производства", value: "Китай"}
-        ]
-        
-        const infoList = <InfoList items={infoListItems}></InfoList>;
+            const infoListItems = [
+                {title: "Категория", value: "Женщинам"},
+                {title: "Пол", value: "Женский"},
+                {title: "Артикул", value: "АРТ123"},
+                {title: "Страна производства", value: "Китай"}
+            ]
+            
+            const infoList = <InfoList items={infoListItems}></InfoList>;
 
-        const tabView = 
-            <TabView.TabView>
-                <TabView.Tab title={"Отзывы"}>{reviewsController}</TabView.Tab>
-                <TabView.Tab title={"Характеристики"}>{infoList}</TabView.Tab>
-                <TabView.Tab title={"Описание"}>3</TabView.Tab>
-            </TabView.TabView>;
+            const tabView = 
+                <TabView.TabView>
+                    <TabView.Tab title={"Отзывы"}>{reviewsController}</TabView.Tab>
+                    <TabView.Tab title={"Характеристики"}>{infoList}</TabView.Tab>
+                    <TabView.Tab title={"Описание"}>3</TabView.Tab>
+                </TabView.TabView>;
 
-        const relatedProducts = <ProductRow title="Похожие товары" products={this.state.relatedProductModels}/>
-        const additionalProducts = <ProductRow title="Сопутсвующие товары" products={[]}/>
+            const relatedProducts = <ProductRow title="Похожие товары" products={this.state.relatedProductModels}/>
+            const additionalProducts = <ProductRow title="Сопутсвующие товары" products={[]}/>
 
-        return(
-            <Grid.GridLine>
-                <Grid.VerticalGrid>
-                    {productModelCard}
-                    {tabView}
-                    {relatedProducts}
-                    {additionalProducts}
-                </Grid.VerticalGrid>
-            </Grid.GridLine>
-        )
+            return(
+                <Grid.GridLine>
+                    <Grid.VerticalGrid>
+                        {productModelCard}
+                        {tabView}
+                        {relatedProducts}
+                        {additionalProducts}
+                    </Grid.VerticalGrid>
+                </Grid.GridLine>
+            )
+        } else if(productModelLoading) {
+            return(<div>Loading...</div>)
+        } else {
+            return(<div>Not found 404</div>)
+        }
     }
 }
 
-export default connect(state => ({
+export default withRouter(connect(state => ({
     productModel: state.productModel.productModel,
     productModelId: state.productModel.productModelId,
+    productModelFetch: state.productModel.loading,
     relatedProductModels: state.productModel.relatedProductModels,
     shoppingCart: state.shoppingCart.shoppingCart
-}), Object.assign({}, actionCreators, ShoppingCartActions, breadCrumbsActions))(withRouter(Controller));
+}), Object.assign({}, actionCreators, ShoppingCartActions))
+(withPage(Controller, 'productPage')));

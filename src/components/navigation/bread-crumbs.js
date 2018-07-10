@@ -65,19 +65,17 @@ export const BreadCrumb = connect(state => ({
 //  -- --
 //  Класс, рендеренга списка хлебныйх крошек
 class BreadCrumbsController extends React.Component {
-    componentWillReceiveProps(nextProps) {
-        console.error(nextProps);
-    }
     render() {
-        const dispaly = (this.props.breadCrumbs || []).length > 0;
-        const currentBreadCrumb = _.last(this.props.breadCrumbs) || { title: '', topOffset: 0 };
+        const breadCrumbs = _.reduce(this.props.pages, (s, b) => _.concat(s, _.concat(b.baseBreadCrumbs, b.breadCrumbs)), []);
+        const dispaly = true;
+        const currentBreadCrumb = _.last(breadCrumbs) || { title: '', topOffset: 0 };
 
         return(
             <div
                 className={`bread-crumbs${!dispaly ? ' bread-crumbs--hide': ''}`}
                 style={{marginTop: currentBreadCrumb.topOffset}}>
                 {
-                    _.map(_.initial(this.props.breadCrumbs), (crumb, index) => {
+                    _.map(_.initial(breadCrumbs), (crumb, index) => {
                         return(
                             <div
                                 key={index} 
@@ -101,7 +99,7 @@ class BreadCrumbsController extends React.Component {
 //  -- --
 //  Оболочка с эксопртом, коннект со стором
 export const BreadCrumbs = connect(state => ({
-    breadCrumbs: state.navigation.breadCrumbs
+    pages: state.environment.pageMetaList
 }))(BreadCrumbsController);
 
 

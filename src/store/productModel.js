@@ -1,21 +1,20 @@
-import { fetch, addTask }   from 'domain-task';
 import update               from 'immutability-helper';
 import { 
     __productModel,
     __relatedProductModel 
 }                           from './api-requests';
-import { ProductModel }     from '../models/ProductModel';
 
 export const actionCreators = {
-    getProductModel: (productModelId, callback) => (dispatch, getState) => {
+    getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
         if(productModelId !== getState().productModel.productModelId) {
             __productModel.Get.Single(productModelId)(
                 data => {
                     dispatch({ type: 'PRODUCTMODEL_RECEIVE', data });
-                    if(callback) callback(data, dispatch);
+                    if(onSucess) onSucess(data);
                 },
                 error => {
-                    dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR', error })
+                    dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR', error });
+                    if(onError) onError(error);
                 }
             )
 
@@ -38,6 +37,25 @@ export const actionCreators = {
     }
 };
 
+export const productModelActionCreators = {
+    getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
+        if(productModelId !== getState().productModel.productModelId) {
+            __productModel.Get.Single(productModelId)(
+                data => {
+                    dispatch({ type: 'PRODUCTMODEL_RECEIVE', data });
+                    if(onSucess) onSucess(data);
+                },
+                error => {
+                    dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR', error });
+                    if(onError) onError(error);
+                }
+            )
+
+            dispatch({ type: 'PRODUCTMODEL_REQUEST', productModelId });
+        }
+    }
+}
+
 const initialState = {
     loading: false,
     result: {
@@ -46,6 +64,7 @@ const initialState = {
     },
 
     productModelId: null,
+    productModelFetch: false,
     productModel: null,
 
     relatedProductModelsFetch: false,
@@ -58,7 +77,7 @@ export const reducer = (state, incomingAction) => {
     switch (action.type) {
         case 'PRODUCTMODEL_REQUEST': {
             return update(state, {$merge: {
-                loading: true,
+                productModelFetch: true,
                 result: {
                     success: false,
                     error: ''
@@ -68,17 +87,17 @@ export const reducer = (state, incomingAction) => {
         }
         case 'PRODUCTMODEL_RECEIVE': {
             return update(state, {$merge: {
-                loading: false,
+                productModelFetch: false,
                 result: {
                     success: true,
                     error: ''
                 },
-                productModel: new ProductModel(action.data)
+                productModel: action.data
             }});
         } 
         case 'PRODUCTMODEL_RECEIVE_ERROR': {
             return update(state, {$merge: {
-                loading: false,
+                productModelFetch: false,
                 result: {
                     success: false,
                     error: action.error

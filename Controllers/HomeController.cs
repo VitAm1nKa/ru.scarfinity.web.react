@@ -29,17 +29,18 @@ namespace scarfinity_react.Controllers
             var prerenderData = await _spaPrerenderer.RenderToString("src/dist/main-server", customDataParameter: data);
             var state = prerenderData.Globals["initialReduxState"].ToObject<Store>();
 
-            var meta = state.Environment.Meta;
+            var meta = state.Environment.Meta.PageMeta;
             ViewData["title"] = meta.Title;
             ViewData["description"] = meta.Description;
             ViewData["keywords"] = meta.Keywords;
             ViewData["author"] = meta.Author;
-            ViewData["og:title"] = meta.OpenGpaphMeta.Title;
-            ViewData["og:description"] = meta.OpenGpaphMeta.Description;
-            ViewData["og:image"] = meta.OpenGpaphMeta.Image;
-            ViewData["og:url"] = "https://scarfinity.ru";
+            ViewData["og:title"] = meta.OpenGraphMeta.Title;
+            ViewData["og:description"] = meta.OpenGraphMeta.Description;
+            ViewData["og:image"] = meta.OpenGraphMeta.Image;
+            ViewData["og:url"] = $"https://scarfinity.ru{meta.OpenGraphMeta.Url}";
             ViewData["og:site_name"] = "Scarfinity";
             ViewData["og:type"] = "website";
+
 
             return View(prerenderData);
         }
