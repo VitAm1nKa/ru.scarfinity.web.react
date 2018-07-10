@@ -29,7 +29,7 @@ namespace scarfinity_react.Controllers
             var prerenderData = await _spaPrerenderer.RenderToString("src/dist/main-server", customDataParameter: data);
             var state = prerenderData.Globals["initialReduxState"].ToObject<Store>();
 
-            var meta = state.Environment.Meta.PageMeta;
+            var meta = state.Environment.Meta;
             ViewData["title"] = meta.Title;
             ViewData["description"] = meta.Description;
             ViewData["keywords"] = meta.Keywords;

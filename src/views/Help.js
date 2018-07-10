@@ -83,6 +83,7 @@ class ProductCardController extends React.Component {
                             this.forceUpdate();
                         });
                 } else {
+                    console.warn('In store');
                     this.state.productModel = new ProductModel(props.productModel);
                     onComplete();
                 }

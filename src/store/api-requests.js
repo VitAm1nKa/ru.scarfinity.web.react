@@ -45,8 +45,7 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
                     console.error(e);
                 });
 
-            //if (domainTask) addTask(fetchTask);
-            addTask(fetchTask);
+            if (domainTask) addTask(fetchTask);
         }
         catch(e) {
             if(onError != null) onError({type: 'Error', message: 'Error'});

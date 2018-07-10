@@ -31,6 +31,31 @@ import InfoList         from '../components/utility/info-list';
 import ProductRow       from '../components/utility/product-row';
 import { OpenGraphMeta } from '../models/PageMeta';
 
+function productModelId(productModelNumber) {
+    if(/^\d+$/g.test(productModelNumber)) {
+        return parseInt(productModelNumber);
+    }
+
+    return null;
+}
+
+function productModelToPage(productModel) {
+    const pageMeta = {
+        title: productModel.title,
+        seo: productModel.productModelId,
+        description: productModel.description,
+        image: productModel.thumbnail,
+        url: productModel.Path
+    }
+
+    const breadCrumbs = _.map([...productModel.productCategoryPath.pathChain.nodes, {
+        seo: productModel.productModelId,
+        title: productModel.title
+    }], b => ({ seo: b.seo, title: b.title, path: 'path' }));
+
+    return ({ pageMeta, breadCrumbs });
+}
+
 class Controller extends React.Component {
     constructor(props) {
         super(props);
@@ -45,32 +70,71 @@ class Controller extends React.Component {
             relatedProductModels: []
         }
 
-        this.proccessProductModel = this.proccessProductModel.bind(this);
+        this.initializePage = this.initializePage.bind(this);
         this.loadReviews = this.loadReviews.bind(this);
         this.handleColorChange = this.handleColorChange.bind(this);
     }
 
-    productModelId(productModelNumber) {
-        if(/^\d+$/g.test(productModelNumber)) {
-            return parseInt(productModelNumber);
-        }
+    initializePage(props) {
+        if(this.state.productModelId != null) {
+            props.initializePage({ seo: this.state.productModelId, breadCrumbs: { seo: 'productCard', title: 'Карточка товара' } }, (callback, onComplete) => {
+                if(props.productModel == null || props.productModel.productModelId != this.state.productModelId) {
+                    props.getProductModel(this.state.productModelId, 
+                        data => {
+                            this.state.productModel = new ProductModel(data);
 
-        return null;
+                            // Необходимо вызвать каллбек инициализации страницы для уточнения меты
+                            // Установить значения хлебных крошек
+                            callback(productModelToPage(this.state.productModel));
+                            onComplete();
+
+                            // Проверка на редирект
+                            if(_.trimEnd(props.location.pathname, '/') != this.state.productModel.Path) {
+                                props.history.push(`${this.state.productModel.Path}${props.location.search}`);
+                            }
+
+                            // Форсим апдейт, так как метод асинхронный
+                            this.forceUpdate();
+                        }, 
+                        error => {
+                            console.warn('Product model not found!', error);
+                            this.state.productModel = null;
+
+                            // Необходимо вызвать каллбек инициализации страницы для уточнения меты
+                            callback(null);
+                            onComplete();
+
+                            // Форсим апдейт, так как метод асинхронный
+                            this.forceUpdate();
+                        });
+                } else {
+                    this.state.productModel = new ProductModel(props.productModel);
+                    onComplete();
+
+                    // Проверка на редирект
+                    if(_.trimEnd(props.location.pathname, '/') != this.state.productModel.Path) {
+                        props.history.push(`${this.state.productModel.Path}${props.location.search}`);
+                    }
+                }
+            });
+        } else {
+            // force 404 page
+        }
     }
 
-    productModelToPageMeta(data) {
-        var productModel = new ProductModel(data);
-        return ({
-            title: productModel.title,
-            seo: productModel.productModelId,
-            description: productModel.description,
-            openGraphMeta: new OpenGraphMeta({
-                title: productModel.title,
-                description: productModel.description,
-                image: productModel.thumbnail,
-                url: productModel.Path
-            })
-        });
+    componentWillMount() {
+        this.state.productModelId = productModelId(_.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')));
+        if(this.state.productModelId != null) {
+            this.initializePage(this.props);
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const nextProductModelId = productModelId(_.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/')));
+        if(nextProductModelId != null && nextProductModelId != this.state.productModelId) {
+            this.state.productModelId = nextProductModelId;
+            this.initializePage(nextProps);
+        }
     }
 
     //  #region Reviews
@@ -100,106 +164,6 @@ class Controller extends React.Component {
     }
     //  #endregion
 
-    proccessProductModel(props) {
-        this.props.updateBreadCrumbs([...this.state.productModel.productCategoryPath.pathChain.nodes, {
-            seo: this.state.productModel.productModelId,
-            title: this.state.productModel.title
-        }]);
-
-        // Установить значения мета тегов страницы
-        this.props.updatePageMeta(this.productModelToPageMeta(this.state.productModel));
-
-        // Реквестим загрузку отзывов
-        this.loadReviews();
-
-        this.props.pageLoadingProcess(null, 70);
-
-        // Проверка на редирект
-        if(_.trimEnd(props.location.pathname, '/') != this.state.productModel.Path) {
-            props.history.push(`${this.state.productModel.Path}${props.location.search}`);
-            this.props.pageLoadingProcess(null, 85);
-        } else {
-            this.props.pageLoadingProcess(null, 100);
-            this.props.pageLoadingEnd();
-        }
-    }
-
-    componentWillMount() {
-        
-    }
-
-    componentWillMount() {
-        // Первая загрузка. Получаем номер модели и реквестим в сторе запрос на данную модель
-        this.props.pageLoadingStart();
-        this.state.productModelId = this.productModelId(_.last(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/')));
-        if(this.state.productModelId != null) {
-            // Модель не грузится в стор
-            if(this.props.productModelFetch == false) {
-                // Модель в сторе отсутствует, начать загружать
-                if(this.props.productModel == null) {
-                    this.props.getProductModel(this.state.productModelId, data => {
-                        // Поскольку асинхронные запросы на сервере не форсят апдейт
-                        // Необходимо обновить данные об странице колбеком из стора
-                        if(data != null && this.state.productModelId == data.productModelId) {
-                            // Установить значения мета тегов страницы
-                            this.props.setPageMeta(this.productModelToPageMeta(data));
-                            // Установить значения хлебных крошек
-                            this.props.setBreadCrumbs([...data.productCategoryPath.pathChain.nodes, {
-                                seo: data.productModelId,
-                                title: data.title
-                            }]);
-                        }
-                    });
-                } else {
-                    this.state.productModel = new ProductModel(this.props.productModel);
-                    this.proccessProductModel(this.props);
-                }
-            }
-
-            if(this.props.relatedProductModels == null) {
-                this.props.getRelatedProductModels(this.state.productModelId);
-            } else {
-                this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
-            }
-        } else {
-
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        // Получен новый номер модели
-        var nextProductModelId = this.productModelId(_.last(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/')));
-        if(nextProductModelId != null) {
-            if(this.state.productModelId != nextProductModelId) {
-                this.props.pageLoadingStart();
-                this.state.productModelId = nextProductModelId;
-                // Реквест на загрузку модели
-                this.props.getProductModel(this.state.productModelId);
-                this.props.getRelatedProductModels(this.state.productModelId);
-            }
-
-            // Сравниваем с текущим номером
-            if(this.props.productModelId == this.state.productModelId) {
-                if(nextProps.productModelFetch == false) {
-                    this.setState({ productModelFetch: false }, () => {
-                        if(nextProps.productModel != null) {
-                            if(this.state.productModel == null || this.state.productModel.productModelId != this.props.productModel.productModelId) {
-                                this.state.productModel = new ProductModel(this.props.productModel);
-                                this.proccessProductModel(this.props);
-                            }
-                        } else {
-                            this.state.productModel = null;
-                        }
-                    });
-                }
-            }
-
-            if(this.props.relatedProductModels != null) {
-                this.state.relatedProductModels = _.map(this.props.relatedProductModels, pm => new ProductModel(pm));
-            }
-        }
-    }
-
     handleColorChange(colorCode) {
         // При выборе цвета, необходимо перейти на другой путь
         // Характеристика цвет: cl = 'colorCode'
@@ -213,10 +177,9 @@ class Controller extends React.Component {
     }
 
     render() {
-        const productModelLoading = this.props.productModelFetch;
-        const productModelNotFound = !productModelLoading && this.state.productModel == null;
-
-        if(productModelNotFound == false) {
+        if(this.props.productModelFetch) {
+            return(<div>Loading...</div>)
+        } else if(this.state.productModel != null) {
             // Формирование карточки модели товара
             // Необходимо получить информацию об выбраном цвете товара и узоре
             const colorCode = qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).cl || '';
@@ -285,19 +248,17 @@ class Controller extends React.Component {
                     </Grid.VerticalGrid>
                 </Grid.GridLine>
             )
-        } else if(productModelLoading) {
-            return(<div>Loading...</div>)
         } else {
             return(<div>Not found 404</div>)
         }
     }
 }
 
-export default withRouter(connect(state => ({
+export default connect(state => ({
     productModel: state.productModel.productModel,
     productModelId: state.productModel.productModelId,
-    productModelFetch: state.productModel.loading,
+    productModelFetch: state.productModel.productModelFetch,
     relatedProductModels: state.productModel.relatedProductModels,
     shoppingCart: state.shoppingCart.shoppingCart
 }), Object.assign({}, actionCreators, ShoppingCartActions))
-(withPage(Controller, 'productPage')));
+(withPage(Controller, '__productPage'));
