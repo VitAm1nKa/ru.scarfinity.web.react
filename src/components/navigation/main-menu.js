@@ -1,22 +1,23 @@
-import React 				from 'react';
-import { connect }			from 'react-redux';
-import { NavLink }			from 'react-router-dom';
-import { matchPath }        from 'react-router';
+import React 						from 'react';
+import { connect }					from 'react-redux';
+import { NavLink }					from 'react-router-dom';
+import { matchPath }        		from 'react-router';
 
 import {
 	PNG
-}							from '../utility/icons';
-import MenuListGrid			from '../utility/menu-list-grid';
-import CartPopup			from '../utility/cart-popup';
-import MiniProductCard		from '../utility/mini-product-card';
+}									from '../utility/icons';
+import MenuListGrid					from '../utility/menu-list-grid';
+import CartPopup					from '../utility/cart-popup';
+import MiniProductCard				from '../utility/mini-product-card';
 
-import * as Grid 			from '../../lib/grid';
-import { count__cartItems }	from '../../lib/currying'; 
-import * as CartS			from '../../store/cart';
+import * as Grid 					from '../../lib/grid';
+import { count__cartItems }			from '../../lib/currying'; 
+import * as CartS					from '../../store/cart';
+
+import { CatalogPageSchemaNode } 	from '../../models/CatalogPage';
+import { ShoppingCart } 			from '../../models/ShoppingCart';
 
 import './main-menu.less';
-import { CatalogPageSchemaNode } from '../../models/CatalogPage';
-
 // 
 class MainMenuNavigationCart extends React.Component{
 	constructor(props) {
@@ -44,7 +45,8 @@ class MainMenuNavigationCart extends React.Component{
 	}
 
 	render() {
-		const linesCount = this.props.shoppingCart.lines.length;
+		const shoppingCart = new ShoppingCart(this.props.shoppingCart);
+		const linesCount = shoppingCart.lines.length;
 
 		let first = "Ваша корзина";
 		let last = "пустая";
@@ -67,7 +69,7 @@ class MainMenuNavigationCart extends React.Component{
 						</span>
 					</NavLink>
 					<CartPopup
-						shoppingCart={this.props.shoppingCart}
+						shoppingCart={shoppingCart}
 						onProductRemove={this.props.onCartProductRemove}/>
 			</div>
 		)

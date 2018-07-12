@@ -1,46 +1,27 @@
-import { fetch, addTask }   from 'domain-task';
 import update               from 'immutability-helper';
-import __request            from './__request';
-import * as ClientData      from '../lib/client-data';
-import { __authentication, makeRequest } from './api-requests';
-
-function login(email, onSuccess, onError) {
-    const request = 
-        __request({
-            url: 'api/account/login',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({email})
-        })
-        .then(response => response.json())
-        .then(({type, message, data}) => {
-            if(type == 'success' && onSuccess) onSuccess(data);
-            if(type != 'success' && onError) onError({type, message});
-        });
-}
+import { __authentication } from './api-requests';
 
 export const actionCreators = {
     continue: (role) => (dispatch, getState) => {
         dispatch({ type: 'ACCOUNT__AUTH__CONTINUE', role });
     },
-    authenticate: (email) => (dispatch, getState) => {
-        __authentication.Authenticate(email)(data => {
-            dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true })
-        }, error => {
-            dispatch({ type: 'ACCOUNT__AUTH__ERROR', error })
-        });
+    authenticate: (email) => (dispatch) => {
+        dispatch(__authentication.Authenticate(email))
+            .then(response => response.json())
+            .then(({ type, data }) => {
+                if(type == 'success') {
+                    dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true });
+                } else {
+                    dispatch({ type: 'ACCOUNT__AUTH__ERROR', error })
+                }
+            })
+            .catch(e => {
+                dispatch({ type: 'ACCOUNT__AUTH__ERROR', error })
+            });
 
         dispatch({ type: 'ACCOUNT__AUTH__REQUEST' });
     },
-    initialize: () => (dispatch, getState) => {
-        const task = dispatch(makeRequest())
-            .then(() => {});
-
-        addTask(task);
-    },
     registration: (model) => (dispatch, getState) => {
-        // Регистрация пользователя на основании данных хрянящихся в session storage
-        // Model: email, password, [name]
         __authentication.SignUp(model.name, model.email, model.password)(data => {
             dispatch({ type: 'ACCOUNT__REGISTRATION__SUCCESS'});
             dispatch({ type: 'ACCOUNT__SIGNIN__SUCCESS', accountData: data });
@@ -64,7 +45,6 @@ export const actionCreators = {
         // При разлогинивании пользователя, необходима взять инфрмацию и стора
         // Необходимо поле name, в нем хранится информация о предыдущем анонимном пользователе
         // Это делается во избежании многократного создания пользователей в случае разлогинивания неанонимного пользователя
-        const anonymousEmail = ClientData.cookieGetData('user-name');
         __authentication.Authenticate(anonymousEmail)(data => {
             dispatch({ type: 'ACCOUNT__AUTH__SUCCESS', data: data, anonymous: true });
         }, error => {
@@ -130,9 +110,6 @@ export const reducer = (state, incomingAction) => {
             }})
         }
         case 'ACCOUNT__AUTH__ERROR': {
-            ClientData.cookieRemoveData('user-token');
-            ClientData.cookieRemoveData('user-name');
-
             return update(state, {$merge: {
                 authFetch: false,
                 auth: false,
@@ -148,10 +125,6 @@ export const reducer = (state, incomingAction) => {
             }});
         }
         case 'ACCOUNT__SIGNIN__SUCCESS': {
-
-            ClientData.cookieSetData('user-email', action.accountData.email);
-            ClientData.cookieSetData('user-token', action.accountData.token);
-
             return update(state, {$merge: {
                 signInFetch: false,
                 signInError: false,
@@ -192,9 +165,6 @@ export const reducer = (state, incomingAction) => {
             }})
         }
         case 'ACCOUNT__SIGNOUT': {
-            ClientData.cookieRemoveData('user-email');
-            ClientData.cookieRemoveData('user-token');
-
             if(state.signIn) {
                 return update(state, {$merge: {
                     auth: false,

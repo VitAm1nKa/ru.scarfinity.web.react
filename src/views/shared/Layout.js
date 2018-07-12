@@ -36,7 +36,9 @@ import {
 
 class Layout extends React.Component {
     componentWillMount() {
-
+        // Инициализация приложения
+        // Записать/обновить информацию о клиенте из стора в куки
+        
 
         // this.props.requestNavigation();
 

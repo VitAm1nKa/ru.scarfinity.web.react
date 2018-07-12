@@ -16,26 +16,28 @@ import Promise from 'bluebird';
 
 function prerender(params) {
     return new Promise((resolve, reject) => {
-        console.error('### ##  #   [APP START]   #  ## ###');
+        console.error('------------------------ ### ##  #   [APP START]   #  ## ### ------------------------');
         // Prepare Redux store with in-memory history, and dispatch a navigation event
         // corresponding to the incoming URL
         const basename = params.baseUrl.substring(0, params.baseUrl.length - 1); // Remove trailing slash
         const urlAfterBasename = params.url.substring(basename.length);
         const store = configureStore(createMemoryHistory());
+        const cookies = new Cookies(params.data.cookies);
         store.dispatch(replace(urlAfterBasename));
 
         const routerContext = {};
         const app = (
             <Provider store={ store }>
-                <CookiesProvider cookies={new Cookies(params.data.cookies)}>
+                <CookiesProvider cookies={cookies}>
                     <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
                 </CookiesProvider>
             </Provider>
         );
 
-        addTask(store.dispatch(initialize(params.data.cookies)).then(() => {
-            renderToString(app);
-        }));
+        // При серверном пререндеринге, вызываем механизм аутентификации клиента
+        // Вызов попадет первым в список отложенных доменных запросов
+        addTask(store.dispatch(initialize(cookies))
+            .then(() => renderToString(app)));
 
         params.domainTasks.then(() => {
             resolve({

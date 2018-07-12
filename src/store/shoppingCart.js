@@ -1,34 +1,59 @@
 import update               from 'immutability-helper';
-import { fetch, addTask }   from 'domain-task';
-import __request            from './__request';
-import qs                   from 'qs';
-
 import { ShoppingCart }     from '../models/ShoppingCart';
 import { __shoppingCart }   from './api-requests';
 
 export const actionCreators = {
     getShoppingCart: (createNewIsNull = false) => (dispatch, getState) => {
-        __shoppingCart.Get()(data => {
-            if(data == null && createNewIsNull) {
-                actionCreators.postShoppingCart()(dispatch, getState);
-            } else {
-                dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-            }
-        }, error => {});
+        if(!getState().shoppingCart.loading) {
+            dispatch(__shoppingCart.Get())
+                .then(response => response.json())
+                .then(({ type, data }) => {
+                    if(type == 'success') {
+                        if(data == null && createNewIsNull) {
+                            dispatch(actionCreators.postShoppingCart());
+                        } else {
+                            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+                        }
+                    } else {
+                        throw new Error(type);
+                    }
+                })
+                .catch(e => {
+                    dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
+                });
 
-        dispatch({type: 'SHOPPINGCART__REQUEST'});
+            dispatch({type: 'SHOPPINGCART__REQUEST'});
+        }
     },
     postShoppingCart: () => (dispatch, getState) => {
-        __shoppingCart.Post()(data => {
-            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-        }, error => {});
-
+        dispatch(__shoppingCart.Post())
+            .then(response => response.json())
+            .then(({ type, data }) => {
+                if(type == 'success') {
+                    dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+                } else {
+                    throw new Error(type);
+                }
+            })
+            .catch(error => { 
+                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
+            });
+        
         dispatch({ type: 'SHOPPINGCART__POST' });
     },
     setProductQty: (productId, quantity) => (dispatch, getState) => { 
-        __shoppingCart.Put(productId, quantity)(data => {
-            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-        }, error => {});
+        dispatch(__shoppingCart.Put(productId, quantity))
+            .then(response => response.json())
+            .then(({ type, data }) => {
+                if(type == 'success') {
+                    dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+                } else {
+                    throw new Error(type);
+                }
+            })
+            .catch(error => {
+                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
+            });
 
         dispatch({ type: 'SHOPPINGCART__SETPRODUCTQTY' });
     }
@@ -36,7 +61,7 @@ export const actionCreators = {
 
 const initialState = {
     loading: false,
-    shoppingCart: new ShoppingCart(),
+    shoppingCart: null,
 }
 
 export const reducer = (state, incomingAction) => {
@@ -47,9 +72,11 @@ export const reducer = (state, incomingAction) => {
         case 'SHOPPINGCART__RECEIVE': {
             return update(state, {$merge: {
                 loading: false,
-                shoppingCart: new ShoppingCart(action.shoppingCartData || {})
+                shoppingCart: action.shoppingCartData
             }});
         }
+
+
         // Фетч спосбов доставки
         case 'SHOPPINGCART__SHIPMETHODS__REQUEST': {
             return update(state, {$merge: {

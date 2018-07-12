@@ -4,6 +4,7 @@ import { connect }          from 'react-redux';
 import qs                   from 'qs';
 import jwtDecoder           from 'jwt-decode';
 import sha1                 from 'sha1';
+import { withCookies }      from 'react-cookie';
 
 import Dialog               from '../components/utility/dialog';
 import SignForm             from '../components/utility/sign-form';
@@ -41,42 +42,23 @@ class Controller extends React.Component {
 
     componentWillMount() {
         if(this.props.account.auth) {
-            ClientData.cookieSetData('user-email', this.props.account.userEmail);
-            ClientData.cookieSetData('user-name', this.props.account.userName);
-            ClientData.cookieSetData('user-token', this.props.account.userToken);
+            this.props.cookies.set('user-email', this.props.account.userEmail);
+            this.props.cookies.set('user-name', this.props.account.userName);
+            this.props.cookies.set('user-token', this.props.account.userToken);
+
+            // Запросить данные о клиенте
+            
+            // Корзина пользователя
+            // Корзина загружается только один раз, при старте приложения
+            if(this.props.shoppingCart.shoppingCart == null) {
+                this.props.getShoppingCart(true); 
+            }
+
+        } else {
+            this.props.cookies.remove('user-email');
+            this.props.cookies.remove('user-name');
+            this.props.cookies.remove('user-token');
         }
-
-        // // Логин пользователя
-        // const userEmail = ClientData.cookieGetData('user-email');
-        // const userToken = ClientData.cookieGetData('user-token');
-
-        // if(userToken == null || userToken == '') {
-        //     // Зарос на новый токен
-        //     this.props.authenticate(userEmail);
-        // } else {
-        //     // Проверка токена
-        //     // Проверка на тип пользователя и срок действия
-        //     // Если срок действия не истек, просто получить информацию о пользователе
-        //     const decoded = jwtDecoder(userToken);
-        //     const datetime = Date.now();
-        //     const roles = _.flatten([decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '']);
-        //     const role = (_.head(roles)).toUpperCase();
-
-        //     if(decoded.exp * 1000 < datetime) {
-        //         // Если срок действия истек, запросить новый токен
-        //         // Автоматически это возможно только в случае, если пользователь анонимный
-        //         // Если пользователь не анонимный, разлогинить данного пользователя и получить токен для анонимного
-        //         if(role != 'ANONYMOUS') {
-        //             // Разлогинить польователя
-        //             this.props.signOut();
-        //         } else {
-        //             // Иначе, получить новый токен анонимного пользователя
-        //             this.props.authenticate(userEmail);
-        //         }
-        //     } else {
-        //         this.props.continue(role);
-        //     }
-        // }
     }
 
     componentWillReceiveProps(newProps) {
@@ -175,7 +157,8 @@ class Controller extends React.Component {
 const mstp = (state, ownProps) => {
     return {
         account: state.account,
-        userInfo: state.user
+        userInfo: state.user,
+        shoppingCart: state.shoppingCart
     }
 }
 
@@ -184,4 +167,4 @@ const mdtp = Object.assign({},
     ShoppingCartActions,
     UserStore.actionCreators);
 
-export default connect(mstp, mdtp)(withRouter(Controller));
+export default withRouter(connect(mstp, mdtp)(withCookies(Controller)));

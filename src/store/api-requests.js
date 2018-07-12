@@ -240,7 +240,6 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
 function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
     return (dispatch, getState) => {
         const queryString = qs.stringify(query, { addQueryPrefix: true });
-        const userToken = getState().account.userToken;
         dispatch({ type: `API Fetch: ${method} : ${apiMethod}${queryString || ''}` });
         console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
 
@@ -248,7 +247,7 @@ function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask =
             url: apiUrl(apiMethod) + queryString,
             method,
             headers: getState().account.headers,
-            body: _.includes(['POST', 'PUT'], method) ? body : null
+            body: _.includes(['POST', 'PUT'], method) ? _.pickBy(body, _.identity) : null
         }));
 
         if (_domainTask) addTask(fetchTask);
@@ -272,8 +271,7 @@ export const __authentication = {
         }});
     },
     Authenticate: (email) => {
-        const body = email != null ? { email } : {};
-        return requestBuilder('Token', 'POST', { body }, true);
+        return __requestBuilder('Token', 'POST', { body: { email } }, true);
     },
     Me: () => {
         return requestBuilder('Token', 'GET');
@@ -375,13 +373,13 @@ export const __sitePage = {
 //  #region ShoppingCart
 export const __shoppingCart = {
     Get: () => {
-        return requestBuilder('ShoppingCart', 'GET', {}, true);
+        return __requestBuilder('ShoppingCart', 'GET', {}, true);
     },
     Post: () => {
-        return requestBuilder('ShoppingCart', 'POST', { body: {} });
+        return __requestBuilder('ShoppingCart', 'POST', { body: {} });
     },
     Put: (productId, quantity) => {
-        return requestBuilder('ShoppingCart', 'PUT', { body: {
+        return __requestBuilder('ShoppingCart', 'PUT', { body: {
             productId,
             quantity
         }});

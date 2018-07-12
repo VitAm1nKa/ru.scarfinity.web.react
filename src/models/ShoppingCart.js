@@ -1,7 +1,8 @@
 import { ProductSmall } from './ProductModel';
 
 export class ShoppingCart {
-    constructor(model = {}) {
+    constructor(model) {
+        model = model || {};
         this.shoppingCartId = model.shoppingCartId;
         this.creationDate = model.creationDate;
         this.lastModified = model.lastModified;

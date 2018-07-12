@@ -22,7 +22,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme      from 'material-ui/styles/getMuiTheme';
 const muiTheme = getMuiTheme({userAgent: 'all'});
 
-export const routes =
+export const routes = 
 <MuiThemeProvider muiTheme={muiTheme}>
     <Layout>
         <Switch>
@@ -43,3 +43,5 @@ export const routes =
         </Switch>
     </Layout>
 </MuiThemeProvider>
+
+

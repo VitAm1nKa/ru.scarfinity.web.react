@@ -16,6 +16,7 @@ import RaisedButton         from 'material-ui/RaisedButton';
 
 import './mobile-main-menu.less';
 import { CatalogPageSchemaNode } from '../../models/CatalogPage';
+import { ShoppingCart } from '../../models/ShoppingCart';
 
 
 // import menuDataJSON from '../../develop/menuMap.json';
@@ -928,8 +929,11 @@ const getSubMenu = (index) => {
 const mstp = state => {
 	return {
         catalogPageSchema: new CatalogPageSchemaNode(state.catalog.catalogPageSchema),
-		root: state.navigation.root,
-		shoppingCartStore: state.shoppingCart,
+        root: state.navigation.root,
+		shoppingCartStore: {
+            shoppingCart: new ShoppingCart(state.shoppingCart.shoppingCart),
+            loading: state.shoppingCart.loading
+        },
 		cartOrder: state.cart.order
 	}
 }

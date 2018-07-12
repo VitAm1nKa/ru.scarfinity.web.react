@@ -1,43 +1,6 @@
-import jwtDecoder   from 'jwt-decode';
-import Promise      from 'bluebird';
-
-function authenticateRequest(email) {
-    const body = { email };
-
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-    };
-
-    const init = {
-        headers,
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        body: JSON.stringify(_.pickBy(body, _.identity))
-    }
-
-    return new Request('http://localhost:50146/api/token', init);
-}
-
-
-function getSettings(cookies, account) {
-    const settings = _.merge({
-        'user-email': null,
-        'user-name': null,
-        'user-token': null
-    }, cookies, _.pickBy({
-        'user-email': account.userEmail,
-        'user-name': account.userName,
-        'user-token': account.userToken
-    }, _.identity));
-
-    return _.pickBy({
-        userEmail: settings['user-email'],
-        userName: settings['user-name'],
-        userToken: settings['user-token']
-    }, _.identity);
-}
+import jwtDecoder           from 'jwt-decode';
+import Promise              from 'bluebird';
+import { __authentication } from './store/api-requests';
 
 function authenticateStart() {
     return { type: 'ACCOUNT__AUTH__REQUEST' };
@@ -55,7 +18,7 @@ function autenticate(email) {
     return (dispatch, getState) => {
         return new Promise((resolve, reject) => {
             dispatch(authenticateStart());
-            fetch(authenticateRequest(email))
+            dispatch(__authentication.Authenticate(email))
                 .then(response => response.json())
                 .then(({type, message, data}) => {
                     if(type == 'success') {
@@ -74,29 +37,35 @@ function autenticate(email) {
     }
 }
 
+function getSettings(data) {
+    return _.merge({
+        ['user-email']: null,
+        ['user-name']: null,
+        ['user-token']: null
+    }, data);
+}
+
 export function initialize({ cookies }) {
-    return (dispatch, getState) => {
-        const settings = getSettings(cookies, getState().account);
-        if(settings.userToken != null) {
-            // // Проверка токена
-            // // Проверка на тип пользователя и срок действия
-            // // Если срок действия не истек, просто получить информацию о пользователе
+    return (dispatch) => {
+        const settings = getSettings(cookies);
+        if(settings['user-token'] != null) {
+            // Проверка токена
             try {
-                const decoded = jwtDecoder(settings.userToken);
+                const decoded = jwtDecoder(settings['user-token']);
 
                 // Если срок действия не истек, вернуть ресолв
                 if(decoded.exp * 1000 > Date.now()) {
                     dispatch(authenticateComplete({
-                        email: settings.userEmail,
-                        name: settings.userName,
-                        token: settings.userToken
+                        email: settings['user-email'],
+                        name: settings['user-name'],
+                        token: settings['user-token']
                     }));
                     return Promise.resolve();
                 } 
             }
-            catch(e) { }
+            catch(e) { return Promise.reject(); }
         } 
 
-        return dispatch(autenticate(settings.userEmail));
+        return dispatch(autenticate(settings['user-email']));
     }
 }
