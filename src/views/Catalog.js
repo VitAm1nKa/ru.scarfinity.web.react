@@ -6,6 +6,8 @@ import {
     Redirect,
     NavLink
 }                       from 'react-router-dom';
+import { withPage }     from './shared/Page';
+
 import {
     StickyContainer
 }                       from 'react-sticky';
@@ -31,17 +33,39 @@ import { PageHeader }   from '../components/utility/titles';
 import CatalogHeader    from '../components/catalog/catalog-header';
 import CatalogLoader    from '../components/catalog/catalog-loader';
 import CatalogGrid      from '../components/catalog/catalog-grid';
+import { CatalogPage }  from '../models/CatalogPage';
+import { ProductModel } from '../store/__models';
+
+function catalogPageToPageData(catalogPage) {
+    if(catalogPage == null) return null;
+
+    const pageMeta = {
+        title: catalogPage.title,
+        seo: catalogPage.seo,
+        description: catalogPage.title,
+        image: '',
+        url: catalogPage.path
+    }
+
+    const breadCrumbs = _.map([...catalogPage.pathChain.nodes, {
+        seo: pageMeta.seo,
+        title: pageMeta.title
+    }], b => ({ seo: b.seo, title: b.title, path: 'path' }));
+
+    return ({ pageMeta, breadCrumbs });
+}
 
 class Controller extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            catalogPage: null,
             catalogPageNumber: 0,
-            catalogPageFilters: new CatalogPageFilters()
+            catalogPageFilters: new CatalogPageFilters(),
+            productModels: null
         }
 
-        this.reloadCatalog = this.reloadCatalog.bind(this);
         this.applyFilters = this.applyFilters.bind(this);
         this.handleCatalogSetFilter = this.handleCatalogSetFilter.bind(this);
         this.handleCatalogPageLoadMore = this.handleCatalogPageLoadMore.bind(this);
@@ -60,22 +84,68 @@ class Controller extends React.Component {
     }
 
     componentWillMount() {
-        this.reloadCatalog(this.props.location);
+        this.state.catalogPageFilters = this.analyzeFilters(this.props.location.pathname.substr(1).replace(/\/$/, "").split('/'));
+        this.props.initializePage({ seo: 'catalog' }, (callback) => {
+            // Информация о каталоге
+            if(this.props.catalogPage == null/* || !CatalogPageFilters.isEqual(this.props.catalogPageFilters, this.state.catalogPageFilters)*/) {
+                this.props.logMessage('Catalo info async start');
+                this.props.loadCatalogPageInfo(this.state.catalogPageFilters,
+                    data => {
+                        this.props.logMessage('Catalo info async loading complete');
+                        // Асинхронный колбек загрузки
+                        this.state.catalogPage = new CatalogPage(data);
+
+                        // Устанавливаем мету и хлебные крошки
+                        callback(catalogPageToPageData(data));
+
+                        // Форсим апдейт, так как метод асинхронный
+                        this.forceUpdate();
+                    }, 
+                    error => {
+                        // Ошибка агрузки, форсим 404
+                        this.props.logMessage('Catalo info async loading complete ERROR');
+                        this.state.catalogPage = null;
+                        callback(null);
+                        this.forceUpdate();
+                    });
+            } else {
+                this.state.catalogPage = new CatalogPage(this.props.catalogPage);
+                // Установить мету страницы и хлебные крошки
+                callback(catalogPageToPageData(this.state.catalogPage));
+            }
+
+            // Список товарав для данного каталога
+            if(this.props.productModels == null || !CatalogPageFilters.isEqualForProducts(this.props.catalogPageFilters, this.state.catalogPageFilters)) {
+                // this.props.loadCatalogProductModels(this.state.catalogPageFilters, this.state.catalogPageNumber);
+            } else {
+                this.state.productModels = _.map(this.props.productModels, p => new ProductModel(p));
+            }
+        });
     }
 
     componentWillReceiveProps(nextProps) {
+        this.props.logMessage('Catalo receive props');
         if(_.trimEnd(this.props.location.pathname, '/') != _.trimEnd(nextProps.location.pathname, '/')) {
-            this.reloadCatalog(nextProps.location);
-        }
-    }
-
-    reloadCatalog(location) {
-        this.setState({
-            catalogPageFilters: this.analyzeFilters(location.pathname.substr(1).replace(/\/$/, "").split('/'))
-        }, () => {
+            this.state.catalogPageFilters = this.analyzeFilters(nextProps.location.pathname.substr(1).replace(/\/$/, "").split('/'));
             this.props.loadCatalogPageInfo(this.state.catalogPageFilters);
-            this.props.loadCatalogProductModels(this.state.catalogPageFilters, this.state.catalogPageNumber);
-        })
+            // this.props.loadCatalogProductModels(this.state.catalogPageFilters, this.state.catalogPageNumber);
+        }
+
+        if(!nextProps.catalogPageLoading && this.props.catalogPageLoading) {
+            // Изменилось состояние загрузки информации о каталоге
+            // Загрузка закончилась
+            this.props.logMessage('Catalo info loading complete');
+            this.state.catalogPage = new CatalogPage(nextProps.catalogPage);
+
+            // Установить мету страницы и хлебные крошки
+            this.props.logMessage('Catalo set pageData');
+            this.props.setPageData(catalogPageToPageData(this.state.catalogPage));
+        }
+
+        if(!nextProps.productModelsLoading && this.props.productModelsLoading) {
+            // Загрузка списка товаров закончена
+            this.state.productModels = _.map(nextProps.productModels, p => new ProductModel(p));
+        }
     }
 
     //  #region Filters
@@ -366,84 +436,93 @@ class Controller extends React.Component {
     }
 
     render() {
-        return(
-            <div className="catalog">
-                <Grid.VerticalGrid>
-                    <Grid.GridLine>
-                        <BreadCrumb nodes={this.props.catalogPage.pathChain.nodes} />
-                        <PageHeader title={this.props.catalogPage.title}/>
-                    </Grid.GridLine>
-                    <Grid.Row>
-                        <Grid.Container>
-                            <Grid.Col lg={3} md={3} sm={16} xs={16}>
-                                <FiltersContainer
-                                    sortByItems={this.state.catalogPageFilters.sortByItems}
-                                    sortBySelectedId={this.state.catalogPageFilters.sortById}
-                                    sortByDesc={this.state.catalogPageFilters.sortByDesc}
-                                    onSortByChange={this.handleSortByChange}>
-                                        <Grid.VerticalGrid>
-                                            {
-                                                this.props.catalogPage.catalogPageInfo.catalogSubPages &&
-                                                this.props.catalogPage.catalogPageInfo.catalogSubPages.length > 0 &&
-                                                <CatalogList
-                                                    productSubCategories={this.props.catalogPage.catalogPageInfo.catalogSubPages}
-                                                    selectedNodes={this.state.catalogPageFilters.catalogIds}
-                                                    onSelectNode={this.handleSelectNode}
-                                                    onReset={this.handleSelectNodeReset}/>
-                                            }
-                                            <PriceRange
-                                                minValue={this.props.catalogPage.catalogPageInfo.minListPrice}
-                                                maxValue={this.props.catalogPage.catalogPageInfo.maxListPrice}
-                                                leftValue={this.state.catalogPageFilters.pricePerItemFrom}
-                                                rightValue={this.state.catalogPageFilters.pricePerItemTo}
-                                                onValueChange={this.handlePriceValueChange}
-                                                onReset={this.handlePriceReset}/>
-                                            <ColorPicker
-                                                selectedColors={this.state.catalogPageFilters.colorCodes}
-                                                avalibleColors={this.props.catalogPage.catalogPageInfo.ColorCodes}
-                                                onSelectChange={this.handleColorCodesSelectChange}
-                                                onReset={this.handleColorCodesReset}/>
-                                            <SeasonList
-                                                seasons={this.props.catalogPage.catalogPageInfo.Seasons}
-                                                selectedSeasonsCodes={this.state.catalogPageFilters.seasonsCodes}
-                                                onSelectChange={this.handleSeasonsCodesChange}
-                                                onReset={this.handleSeasonsCodesReset}/>
-                                            <RatingSelect
-                                                rating={this.state.catalogPageFilters.rating}
-                                                maxAverageRating={this.props.catalogPage.catalogPageInfo.maxAverageRating}
-                                                onRatingChange={this.handleRatingChange}
-                                                onReset={this.handleRatingReset}/>
-                                        </Grid.VerticalGrid>
-                                </FiltersContainer>
-                            </Grid.Col>
-                            <Grid.Col lg={13} md={13} sm={16} xs={16}>
-                                <Grid.VerticalGrid>
-                                    <CatalogHeader
-                                        title={this.props.catalogPage.title}
-                                        itemsOnPage={this.state.catalogPageFilters.itemsOnPage}
-                                        itemsOnPageValues={this.state.catalogPageFilters.itemsOnPageValues}
-                                        onItemsOnPageChange={this.handleChangeItemsOnPage}
+        if(this.props.catalogPageLoading) {
+            return <div>{"Loading..."}</div>
+        } else if(this.state.catalogPage != null) {
+            return(
+                <div className="catalog">
+                    <Grid.VerticalGrid>
+                        <Grid.GridLine>
+                            <PageHeader title={this.props.catalogPage.title}/>
+                        </Grid.GridLine>
+                        <Grid.Row>
+                            <Grid.Container>
+                                <Grid.Col lg={3} md={3} sm={16} xs={16}>
+                                    <FiltersContainer
                                         sortByItems={this.state.catalogPageFilters.sortByItems}
                                         sortBySelectedId={this.state.catalogPageFilters.sortById}
                                         sortByDesc={this.state.catalogPageFilters.sortByDesc}
-                                        onSortByChange={this.handleSortByChange}/>
-                                    <CatalogGrid
-                                        catalogId={this.props.catalogPage.catalogPageId}
-                                        productModels={this.props.productModels}
-                                        loadMore={this.props.onLoadProductsModel}
-                                        hasMore={this.props.productModelsHasMore}
-                                        onCartAdd={this.props.setCartOrderProduct}/>
-                                </Grid.VerticalGrid>
-                            </Grid.Col>
-                        </Grid.Container>
-                    </Grid.Row>
-                </Grid.VerticalGrid>
-            </div>
-        )
+                                        onSortByChange={this.handleSortByChange}>
+                                            <Grid.VerticalGrid>
+                                                {
+                                                    this.props.catalogPage.catalogPageInfo.catalogSubPages &&
+                                                    this.props.catalogPage.catalogPageInfo.catalogSubPages.length > 0 &&
+                                                    <CatalogList
+                                                        productSubCategories={this.props.catalogPage.catalogPageInfo.catalogSubPages}
+                                                        selectedNodes={this.state.catalogPageFilters.catalogIds}
+                                                        onSelectNode={this.handleSelectNode}
+                                                        onReset={this.handleSelectNodeReset}/>
+                                                }
+                                                <PriceRange
+                                                    minValue={this.props.catalogPage.catalogPageInfo.minListPrice}
+                                                    maxValue={this.props.catalogPage.catalogPageInfo.maxListPrice}
+                                                    leftValue={this.state.catalogPageFilters.pricePerItemFrom}
+                                                    rightValue={this.state.catalogPageFilters.pricePerItemTo}
+                                                    onValueChange={this.handlePriceValueChange}
+                                                    onReset={this.handlePriceReset}/>
+                                                <ColorPicker
+                                                    selectedColors={this.state.catalogPageFilters.colorCodes}
+                                                    avalibleColors={this.props.catalogPage.catalogPageInfo.ColorCodes}
+                                                    onSelectChange={this.handleColorCodesSelectChange}
+                                                    onReset={this.handleColorCodesReset}/>
+                                                <SeasonList
+                                                    seasons={this.props.catalogPage.catalogPageInfo.Seasons}
+                                                    selectedSeasonsCodes={this.state.catalogPageFilters.seasonsCodes}
+                                                    onSelectChange={this.handleSeasonsCodesChange}
+                                                    onReset={this.handleSeasonsCodesReset}/>
+                                                <RatingSelect
+                                                    rating={this.state.catalogPageFilters.rating}
+                                                    maxAverageRating={this.props.catalogPage.catalogPageInfo.maxAverageRating}
+                                                    onRatingChange={this.handleRatingChange}
+                                                    onReset={this.handleRatingReset}/>
+                                            </Grid.VerticalGrid>
+                                    </FiltersContainer>
+                                </Grid.Col>
+                                <Grid.Col lg={13} md={13} sm={16} xs={16}>
+                                    <Grid.VerticalGrid>
+                                        <CatalogHeader
+                                            title={this.props.catalogPage.title}
+                                            itemsOnPage={this.state.catalogPageFilters.itemsOnPage}
+                                            itemsOnPageValues={this.state.catalogPageFilters.itemsOnPageValues}
+                                            onItemsOnPageChange={this.handleChangeItemsOnPage}
+                                            sortByItems={this.state.catalogPageFilters.sortByItems}
+                                            sortBySelectedId={this.state.catalogPageFilters.sortById}
+                                            sortByDesc={this.state.catalogPageFilters.sortByDesc}
+                                            onSortByChange={this.handleSortByChange}/>
+                                        <CatalogGrid
+                                            catalogId={this.props.catalogPage.catalogPageId}
+                                            productModels={this.props.productModels}
+                                            loadMore={this.props.onLoadProductsModel}
+                                            hasMore={this.props.productModelsHasMore}
+                                            onCartAdd={this.props.setCartOrderProduct}/>
+                                    </Grid.VerticalGrid>
+                                </Grid.Col>
+                            </Grid.Container>
+                        </Grid.Row>
+                    </Grid.VerticalGrid>
+                </div>
+            )
+        } else {
+            return <div>{"Error"}</div>
+        }
     }
 }
 
 export default connect(state => ({
+    catalogPageFilters: state.catalog.catalogPageFilters,
     catalogPage: state.catalog.catalogPage,
-    productModels: state.catalog.productModels
-}), Object.assign({}, actionCreators))(Controller);
+    catalogPageLoading: state.catalog.catalogPageLoading,
+    productModels: state.catalog.productModels,
+    productModelsLoading: state.catalog.productModelsLoading
+}), Object.assign({}, actionCreators))
+(withPage(Controller));

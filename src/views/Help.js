@@ -3,6 +3,7 @@ import { connect }          from 'react-redux';
 import {  
     Route,
     NavLink,
+    Switch,
     withRouter
 }                           from 'react-router-dom';
 import { withPage }         from './shared/Page';
@@ -10,10 +11,14 @@ import { withPage }         from './shared/Page';
 import * as Grid            from '../lib/grid';
 
 import { ProductModel }     from '../store/__models';
+import { CatalogPage }      from '../models/CatalogPage';
 import { __productModel }   from '../store/api-requests';
 import {
     productModelActionCreators
 }                           from '../store/productModel';
+import {
+    actionCreators
+}                           from '../store/catalog';
 
 function productModelId(productModelNumber) {
     if(/^\d+$/g.test(productModelNumber)) {
@@ -133,6 +138,56 @@ const ProductCard = connect(state => ({
 (withPage(ProductCardController, '__productCard'));
 //  -----------------------------------------------------------------
 
+
+class CatalogPageController extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            catalogPage: null
+        }
+    }
+
+    componentWillMount() {
+        this.props.initializePage({ seo: '' }, (callback) => {
+            if(this.props.catalogPage == null) {
+                this.props.loadCatalogPageInfo(null, 
+                    data => {
+                        this.state.catalogPage = new CatalogPage(data);
+                        callback({pageMeta: { title: this.state.catalogPage.title }});
+                        this.forceUpdate();
+                    }, 
+                    error => {
+                        this.state.catalogPage = null;
+                        callback(null);
+                        this.forceUpdate();
+                    });
+            } else {
+                this.state.catalogPage = new CatalogPage(this.props.catalogPage);
+            }
+        });
+    }
+
+    render() {
+        if(this.props.catalogPageLoading) {
+            return <div style={{textAlign: 'center', display: 'flex', height: 250, fontSize: 32}}>{'Loading.......'}</div>
+        } else if(this.state.catalogPage != null) {
+            return <div style={{ display: 'flex' }}>
+                <h2>{this.state.catalogPage.title || 'No title'}</h2>
+            </div>
+        } else {
+            return <div style={{textAlign: 'center', display: 'flex', height: 250, fontSize: 48}}>{'404'}</div>
+        }
+    }
+}
+
+const CatalogPageView = connect(state => ({
+    catalogPage: state.catalog.catalogPage,
+    catalogPageLoading: state.catalog.catalogPageLoading
+}), Object.assign({}, actionCreators))
+(withPage(CatalogPageController, '__catalogPage'));
+//  -----------------------------------------------------------------
+
 const navLinkStyle = {
     display: 'block',
     lineHeight: '24px',
@@ -165,9 +220,13 @@ class Controller extends React.Component {
                     <NavLink style={navLinkStyle} to='/help/12'>{'12'}</NavLink>
                     <NavLink style={navLinkStyle} to='/help/48'>{'48'}</NavLink>
                     <NavLink style={navLinkStyle} to='/help/36'>{'36'}</NavLink>
+                    <NavLink style={navLinkStyle} to='/help/catalog/1'>{'catalog'}</NavLink>
                 </div>
                 <div style={{ padding: '20px 0px' }}>
-                    <Route path='/help/:id' component={ProductCard} />
+                    <Switch>
+                        <Route path='/help/catalog' component={CatalogPageView} />
+                        <Route path='/help/:id' component={ProductCard} />
+                    </Switch>
                 </div>
                 <hr />
                 <p>

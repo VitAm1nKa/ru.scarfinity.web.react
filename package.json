@@ -22,6 +22,7 @@
   "dependencies": {
     "aspnet-prerendering": "^3.0.1",
     "aspnet-webpack-react": "^3.0.0",
+    "bluebird": "^3.5.1",
     "create-react-class": "^15.6.3",
     "domain-task": "^3.0.3",
     "event-source-polyfill": "0.0.9",

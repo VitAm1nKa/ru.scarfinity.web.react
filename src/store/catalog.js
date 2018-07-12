@@ -8,6 +8,7 @@ import {
     __productModel,
     __catalogPage
 }                           from './api-requests';
+import { addTask }          from 'domain-task';
 
 export const catalogSchemaActionCreators = {
     loadCatalogPageSchema: () => (dispatch, getState) => {
@@ -43,20 +44,49 @@ export const actionCreators = {
         }
     },
     //  -- Работа с информацией о каталоге
-    loadCatalogPageInfo: (catalogPageFilters) => (dispatch, getState) => {
-        if(!getState().catalog.cataloPageInfoLoading) {
-            __catalogPage.Get.Single(catalogPageFilters)(
-                data => {
-                    dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS', data });
-                },
-                error => {
+    loadCatalogPageInfo: (catalogPageFilters, onSuccess, onError) => (dispatch, getState) => {
+        if(getState().catalog.catalogPageLoading == false) {
+            dispatch(__catalogPage.Get.Single(catalogPageFilters))
+                .then(response => response.json())
+                .then(({ type, data }) => {
+                    if(type == 'success') {
+                        dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS', data });
+                        if(onSuccess) onSuccess(data);
+                    } else {
+                        dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR' });
+                        if(onError) onError();
+                    }
+                })
+                .catch(e => {
                     dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR' });
-                }, true);
+                    if(onError) onError(e);
+                });
 
-            dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH' });
+            dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH', catalogPageFilters });
         }
     }
 };
+
+/*
+    //  -- Работа с информацией о каталоге
+    loadCatalogPageInfo: (catalogPageFilters, onSuccess, onError) => (dispatch, getState) => {
+        if(getState().catalog.catalogPageLoading == false) {
+            dispatch(__catalogPage.Get.Single(catalogPageFilters))
+                .then(response => response.json())
+                .then(({ type, data }) => {
+                    if(type == 'success') {
+                        dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS', data });
+                        if(onSuccess) onSuccess(data);
+                    } else {
+                        dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR' });
+                        if(onError) onError(error);
+                    }
+                })
+                .catch(error => {});
+        }
+    }
+
+*/
 
 const initialState = {
     catalogPageSchema: new CatalogPageSchemaNode(),
@@ -64,10 +94,10 @@ const initialState = {
     catalogPageSchemaFetch: false,
     catalogPageSchemaError: null,
 
-    catalogPage: new CatalogPage(),
+    catalogPageFilters: null,
+    catalogPage: null,
     catalogPageLoading: false,
-
-    productModels: [],
+    productModels: null,
     productModelsHasMore: true,
     productModelsLoading: false,
 }
@@ -101,19 +131,21 @@ export const reducer = (state, incomingAction) => {
         //  #endregion
         //  #region CatalogPage
         case 'CATALOG_CATALOGPAGEINFO_FETCH': {
-            return update(state, {
-                catalogPageLoading: {$set: true},
-                productModels: {$set: []}
-            });
+            return update(state, {$merge: {
+                catalogPageFilters: action.catalogPageFilters,
+                catalogPageLoading: true,
+            }});
         }
         case 'CATALOG_CATALOGPAGEINFO_FETCH_SUCCESS': {
             return update(state, {$merge: {
                 catalogPageLoading: false,
-                catalogPage: new CatalogPage(action.data)
+                catalogPage: action.data
             }});
         }
         case 'CATALOG_CATALOGPAGEINFO_FETCH_ERROR': {
-            return state;
+            return update(state, {$merge: {
+                catalogPageLoading: false
+            }});
         }
         //  #endregion
         //  #region ProductModels
@@ -124,7 +156,7 @@ export const reducer = (state, incomingAction) => {
             return update(state, {$merge: {
                 productModelsLoading: false,
                 productModelsHasMore: action.data != null && action.data.length == action.productsOnPage },
-                productModels: {$push: _.map(action.data, productModel => new ProductModel(productModel))}
+                productModels: {$push: action.data}
             })
         }
         case 'CATALOG_PRODUCTMODELS_FETCH_EROOR': {

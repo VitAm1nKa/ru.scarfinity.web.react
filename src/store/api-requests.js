@@ -2,6 +2,184 @@ import qs                   from 'qs';
 import { addTask }          from 'domain-task';
 import * as ClientData      from '../lib/client-data';
 
+function authenticateRequest(email) {
+    const body = { email };
+
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+    };
+
+    const init = {
+        headers,
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: JSON.stringify(_.pickBy(body, _.identity))
+    }
+
+    return new Request('http://localhost:50146/api/token', init);
+}
+
+//  #region Authenticate
+function authenticate(userEmail) {
+    return (dispatch) => {
+        dispatch(authenticateStart());
+        return new Promise((resolve, reject) => {
+            fetch(authenticateRequest(userEmail))
+                .then(response => response.json())
+                .then(({type, message, data}) => {
+                    if(type == 'success') {
+                        resolve({ type: 'success', data });
+                    } else {
+                        reject({ type, error: message });
+                    }
+                })
+                .catch(error => {
+                    resolve({ type: 'error', error });
+                });
+        });
+    }
+}
+
+export function authenticateStart() {
+    return { type: 'ACCOUNT__AUTH__REQUEST' };
+}
+
+export function authenticateComplete(data) {
+    return { type: 'ACCOUNT__AUTH__SUCCESS', data, anonymous: true };
+}
+
+export function authenticateError() {
+    return { type: 'ACCOUNT__AUTH__ERROR' };
+}
+
+function getSettings(cookies, account) {
+    const settings = _.merge({
+        'user-email': null,
+        'user-name': null,
+        'user-token': null
+    }, cookies, _.pickBy({
+        'user-email': account.userEmail,
+        'user-name': account.userName,
+        'user-token': account.userToken
+    }, _.identity));
+
+    return _.pickBy({
+        userEmail: settings['user-email'],
+        userName: settings['user-name'],
+        userToken: settings['user-token']
+    }, _.identity);
+}
+
+
+
+
+function buildRequest(baseRequest) {
+    const body = baseRequest.body;
+
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+    };
+
+    const init = {
+        headers,
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: JSON.stringify(_.pickBy(body, _.identity))
+    }
+
+    return new Request('http://localhost:50146/api/token', init);
+}
+
+
+export function makeRequest() {
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            const settings = getSettings(ClientData.cookies, getState().account);
+
+            if(settings.userToken != null) {
+                // // Проверка токена
+                try {
+                    const decoded = jwtDecoder(settings.userToken);
+
+                    // Если срок действия не истек, вернуть ресолв
+                    if(decoded.exp * 1000 > Date.now()) {
+                        dispatch(authenticateComplete({
+                            email: settings.userEmail,
+                            name: settings.userName,
+                            token: settings.userToken
+                        }));
+                        resolve();
+                    } 
+                }
+                catch(e) { }
+            } 
+
+            return dispatch(authenticate(settings['user-email']))
+                .then(({ data }) => {
+                    dispatch(authenticateComplete(data));
+                    resolve();
+                })
+                .catch(() => {
+                    dispatch(authenticateError());
+                    reject();
+                });
+        });
+    }
+}
+
+function _request(options = {}) {
+    const headers = new Headers(Object.assign({}, {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+    }, options.headers || {}));
+
+    
+    console.error(`!!!!`, options.url, headers);
+
+    const init = {
+        headers,
+        method: options.method || 'GET',
+        mode: 'cors',
+        cache: 'default',
+        body: options.body ? JSON.stringify(_.pickBy(options.body, _.identity)) : null
+    }
+
+    return new Request(options.url, init);
+}
+
+function _requestBuilder(apiMethod, method, { body, query }, _domainTask = false) {
+    return (dispatch, getState) => {
+        // Формируем квери запроса
+        const queryString = qs.stringify(query, { addQueryPrefix: true });
+
+        // Получаем из стора токен пользователя
+        const userToken = getState().account.userToken;
+
+        dispatch({ type: `API fetch: ${method} : ${apiMethod}${queryString || ''}. [token]:[${(userToken || 'no-tkn').substr(0, 5)}...]` });
+
+        // Генерируем итоговый запрос
+        let fetchTask = fetch(_request({
+            url: apiUrl(apiMethod) + queryString,
+            method,
+            headers: _.pickBy({ 'Authorization': userToken ? `Bearer ${userToken}`: null }),
+            body: _.includes(['POST', 'PUT'], method) ? body : null
+        }))
+        .then(response => {
+            const headers = {};
+            return Promise.resolve();
+        })
+        .catch(e => Promise.reject(e));
+
+        if(_domainTask) addTask(fetchTask);
+
+        return fetchTask;
+    }
+}
+
 function request(options = {}) {
     const userToken = ClientData.cookieGetData('user-token');
     const headers = new Headers(Object.assign({}, {
@@ -27,6 +205,7 @@ function apiUrl(apiMethodName) {
 
 function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
     const queryString = qs.stringify(query, { addQueryPrefix: true });
+    const userToken = ClientData.cookieGetData('user-token');
     console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
     return function(onSuccess, onError, domainTask = _domainTask) {
         try {
@@ -45,7 +224,8 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
                     console.error(e);
                 });
 
-            if (domainTask) addTask(fetchTask);
+                // addTask(fetchTask);
+                if (domainTask) addTask(fetchTask);
         }
         catch(e) {
             if(onError != null) onError({type: 'Error', message: 'Error'});
@@ -53,6 +233,26 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
         finally {
             // do on finaly
         }
+    }
+}
+
+
+function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
+    return (dispatch, getState) => {
+        const queryString = qs.stringify(query, { addQueryPrefix: true });
+        const userToken = getState().account.userToken;
+        dispatch({ type: `API Fetch: ${method} : ${apiMethod}${queryString || ''}` });
+        console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
+
+        let fetchTask = fetch(_request({
+            url: apiUrl(apiMethod) + queryString,
+            method,
+            headers: getState().account.headers,
+            body: _.includes(['POST', 'PUT'], method) ? body : null
+        }));
+
+        if (_domainTask) addTask(fetchTask);
+        return fetchTask;
     }
 }
 
@@ -73,8 +273,7 @@ export const __authentication = {
     },
     Authenticate: (email) => {
         const body = email != null ? { email } : {};
-        console.log(body);
-        return requestBuilder('Token', 'POST', { body });
+        return requestBuilder('Token', 'POST', { body }, true);
     },
     Me: () => {
         return requestBuilder('Token', 'GET');
@@ -103,7 +302,7 @@ export const __productModel = {
 
             return requestBuilder('ProductModel', 'GET', { query }, true);
         },
-        Single: (productModelId) => requestBuilder(`ProductModel/${productModelId}`, 'GET', {}, true)
+        Single: (productModelId) => __requestBuilder(`ProductModel/${productModelId}`, 'GET', {}, true)
     }
 }
 
@@ -111,6 +310,7 @@ export const __catalogPage = {
     Get: {
         Many: () => requestBuilder('CatalogPage', 'GET', {}, true),
         Single: (catalogPageFilters) => {
+            return __requestBuilder(`CatalogPage/${'catalog/ladies'}`, 'GET', { }, true);
             const catalogPagePath = _.join(catalogPageFilters.catalogPathNodes, '/');
             const query = {
                 ct: catalogPageFilters.catalogIds,
@@ -123,7 +323,7 @@ export const __catalogPage = {
                 pu: catalogPageFilters.pricePerItemTo
             };
 
-            return requestBuilder(`CatalogPage/${catalogPagePath}`, 'GET', { query }, true);
+            return __requestBuilder(`CatalogPage/${catalogPagePath}`, 'GET', { query }, true);
         }
     }
 }

@@ -2,7 +2,7 @@ import { fetch, addTask }   from 'domain-task';
 import update               from 'immutability-helper';
 import __request            from './__request';
 import * as ClientData      from '../lib/client-data';
-import { __authentication } from './api-requests';
+import { __authentication, makeRequest } from './api-requests';
 
 function login(email, onSuccess, onError) {
     const request = 
@@ -31,6 +31,12 @@ export const actionCreators = {
         });
 
         dispatch({ type: 'ACCOUNT__AUTH__REQUEST' });
+    },
+    initialize: () => (dispatch, getState) => {
+        const task = dispatch(makeRequest())
+            .then(() => {});
+
+        addTask(task);
     },
     registration: (model) => (dispatch, getState) => {
         // Регистрация пользователя на основании данных хрянящихся в session storage
@@ -71,13 +77,21 @@ export const actionCreators = {
 };
 
 const initialState = {
+    headers: [],
+
     authFetch: false,
     auth: false,
     authError: null,
+
+    userEmail: null,
+    userName: null,
+    userToken: null,
+
     signIn: false,
     signInFetch: false,
     signInError: null,
     signInErrorMessages: [],
+
     registrationFetch: false,
     registrationError: false,
     registrationErrorMessages: []
@@ -99,32 +113,32 @@ export const reducer = (state, incomingAction) => {
             }});
         }
         case 'ACCOUNT__AUTH__SUCCESS': {
-
-            ClientData.cookieSetData('user-email', action.data.email || '');
-            ClientData.cookieSetData('user-token', action.data.token || '');
-
-            // Если получен токен для ананимного польователя, то сохранить email как name
-            // Для избежания многократного созвавания пользователей в момент ралогинивания
-            // Так же для исмольования при регистрации анонимного пользователя в реального
-            if(action.anonymous == true)
-                ClientData.cookieSetData('user-name', action.data.email);
+            const headers = {
+                ['Access-Control-Allow-Origin']: '*',
+                ['Content-Type']: 'application/json',
+                ['Authorization']: `Bearer ${action.data.token}`
+            };
 
             return update(state, {$merge: {
+                headers: headers,
                 authFetch: false,
                 auth: true,
-                authError: null
+                authError: null,
+                userEmail: action.data.email,
+                userName: action.data.email,
+                userToken: action.data.token
             }})
         }
         case 'ACCOUNT__AUTH__ERROR': {
-
-            ClientData.cookieRemoveData('user-email');
             ClientData.cookieRemoveData('user-token');
             ClientData.cookieRemoveData('user-name');
 
             return update(state, {$merge: {
                 authFetch: false,
                 auth: false,
-                authError: action.error.message
+                authError: action.error.message,
+                userName: null,
+                userToken: null
             }})
         }
         case 'ACCOUNT__SIGNIN__REQUEST': {

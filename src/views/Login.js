@@ -137,7 +137,6 @@ class Controller extends React.Component {
 
         return(
             <div>
-            <EnvironmentMeta title="Login Page" />
             <Grid.Row>
                 <Grid.Container>
                     <Grid.Col>

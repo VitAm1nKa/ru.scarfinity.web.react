@@ -35,16 +35,17 @@ import {
 }                           from '../../store/shop';
 
 class Layout extends React.Component {
-    // componentWillMount() {
+    componentWillMount() {
 
-    //     // this.props.requestNavigation();
 
-    //     // Получение информации о магазинах(на земле)
-    //     // this.props.getShops();
+        // this.props.requestNavigation();
 
-    //     // Получение данных о структуре каталога
-    //     this.props.loadCatalogPageSchema();
-    // }
+        // Получение информации о магазинах(на земле)
+        // this.props.getShops();
+
+        // Получение данных о структуре каталога
+        // this.props.loadCatalogPageSchema();
+    }
 
     componentDidMount() {
         scroll(0, 0);

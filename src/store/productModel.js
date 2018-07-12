@@ -1,7 +1,8 @@
 import update               from 'immutability-helper';
 import { 
     __productModel,
-    __relatedProductModel 
+    __relatedProductModel, 
+    makeRequest
 }                           from './api-requests';
 
 export const actionCreators = {
@@ -40,16 +41,17 @@ export const actionCreators = {
 export const productModelActionCreators = {
     getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
         if(productModelId !== getState().productModel.productModelId) {
-            __productModel.Get.Single(productModelId)(
-                data => {
-                    dispatch({ type: 'PRODUCTMODEL_RECEIVE', data });
-                    if(onSucess) onSucess(data);
-                },
-                error => {
-                    dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR', error });
-                    if(onError) onError(error);
-                }
-            )
+            dispatch(__productModel.Get.Single(productModelId))
+                .then(response => response.json())
+                .then(({type, data}) => {
+                    if(type == 'success') {
+                        dispatch({ type: 'PRODUCTMODEL_RECEIVE', data });
+                        if(onSucess) onSucess(data);
+                    } else {
+                        dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR' });
+                        if(onError) onError();
+                    }
+                });
 
             dispatch({ type: 'PRODUCTMODEL_REQUEST', productModelId });
         }

@@ -34,4 +34,25 @@ export class CatalogPageFilters {
     get SortBy() {
         return `${this.sortById}${this.sortByDesc ? '1' : '0'}`;
     }
+
+    static isEqual(filterA, filterB) {
+        if(filterA == null || filterB == null) return false;
+
+        return  filterA.itemsOnPage === filterB.itemsOnPage 
+            &&  filterA.rating === filterB.rating
+            &&  _.difference(filterA.colorCodes, filterB.colorCodes).length == 0
+            &&  _.difference(filterA.patternCodes, filterB.patternCodes).length == 0
+            &&  filterA.seasonsCodes === filterB.seasonsCodes
+            &&  _.difference(filterA.sexesCodes, filterB.sexesCodes).length == 0
+            &&  filterA.pricePerItemFrom === filterB.pricePerItemFrom
+            &&  filterA.pricePerItemTo === filterB.pricePerItemTo
+    }
+
+    static isEqualForProducts(filterA, filterB) {
+        if(filterA == null || filterB == null) return false;
+        
+        return  this.isEqual(filterA, filterB)
+            &&  filterA.sortById === filterB.sortById
+            &&  filterA.sortByDesc === filterB.sortByDesc
+    }
 }

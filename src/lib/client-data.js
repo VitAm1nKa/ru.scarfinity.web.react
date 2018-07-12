@@ -1,6 +1,6 @@
 import Cookies from 'universal-cookie';
 
-var cookies = new Cookies();
+export var cookies = new Cookies();
 var isLocalStorageAvaliable = (() => {
     try{
         localStorage.setItem('test', 'test');

@@ -8,6 +8,9 @@ import {
 import {
     pageLoadingActions
 }                       from '../../store/navigation';
+import {
+    reduxLog
+}                       from '../../store/values';
 
 import { PageMeta, SitePage }     from '../../models/PageMeta';
 import { __sitePage } from '../../store/api-requests';
@@ -115,13 +118,15 @@ export function withPage(WrappedComponent, pageId = '__page') {
         render() {
             return <WrappedComponent
                 {...this.props} 
-                initializePage={this.initializePage} />;
+                initializePage={this.initializePage}
+                setPageData={(pageData) => this.setPageData(pageData)}
+                logMessage={this.props.reduxLog} />;
         }
     }
 
     return connect(state => ({
         pages: state.environment.pageMetaList
-    }), Object.assign({}, environmentActionCreators, pageLoadingActions))(Controller);
+    }), Object.assign({}, environmentActionCreators, pageLoadingActions, reduxLog))(Controller);
 }
 
 export default withPage;
