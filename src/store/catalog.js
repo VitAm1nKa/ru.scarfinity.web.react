@@ -46,7 +46,7 @@ export const actionCreators = {
     //  -- Работа с информацией о каталоге
     loadCatalogPageInfo: (catalogPageFilters, onSuccess, onError) => (dispatch, getState) => {
         if(getState().catalog.catalogPageLoading == false) {
-            dispatch(__catalogPage.Get.Single(catalogPageFilters))
+            let fetchTask = dispatch(__catalogPage.Get.Single(catalogPageFilters))
                 .then(response => response.json())
                 .then(({ type, data }) => {
                     if(type == 'success') {
@@ -62,6 +62,7 @@ export const actionCreators = {
                     if(onError) onError(e);
                 });
 
+            addTask(fetchTask);
             dispatch({ type: 'CATALOG_CATALOGPAGEINFO_FETCH', catalogPageFilters });
         }
     }

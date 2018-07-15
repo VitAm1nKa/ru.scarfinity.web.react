@@ -1,4 +1,5 @@
 import * as Account                 from './account';
+import * as AccountSocial           from './accountSocial';
 import * as Environment             from './environment';
 import * as Catalog                 from './catalog';
 import * as Filter                  from './filter';
@@ -21,6 +22,7 @@ import * as Values                  from './values';
 
 export var reducers = {
     account: Account.reducer,
+    accountSocial: AccountSocial.reducer,
     environment: Environment.reducer,
     product: Product.reducer,
     productModel: ProductModel.reducer,

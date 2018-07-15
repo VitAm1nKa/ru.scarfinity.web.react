@@ -4,6 +4,7 @@ import {
     __relatedProductModel, 
     makeRequest
 }                           from './api-requests';
+import { addTask } from 'domain-task';
 
 export const actionCreators = {
     getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
@@ -41,18 +42,23 @@ export const actionCreators = {
 export const productModelActionCreators = {
     getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
         if(productModelId !== getState().productModel.productModelId) {
-            dispatch(__productModel.Get.Single(productModelId))
+            dispatch({ type: 'PRODUCTMODEL_REQUEST', productModelId });
+            let fetchTask = dispatch(__productModel.Get.Single(productModelId))
                 .then(response => response.json())
                 .then(({type, data}) => {
                     if(type == 'success') {
                         dispatch({ type: 'PRODUCTMODEL_RECEIVE', data });
                         if(onSucess) onSucess(data);
                     } else {
-                        dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR' });
-                        if(onError) onError();
+                        throw new Error('error');
                     }
+                })
+                .catch(error => {
+                    dispatch({ type: 'PRODUCTMODEL_RECEIVE_ERROR', error });
+                    if(onError) onError();
                 });
 
+            addTask(fetchTask);
             dispatch({ type: 'PRODUCTMODEL_REQUEST', productModelId });
         }
     }

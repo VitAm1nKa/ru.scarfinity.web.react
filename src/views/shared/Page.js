@@ -3,6 +3,9 @@ import { connect }      from 'react-redux';
 import { withRouter }   from 'react-router-dom';
 
 import {
+    sitePageActionCreators
+}                       from '../../store/sitePage';
+import {
     environmentActionCreators
 }                       from '../../store/environment';
 import {
@@ -14,6 +17,7 @@ import {
 
 import { PageMeta, SitePage }     from '../../models/PageMeta';
 import { __sitePage } from '../../store/api-requests';
+import { addTask } from 'domain-task';
 
 export function withPage(WrappedComponent, pageId = '__page') {
     class Controller extends React.Component {
@@ -45,20 +49,19 @@ export function withPage(WrappedComponent, pageId = '__page') {
             if(seo) {
                 // Загрузка инфомации о странице
                 if(this.state.sitePage.pageMeta == null) {
-                    __sitePage.Get.Single(seo)(
-                        data => {
+                    this.props.getSitePageInfo(seo)
+                        .then(data => {
                             this.setPageData({ 
                                 pageMeta: new PageMeta(data),
                                 breadCrumbs: { seo: data.seo, title: data.title }
                             }, true);
-                        },
-                        error => {
+                        })
+                        .catch(error => {
                             this.setPageData({ 
                                 pageMeta: new PageMeta({ title: '404' }),
                                 breadCrumbs: []
                             }, true);
-                        }
-                    )
+                        });
                 }
             } else {
                 // Устанавливаем базовые хлебные крошки для данной страницы
@@ -72,8 +75,12 @@ export function withPage(WrappedComponent, pageId = '__page') {
                     // Вызов данного метода необходим для уточнения меты страницы
                     // И хлебных крошек
                     // Например когда загружается каталог, товар, пост блога, отзыв и тд.
+                    console.log(pageData);
                     if(pageData != null) {
-                        this.setPageData(pageData);
+                        this.setPageData({ 
+                            pageMeta: new PageMeta(pageData.pageMeta),
+                            breadCrumbs: pageData.breadCrumbs
+                        });
                     } else {
                         this.setPageData({
                             pageMeta: new PageMeta({ title: '404' }),
@@ -126,7 +133,12 @@ export function withPage(WrappedComponent, pageId = '__page') {
 
     return connect(state => ({
         pages: state.environment.pageMetaList
-    }), Object.assign({}, environmentActionCreators, pageLoadingActions, reduxLog))(Controller);
+    }), Object.assign({}, 
+        sitePageActionCreators, 
+        environmentActionCreators, 
+        pageLoadingActions, 
+        reduxLog
+    ))(Controller);
 }
 
 export default withPage;

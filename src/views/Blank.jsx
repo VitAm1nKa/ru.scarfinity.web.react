@@ -1,14 +1,26 @@
-import React    from 'react';
-import View     from './shared/View';
+import React        from 'react';
+import { connect }  from 'react-redux';
+import {
+    sitePageActionCreators
+}                   from '../store/sitePage';
+import {
+    valuesActionCreators
+}                   from '../store/values';
 
 class Controller extends React.Component {
+    componentWillMount() {
+        // this.props.taskTest();
+        this.props.getSitePageInfo('allo')
+            .then(() => {
+                console.error('!!!!!!!!!!!!!!!!!!!!!!!'); 
+            });
+    }
+
     render() {
         return(
-            <View title="Hello world. Blank">
-                <h1>{"Blank"}</h1>
-            </View>
+            <div>{'Hello world!'}</div>
         )
     }
 }
 
-export default Controller;
+export default connect(state => ({}), Object.assign({}, sitePageActionCreators, valuesActionCreators))(Controller);

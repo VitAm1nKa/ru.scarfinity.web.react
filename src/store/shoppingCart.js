@@ -1,26 +1,35 @@
 import update               from 'immutability-helper';
 import { ShoppingCart }     from '../models/ShoppingCart';
 import { __shoppingCart }   from './api-requests';
+import Promise              from 'bluebird';
+import { addTask } from 'domain-task';
 
 export const actionCreators = {
     getShoppingCart: (createNewIsNull = false) => (dispatch, getState) => {
         if(!getState().shoppingCart.loading) {
-            dispatch(__shoppingCart.Get())
+            let fetchTask = dispatch(__shoppingCart.Get())
                 .then(response => response.json())
                 .then(({ type, data }) => {
+                    // if(type == 'success') {
+                    //     if(data == null && createNewIsNull) {
+                    //         dispatch(actionCreators.postShoppingCart());
+                    //     } else {
+                    //         dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
+                    //     }
+                    // } else {
+                    //     throw new Error(type);
+                    // }
                     if(type == 'success') {
-                        if(data == null && createNewIsNull) {
-                            dispatch(actionCreators.postShoppingCart());
-                        } else {
-                            dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-                        }
+                        return dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
                     } else {
                         throw new Error(type);
                     }
                 })
-                .catch(e => {
+                .catch(error => {
                     dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
                 });
+
+            addTask(fetchTask);
 
             dispatch({type: 'SHOPPINGCART__REQUEST'});
         }
@@ -44,15 +53,17 @@ export const actionCreators = {
     setProductQty: (productId, quantity) => (dispatch, getState) => { 
         dispatch(__shoppingCart.Put(productId, quantity))
             .then(response => response.json())
-            .then(({ type, data }) => {
+            .then(({ type, message, data }) => {
+                console.log(type, message, data);
                 if(type == 'success') {
                     dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
                 } else {
-                    throw new Error(type);
+                    throw new Error(`${type}, ${message}`);
                 }
             })
             .catch(error => {
-                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
+                console.log(error);
+                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error: error.message }); 
             });
 
         dispatch({ type: 'SHOPPINGCART__SETPRODUCTQTY' });
@@ -75,7 +86,6 @@ export const reducer = (state, incomingAction) => {
                 shoppingCart: action.shoppingCartData
             }});
         }
-
 
         // Фетч спосбов доставки
         case 'SHOPPINGCART__SHIPMETHODS__REQUEST': {

@@ -47,17 +47,15 @@ class Controller extends React.Component {
             this.props.cookies.set('user-token', this.props.account.userToken);
 
             // Запросить данные о клиенте
-            
+            if(this.props.account.userInfo == null) {
+                this.props.getUserInformation();
+            }
+
             // Корзина пользователя
             // Корзина загружается только один раз, при старте приложения
             if(this.props.shoppingCart.shoppingCart == null) {
                 this.props.getShoppingCart(true); 
             }
-
-        } else {
-            this.props.cookies.remove('user-email');
-            this.props.cookies.remove('user-name');
-            this.props.cookies.remove('user-token');
         }
     }
 
@@ -122,6 +120,7 @@ class Controller extends React.Component {
     }
 
     render() {
+        return null;
         // Анализ пути
         const queryParams = qs.parse(this.props.location.search, {ignoreQueryPrefix: true});
         const aParam = _.trim(queryParams['a']).toLowerCase();
@@ -164,7 +163,6 @@ const mstp = (state, ownProps) => {
 
 const mdtp = Object.assign({}, 
     AccountStore.actionCreators,
-    ShoppingCartActions,
-    UserStore.actionCreators);
+    ShoppingCartActions);
 
 export default withRouter(connect(mstp, mdtp)(withCookies(Controller)));

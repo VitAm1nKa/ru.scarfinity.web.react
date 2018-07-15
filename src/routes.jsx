@@ -16,11 +16,14 @@ import BreadCrumbs          from './views/BreadCrumbs';
 import EmptyPage            from './views/Empty';
 import Develop              from './develop';
 import CC                   from './views/CatalogPageTest';
+import Blank                from './views/Blank';
 
 // -- -------------------------------------------------------
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme      from 'material-ui/styles/getMuiTheme';
 const muiTheme = getMuiTheme({userAgent: 'all'});
+
+export const routes1 = <Blank />;
 
 export const routes = 
 <MuiThemeProvider muiTheme={muiTheme}>

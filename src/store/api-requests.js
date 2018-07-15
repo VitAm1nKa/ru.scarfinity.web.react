@@ -1,5 +1,6 @@
 import qs                   from 'qs';
 import { addTask }          from 'domain-task';
+import Promise              from 'bluebird';
 import * as ClientData      from '../lib/client-data';
 
 function authenticateRequest(email) {
@@ -131,55 +132,6 @@ export function makeRequest() {
     }
 }
 
-function _request(options = {}) {
-    const headers = new Headers(Object.assign({}, {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-    }, options.headers || {}));
-
-    
-    console.error(`!!!!`, options.url, headers);
-
-    const init = {
-        headers,
-        method: options.method || 'GET',
-        mode: 'cors',
-        cache: 'default',
-        body: options.body ? JSON.stringify(_.pickBy(options.body, _.identity)) : null
-    }
-
-    return new Request(options.url, init);
-}
-
-function _requestBuilder(apiMethod, method, { body, query }, _domainTask = false) {
-    return (dispatch, getState) => {
-        // Формируем квери запроса
-        const queryString = qs.stringify(query, { addQueryPrefix: true });
-
-        // Получаем из стора токен пользователя
-        const userToken = getState().account.userToken;
-
-        dispatch({ type: `API fetch: ${method} : ${apiMethod}${queryString || ''}. [token]:[${(userToken || 'no-tkn').substr(0, 5)}...]` });
-
-        // Генерируем итоговый запрос
-        let fetchTask = fetch(_request({
-            url: apiUrl(apiMethod) + queryString,
-            method,
-            headers: _.pickBy({ 'Authorization': userToken ? `Bearer ${userToken}`: null }),
-            body: _.includes(['POST', 'PUT'], method) ? body : null
-        }))
-        .then(response => {
-            const headers = {};
-            return Promise.resolve();
-        })
-        .catch(e => Promise.reject(e));
-
-        if(_domainTask) addTask(fetchTask);
-
-        return fetchTask;
-    }
-}
-
 function request(options = {}) {
     const userToken = ClientData.cookieGetData('user-token');
     const headers = new Headers(Object.assign({}, {
@@ -236,35 +188,64 @@ function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = f
     }
 }
 
+function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
 
 function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
     return (dispatch, getState) => {
-        const queryString = qs.stringify(query, { addQueryPrefix: true });
-        dispatch({ type: `API Fetch: ${method} : ${apiMethod}${queryString || ''}` });
-        console.warn("API Fetch: ", `${method} : ${apiMethod}${queryString || ''}`);
+        return new Promise((resolve, reject) => {
+            const requestCode = s4();
+            const queryString = qs.stringify(query, { addQueryPrefix: true });
 
-        let fetchTask = fetch(_request({
-            url: apiUrl(apiMethod) + queryString,
-            method,
-            headers: getState().account.headers,
-            body: _.includes(['POST', 'PUT'], method) ? _.pickBy(body, _.identity) : null
-        }));
+            console.warn(`Request[${requestCode}][start]: ${method} : ${apiMethod}${queryString || ''}`);
 
-        if (_domainTask) addTask(fetchTask);
-        return fetchTask;
+            const headers = new Headers(_.merge({
+                ['Access-Control-Allow-Origin']: '*',
+                ['Content-Type']: 'application/json',
+            }, getState().account.headers));
+
+            // Выполняем асинхронный зарос к API
+            // Хэндлим ошибки этим методом
+            fetch(apiUrl(apiMethod) + queryString, {
+                method: method || 'GET',
+                headers,
+                mode: 'cors',
+                cache: 'default',
+                body: _.includes(['POST', 'PUT'], method) ? JSON.stringify(_.pickBy(body, _.identity)) : null
+            })
+            .then(response => {
+                console.warn(`Request[${requestCode}][end]: ${method} : ${apiMethod}${queryString || ''}`);
+                if(response.ok) return resolve(response);
+
+                dispatch({ type: `Request[${requestCode}], requested not ok! Status code: [${response.status}]` });
+                console.warn(`Request[${requestCode}], requested not ok! Status code: [${response.status}]`);
+                return Promise.reject(new Error('error'));
+            })
+            .catch(error => {
+                dispatch({ type: `Request[${requestCode}][${apiMethod}], handled error! Error: ${error}` });
+                reject(error);
+            });
+        });
     }
+}
+
+export const __values = {
+    Get: () => __requestBuilder('Values/5', 'GET', {}, true)
 }
 
 //#region  Authentication
 export const __authentication = {
     SignIn: (email, password) => {
-        return requestBuilder('Token/SignIn', 'POST', { body: {
+        return __requestBuilder('Token/SignIn', 'POST', { body: {
             email,
             password
         }}, true);
     },
     SignUp: (name, email, password) => {
-        return requestBuilder('Token/SignUp', 'POST', { body: {
+        return __requestBuilder('Token/SignUp', 'POST', { body: {
             name,
             email,
             password
@@ -274,7 +255,15 @@ export const __authentication = {
         return __requestBuilder('Token', 'POST', { body: { email } }, true);
     },
     Me: () => {
-        return requestBuilder('Token', 'GET');
+        return __requestBuilder('Token', 'GET', {}, true);
+    }
+}
+export const __authenticationSocial = {
+    VK: {
+        auth: (code, redirect) => __requestBuilder('Token/OAuthVKSignIn', 'GET', { query: { code, redirect } }, true)
+    },
+    FB: {
+        auth: (code, redirect) => __requestBuilder('Token/FBSignIn', 'GET', { query: { code, redirect } }, true)
     }
 }
 //#endregion
@@ -365,7 +354,7 @@ export const __shipMethod = {
 //  #region SitePage
 export const __sitePage = {
     Get: {
-        Single: (seo) => requestBuilder(`SitePage/${seo}`, 'GET', {}, true)
+        Single: (seo) => __requestBuilder(`SitePage/${seo}`, 'GET', {}, true)
     }
 }
 //  #endregion
@@ -376,7 +365,7 @@ export const __shoppingCart = {
         return __requestBuilder('ShoppingCart', 'GET', {}, true);
     },
     Post: () => {
-        return __requestBuilder('ShoppingCart', 'POST', { body: {} });
+        return __requestBuilder('ShoppingCart', 'POST', { body: {} }, true);
     },
     Put: (productId, quantity) => {
         return __requestBuilder('ShoppingCart', 'PUT', { body: {

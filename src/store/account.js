@@ -1,7 +1,31 @@
 import update               from 'immutability-helper';
-import { __authentication } from './api-requests';
+import { 
+    __authentication, 
+    __authenticationSocial 
+}                           from './api-requests';
+import { addTask } from 'domain-task';
 
 export const actionCreators = {
+    getUserInformation: () => (dispatch, getState) => {
+        if(!getState().account.userInfoFetch) {
+            let fetchTask = dispatch(__authentication.Me())
+                .then(response => response.json())
+                .then(({ type, data }) => {
+                    dispatch({ type: 'ACCOUNT_USERINFO_FETCH_SUCCESS', data: {} });
+                    if(type == 'success') {
+                        if(data.loginProviders.vkUserInfo != null) {
+                            dispatch({ type: 'ACCOUNT_SOCIAL_VK_USERDATA', data: data.loginProviders.vkUserInfo });
+                        }
+                    }
+                })
+                .catch(error => {
+                    dispatch({ type: 'ACCOUNT_USERINFO_FETCH_ERROR', error });
+                });
+
+            dispatch({ type: 'ACCOUNT_USERINFO_FETCH' });
+            addTask(fetchTask);
+        }
+    },
     continue: (role) => (dispatch, getState) => {
         dispatch({ type: 'ACCOUNT__AUTH__CONTINUE', role });
     },
@@ -67,6 +91,10 @@ const initialState = {
     userName: null,
     userToken: null,
 
+    userInfo: null,
+    userInfoFetch: false,
+    userInfoError: null,
+
     signIn: false,
     signInFetch: false,
     signInError: null,
@@ -80,6 +108,39 @@ const initialState = {
 export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
+        case 'ACCOUNT_INITIALIZE': {
+            const headers = {
+                ['Authorization']: `Bearer ${action.data['user-token']}`
+            };
+
+            return update(state, {$merge: {
+                headers,
+                authFetch: false,
+                auth: true,
+                authError: null,
+                userEmail: action.data['user-email'],
+                userName: action.data['user-name'],
+                userToken: action.data['user-token']
+            }});
+        }
+        case 'ACCOUNT_USERINFO_FETCH': {
+            return update(state, {$merge: {
+                userInfoFetch: true
+            }});
+        }
+        case 'ACCOUNT_USERINFO_FETCH_SUCCESS': {
+            return update(state, {$merge: {
+                userInfoFetch: false,
+                userInfo: action.data
+            }});
+        }
+        case 'ACCOUNT_USERINFO_FETCH_ERROR': {
+            return update(state, {$merge: {
+                userInfoFetch: false,
+                userInfo: null,
+                userInfoError: action.error
+            }});
+        }
         case 'ACCOUNT__AUTH__CONTINUE': {
             switch(action.role) {
                 case 'ANONYMOUS': return update(state, {auth: {$set: true}});
@@ -94,8 +155,6 @@ export const reducer = (state, incomingAction) => {
         }
         case 'ACCOUNT__AUTH__SUCCESS': {
             const headers = {
-                ['Access-Control-Allow-Origin']: '*',
-                ['Content-Type']: 'application/json',
                 ['Authorization']: `Bearer ${action.data.token}`
             };
 
@@ -113,7 +172,7 @@ export const reducer = (state, incomingAction) => {
             return update(state, {$merge: {
                 authFetch: false,
                 auth: false,
-                authError: action.error.message,
+                authError: action.error,
                 userName: null,
                 userToken: null
             }})
