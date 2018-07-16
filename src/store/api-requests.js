@@ -1,6 +1,6 @@
 import qs                   from 'qs';
 import { addTask }          from 'domain-task';
-import Promise              from 'bluebird';
+// import Promise              from 'bluebird';
 import * as ClientData      from '../lib/client-data';
 
 function authenticateRequest(email) {
@@ -119,33 +119,42 @@ function s4() {
 
 function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
     return (dispatch, getState) => {
-        const requestCode = s4();
-        const queryString = qs.stringify(query, { addQueryPrefix: true });
-
-        console.warn(`Request[${requestCode}][start]: ${method} : ${apiMethod}${queryString || ''}`);
-
-        const headers = new Headers(_.merge({
-            ['Access-Control-Allow-Origin']: '*',
-            ['Content-Type']: 'application/json',
-        }, getState().account.headers));
-
-        // Выполняем асинхронный зарос к API
-        // Хэндлим ошибки этим методом
-        return fetch(apiUrl(apiMethod) + queryString, {
-            method: method || 'GET',
-            headers,
-            mode: 'cors',
-            cache: 'default',
-            body: _.includes(['POST', 'PUT'], method) ? JSON.stringify(_.pickBy(body, _.identity)) : null
-        })
-        .then(response => {
-            console.warn(`Request[${requestCode}][end]: ${method} : ${apiMethod}${queryString || ''}`);
-            if(response.ok) return Promise.resolve(response);
-
-            dispatch({ type: `Request[${requestCode}], requested not ok! Status code: [${response.status}]` });
-            console.warn(`Request[${requestCode}], requested not ok! Status code: [${response.status}]`);
-            return Promise.reject(new Error('error'));
-        });
+        return new Promise((resolve, reject) => {
+            const requestCode = s4();
+            const queryString = qs.stringify(_.pickBy(query), { addQueryPrefix: true });
+    
+            console.warn(`Request[${requestCode}][start]: ${method} : ${apiMethod}${queryString || ''}`);
+    
+            const headers = new Headers(_.merge({
+                ['Access-Control-Allow-Origin']: '*',
+                ['Content-Type']: 'application/json',
+            }, getState().account.headers));
+    
+            // Выполняем асинхронный зарос к API
+            // Хэндлим ошибки этим методом
+            return fetch(apiUrl(apiMethod) + queryString, {
+                method: method || 'GET',
+                headers,
+                mode: 'cors',
+                cache: 'default',
+                body: _.includes(['POST', 'PUT'], method) ? JSON.stringify(_.pickBy(body, _.identity)) : null
+            })
+            .then(response => {
+                console.warn(`Request[${requestCode}][end]: ${method} : ${apiMethod}${queryString || ''}`);
+                if(response.ok) {
+                    resolve(response);
+                } else {
+                    dispatch({ type: `Request[${requestCode}], requested not ok! Status code: [${response.status}]` });
+                    console.warn(`Request[${requestCode}], requested not ok! Status code: [${response.status}]`);
+                    reject(`[${response.status}]`);
+                }
+            })
+            .catch(error => {
+                dispatch({ type: `Request[${requestCode}], request fetch Error! ${error}` });
+                console.warn(`Request[${requestCode}], request fetch Error!`, error);
+                reject(`[${error.code}]`);
+            });
+        }); 
     }
 }
 
@@ -278,8 +287,8 @@ export const __sitePage = {
 
 //  #region ShoppingCart
 export const __shoppingCart = {
-    Get: () => {
-        return __requestBuilder('ShoppingCart', 'GET', {}, true);
+    Get: (action) => {
+        return __requestBuilder('ShoppingCart', 'GET', { query: { action } }, true);
     },
     Post: () => {
         return __requestBuilder('ShoppingCart', 'POST', { body: {} }, true);

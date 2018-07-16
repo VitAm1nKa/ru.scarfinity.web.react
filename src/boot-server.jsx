@@ -78,7 +78,7 @@ function prerender(params) {
                     </CookiesProvider>
                 </Provider>
             );
-
+    
         store.dispatch(initialize(cookies.cookies, params.location))
             .then(() => {
                 run(() => {

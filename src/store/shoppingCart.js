@@ -5,20 +5,11 @@ import Promise              from 'bluebird';
 import { addTask } from 'domain-task';
 
 export const actionCreators = {
-    getShoppingCart: (createNewIsNull = false) => (dispatch, getState) => {
+    getShoppingCart: (action) => (dispatch, getState) => {
         if(!getState().shoppingCart.loading) {
-            let fetchTask = dispatch(__shoppingCart.Get())
+            let fetchTask = dispatch(__shoppingCart.Get(action))
                 .then(response => response.json())
                 .then(({ type, data }) => {
-                    // if(type == 'success') {
-                    //     if(data == null && createNewIsNull) {
-                    //         dispatch(actionCreators.postShoppingCart());
-                    //     } else {
-                    //         dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
-                    //     }
-                    // } else {
-                    //     throw new Error(type);
-                    // }
                     if(type == 'success') {
                         return dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
                     } else {
@@ -35,35 +26,36 @@ export const actionCreators = {
         }
     },
     postShoppingCart: () => (dispatch, getState) => {
-        dispatch(__shoppingCart.Post())
+        let fetchTask = dispatch(__shoppingCart.Post())
             .then(response => response.json())
             .then(({ type, data }) => {
                 if(type == 'success') {
                     dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
                 } else {
-                    throw new Error(type);
+                    return Promise.reject('error');
                 }
             })
             .catch(error => { 
                 dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
             });
         
+        addTask(fetchTask);
+
         dispatch({ type: 'SHOPPINGCART__POST' });
     },
     setProductQty: (productId, quantity) => (dispatch, getState) => { 
         dispatch(__shoppingCart.Put(productId, quantity))
             .then(response => response.json())
             .then(({ type, message, data }) => {
-                console.log(type, message, data);
                 if(type == 'success') {
                     dispatch({ type: 'SHOPPINGCART__RECEIVE', shoppingCartData: data });
                 } else {
-                    throw new Error(`${type}, ${message}`);
+                    return Promise.reject(message);
                 }
             })
             .catch(error => {
                 console.log(error);
-                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error: error.message }); 
+                dispatch({ type: 'SHOPPINGCART__RECEIVE__ERROR', error }); 
             });
 
         dispatch({ type: 'SHOPPINGCART__SETPRODUCTQTY' });

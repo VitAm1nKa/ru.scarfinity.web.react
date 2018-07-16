@@ -55,7 +55,7 @@ class Layout extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.location.pathname !== prevProps.location.pathname) {
-            console.clear();
+            // console.clear();
             console.warn('Page changed.');
             scroll(0, 0);
         }

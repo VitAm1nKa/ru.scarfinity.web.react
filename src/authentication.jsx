@@ -1,6 +1,6 @@
 import jwtDecoder           from 'jwt-decode';
 import qs                   from 'qs';
-import Promise              from 'bluebird';
+// import Promise              from 'bluebird';
 import { __authentication, __authenticationSocial } from './store/api-requests';
 
 function authenticateStart() {
@@ -78,10 +78,7 @@ function fbAuthenticate(code, redirect) {
         return new Promise((resolve, reject) => {
             dispatch({ type: 'ACCOUNT_SOCIAL_FB_AUTH', code });
             dispatch(__authenticationSocial.FB.auth(code, redirect))
-                .then(response => {
-                    dispatch({ type: 'Auth FB json blob...' });
-                    return response.json()
-                })
+                .then(response => response.json())
                 .then(({ type, data }) => {
                     if(type == 'success') {
                         dispatch({ type: 'ACCOUNT_SOCIAL_FB_AUTH_SUCCESS', data });
@@ -92,8 +89,8 @@ function fbAuthenticate(code, redirect) {
                         resolve({ type: 'error' });
                     }
                 })
-                .catch(e => {
-                    dispatch({ type: 'ACCOUNT_SOCIAL_FB_AUTH_ERROR' });
+                .catch(error => {
+                    dispatch({ type: 'ACCOUNT_SOCIAL_FB_AUTH_ERROR', error });
                     resolve({ type: 'error' });
                 });
         });

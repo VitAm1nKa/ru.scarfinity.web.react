@@ -49,19 +49,17 @@ export function withPage(WrappedComponent, pageId = '__page') {
             if(seo) {
                 // Загрузка инфомации о странице
                 if(this.state.sitePage.pageMeta == null) {
-                    this.props.getSitePageInfo(seo)
-                        .then(data => {
-                            this.setPageData({ 
-                                pageMeta: new PageMeta(data),
-                                breadCrumbs: { seo: data.seo, title: data.title }
-                            }, true);
-                        })
-                        .catch(error => {
-                            this.setPageData({ 
-                                pageMeta: new PageMeta({ title: '404' }),
-                                breadCrumbs: []
-                            }, true);
-                        });
+                    this.props.getSitePageInfo(seo, data => {
+                        this.setPageData({ 
+                            pageMeta: new PageMeta(data),
+                            breadCrumbs: { seo: data.seo, title: data.title }
+                        }, true);
+                    }, error => {
+                        this.setPageData({ 
+                            pageMeta: new PageMeta({ title: '404' }),
+                            breadCrumbs: []
+                        }, true);
+                    });
                 }
             } else {
                 // Устанавливаем базовые хлебные крошки для данной страницы

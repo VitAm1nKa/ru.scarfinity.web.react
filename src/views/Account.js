@@ -41,7 +41,7 @@ class Controller extends React.Component {
     }
 
     componentWillMount() {
-        if(this.props.account.auth || true) {
+        if(this.props.account.auth) {
             this.props.cookies.set('user-email', this.props.account.userEmail);
             this.props.cookies.set('user-name', this.props.account.userName);
             this.props.cookies.set('user-token', this.props.account.userToken);
@@ -54,8 +54,15 @@ class Controller extends React.Component {
             // Корзина пользователя
             // Корзина загружается только один раз, при старте приложения
             if(this.props.shoppingCart.shoppingCart == null) {
-                this.props.getShoppingCart(true); 
+                this.props.getShoppingCart('create'); 
             }
+        }
+
+        // Редиректим приложение, без параметров для соц.аутентификации
+        console.log(this.props.location);
+        const query = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+        if(query.code != null || query.lp != null) {
+            this.props.history.push(`${this.props.location.pathname}${qs.stringify(_.omit(query, ['code', 'lp']), { addQueryPrefix: true })}`);
         }
     }
 

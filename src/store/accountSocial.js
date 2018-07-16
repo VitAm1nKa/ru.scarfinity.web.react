@@ -2,7 +2,6 @@ import update               from 'immutability-helper';
 import {
     __authenticationSocial 
 }                           from './api-requests';
-import Promise              from 'bluebird';
 
 export const accountSocialActionCreators = {
     vkAuth: (code, redirect) => (dispatch, getState) => {
@@ -26,12 +25,16 @@ export const accountSocialActionCreators = {
 const initialState = {
     vkAuth: false,
     vkAuthData: null,
-    vkAuthError: null
+    vkAuthError: null,
+    fbAuth: false,
+    fbAuthData: null,
+    fbAuthError: null
 }
 
 export const reducer = (state, incomingAction) => {
     const action = incomingAction;
     switch (action.type) {
+        // #region VK
         case 'ACCOUNT_SOCIAL_VK_AUTH': {
             return update(state, {$merge: {
                 vkAuthError: null
@@ -53,6 +56,30 @@ export const reducer = (state, incomingAction) => {
                 vkAuthData: action.data
             }});
         }
+        // #endregion
+        
+        // #region FB
+        case 'ACCOUNT_SOCIAL_FB_AUTH': {
+            return update(state, {$merge: {
+                fbAuth: false,
+                fbAuthError: null
+            }});
+        }
+        case 'ACCOUNT_SOCIAL_FB_AUTH_SUCCESS': {
+            return update(state, {$merge: {
+                fbAuth: true,
+                fbAuthError: null,
+                fbAuthData: action.data
+            }});
+        }
+        case 'ACCOUNT_SOCIAL_FB_AUTH_ERROR': {
+            return update(state, {$merge: {
+                fbAuth: false,
+                fbAuthError: action.error,
+                fbAuthData: null
+            }});
+        }
+        // #endregion
     }
     return state || initialState;
 }
