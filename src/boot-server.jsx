@@ -14,52 +14,9 @@ import {
     initialize,
     authenticateWithSocial
 } from './authentication';
-import { addTask } from 'domain-task';
-import Promise from 'bluebird';
+import { addTask, run } from 'domain-task';
+// import Promise from 'bluebird';
 
-
-import { valuesActionCreators } from './store/values';
-
-function prerender1(params) {
-    return new Promise((resolve, reject) => {
-        console.error('------------------------ ### ##  #   [APP START]   #  ## ### ------------------------');
-        // Prepare Redux store with in-memory history, and dispatch a navigation event
-        // corresponding to the incoming URL
-        const basename = params.baseUrl.substring(0, params.baseUrl.length - 1); // Remove trailing slash
-        const urlAfterBasename = params.url.substring(basename.length);
-        const store = configureStore(createMemoryHistory());
-        const cookies = new Cookies(params.data.cookies);
-        store.dispatch(replace(urlAfterBasename));
-
-        const routerContext = {};
-            const app = (
-                <Provider store={ store }>
-                    <CookiesProvider cookies={cookies}>
-                        <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
-                    </CookiesProvider>
-                </Provider>
-            );
-
-        params.domainTasks.then(() => {
-            store.dispatch(log('Hello world'));
-            return Promise.resolve();
-        });
-
-        addTask(store.dispatch(initialize(cookies.cookies, params.location))
-            .then(() => {
-                return renderToString(app);
-            }));
-
-        params.domainTasks.then(() => {
-            store.dispatch(log('App final render start...'));
-            store.dispatch(log('--------------------------------------------'));
-            resolve({
-                html: renderToString(app),
-                globals: { initialReduxState: store.getState() }
-            });
-        }, reject); // Also propagate any errors back into the host application 
-    });
-}
 
 function A() {
     return (dispatch) => {
@@ -83,6 +40,18 @@ function T() {
     }
 }
 
+function longQuery(delay) {
+    return (dispatch) => {
+        return new Promise((resolve, reject) => {
+            dispatch(log('Long query start...'));
+            setTimeout(() => {
+                dispatch(log('Long query end...'));
+                resolve({});
+            }, delay);
+        });
+    }
+}
+
 function log(message) {
     return (dispatch) => {
         console.error(`[Log]:: ${message}`);
@@ -102,31 +71,31 @@ function prerender(params) {
         store.dispatch(replace(urlAfterBasename));
 
         const routerContext = {};
-        const app = (
-            <Provider store={ store }>
-                <CookiesProvider cookies={cookies}>
-                    <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
-                </CookiesProvider>
-            </Provider>
-        );
+            const app = (
+                <Provider store={ store }>
+                    <CookiesProvider cookies={cookies}>
+                        <StaticRouter basename={ basename } context={ routerContext } location={ params.location.path } children={ routes } />
+                    </CookiesProvider>
+                </Provider>
+            );
 
-        // При серверном пререндеринге, вызываем механизм аутентификации клиента
-        // Вызов попадет первым в список отложенных доменных запросов
-        addTask(store.dispatch(initialize(cookies.cookies, params.location))
-            .then((data) => {
-                if(data.type == 'success') store.dispatch(log('App rendering with normal auth!'));
-                else store.dispatch(log('App rendering with error auth!'));
-                store.dispatch(log('------------------- PRERENDER START -------------------'));
-                return renderToString(app);
-            }));
-
-        params.domainTasks.then(() => {
-            store.dispatch(log('------------------- FINAL RENDER START -------------------'));
-            resolve({
-                html: renderToString(app),
-                globals: { initialReduxState: store.getState() }
+        store.dispatch(initialize(cookies.cookies, params.location))
+            .then(() => {
+                run(() => {
+                    store.dispatch(log('------------------- PRERENDER START -------------------'));
+                    renderToString(app);
+                }, () => {
+                    params.domainTasks.then(() => {
+                        store.dispatch(log('------------------- FINAL RENDER START -------------------'));
+                        resolve({
+                            html: renderToString(app),
+                            globals: { initialReduxState: store.getState() }
+                        });
+                    }, reject); // Also propagate any errors back into the host application 
+                });
             });
-        }, reject); // Also propagate any errors back into the host application 
+
+
     });
 }
 

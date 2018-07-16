@@ -55,83 +55,6 @@ export function authenticateError() {
     return { type: 'ACCOUNT__AUTH__ERROR' };
 }
 
-function getSettings(cookies, account) {
-    const settings = _.merge({
-        'user-email': null,
-        'user-name': null,
-        'user-token': null
-    }, cookies, _.pickBy({
-        'user-email': account.userEmail,
-        'user-name': account.userName,
-        'user-token': account.userToken
-    }, _.identity));
-
-    return _.pickBy({
-        userEmail: settings['user-email'],
-        userName: settings['user-name'],
-        userToken: settings['user-token']
-    }, _.identity);
-}
-
-
-
-
-function buildRequest(baseRequest) {
-    const body = baseRequest.body;
-
-    const headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-    };
-
-    const init = {
-        headers,
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        body: JSON.stringify(_.pickBy(body, _.identity))
-    }
-
-    return new Request('http://localhost:50146/api/token', init);
-}
-
-
-export function makeRequest() {
-    return (dispatch, getState) => {
-        return new Promise((resolve, reject) => {
-            const settings = getSettings(ClientData.cookies, getState().account);
-
-            if(settings.userToken != null) {
-                // // Проверка токена
-                try {
-                    const decoded = jwtDecoder(settings.userToken);
-
-                    // Если срок действия не истек, вернуть ресолв
-                    if(decoded.exp * 1000 > Date.now()) {
-                        dispatch(authenticateComplete({
-                            email: settings.userEmail,
-                            name: settings.userName,
-                            token: settings.userToken
-                        }));
-                        resolve();
-                    } 
-                }
-                catch(e) { }
-            } 
-
-            return dispatch(authenticate(settings['user-email']))
-                .then(({ data }) => {
-                    dispatch(authenticateComplete(data));
-                    resolve();
-                })
-                .catch(() => {
-                    dispatch(authenticateError());
-                    reject();
-                });
-        });
-    }
-}
-
 function request(options = {}) {
     const userToken = ClientData.cookieGetData('user-token');
     const headers = new Headers(Object.assign({}, {
@@ -152,7 +75,7 @@ function request(options = {}) {
 }
 
 function apiUrl(apiMethodName) {
-    return `http://localhost:50146/api/${apiMethodName}`;
+    return `http://192.168.1.198:8013/api/${apiMethodName}`;
 }
 
 function requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
@@ -196,38 +119,32 @@ function s4() {
 
 function __requestBuilder(apiMethod, method, { body, query } = {}, _domainTask = false) {
     return (dispatch, getState) => {
-        return new Promise((resolve, reject) => {
-            const requestCode = s4();
-            const queryString = qs.stringify(query, { addQueryPrefix: true });
+        const requestCode = s4();
+        const queryString = qs.stringify(query, { addQueryPrefix: true });
 
-            console.warn(`Request[${requestCode}][start]: ${method} : ${apiMethod}${queryString || ''}`);
+        console.warn(`Request[${requestCode}][start]: ${method} : ${apiMethod}${queryString || ''}`);
 
-            const headers = new Headers(_.merge({
-                ['Access-Control-Allow-Origin']: '*',
-                ['Content-Type']: 'application/json',
-            }, getState().account.headers));
+        const headers = new Headers(_.merge({
+            ['Access-Control-Allow-Origin']: '*',
+            ['Content-Type']: 'application/json',
+        }, getState().account.headers));
 
-            // Выполняем асинхронный зарос к API
-            // Хэндлим ошибки этим методом
-            fetch(apiUrl(apiMethod) + queryString, {
-                method: method || 'GET',
-                headers,
-                mode: 'cors',
-                cache: 'default',
-                body: _.includes(['POST', 'PUT'], method) ? JSON.stringify(_.pickBy(body, _.identity)) : null
-            })
-            .then(response => {
-                console.warn(`Request[${requestCode}][end]: ${method} : ${apiMethod}${queryString || ''}`);
-                if(response.ok) return resolve(response);
+        // Выполняем асинхронный зарос к API
+        // Хэндлим ошибки этим методом
+        return fetch(apiUrl(apiMethod) + queryString, {
+            method: method || 'GET',
+            headers,
+            mode: 'cors',
+            cache: 'default',
+            body: _.includes(['POST', 'PUT'], method) ? JSON.stringify(_.pickBy(body, _.identity)) : null
+        })
+        .then(response => {
+            console.warn(`Request[${requestCode}][end]: ${method} : ${apiMethod}${queryString || ''}`);
+            if(response.ok) return Promise.resolve(response);
 
-                dispatch({ type: `Request[${requestCode}], requested not ok! Status code: [${response.status}]` });
-                console.warn(`Request[${requestCode}], requested not ok! Status code: [${response.status}]`);
-                return Promise.reject(new Error('error'));
-            })
-            .catch(error => {
-                dispatch({ type: `Request[${requestCode}][${apiMethod}], handled error! Error: ${error}` });
-                reject(error);
-            });
+            dispatch({ type: `Request[${requestCode}], requested not ok! Status code: [${response.status}]` });
+            console.warn(`Request[${requestCode}], requested not ok! Status code: [${response.status}]`);
+            return Promise.reject(new Error('error'));
         });
     }
 }

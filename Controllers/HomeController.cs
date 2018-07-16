@@ -2,23 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.NodeServices;
 using Microsoft.AspNetCore.SpaServices.Prerendering;
+using Microsoft.Extensions.DependencyInjection;
 using ru.scarfinity.core.models.ReduxStore;
 
 namespace scarfinity_react.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ISpaPrerenderer _spaPrerenderer;
-        public HomeController(ISpaPrerenderer spaPrerenderer)
-        {
-            _spaPrerenderer = spaPrerenderer;
-        }
-
         public async Task<IActionResult> Index()
         {
+            var nodeServices = Request.HttpContext.RequestServices.GetRequiredService<INodeServices>();
+            var hostEnv = Request.HttpContext.RequestServices.GetRequiredService<IHostingEnvironment>();
+
+            var applicationBasePath = hostEnv.ContentRootPath;
+            var requestFeature = Request.HttpContext.Features.Get<IHttpRequestFeature>();
+            var unencodedPathAndQuery = requestFeature.RawTarget;
+            var unencodedAbsoluteUrl = $"{Request.Scheme}://{Request.Host}{unencodedPathAndQuery}";
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            CancellationToken token = cancelTokenSource.Token;
+
             var cookies = new Dictionary<string, string>();
             foreach (var c in HttpContext.Request.Cookies)
             {
@@ -26,8 +36,20 @@ namespace scarfinity_react.Controllers
             }
             var data = new { cookies };
 
-            var prerenderData = await _spaPrerenderer.RenderToString("src/dist/main-server", customDataParameter: data);
-            var state = prerenderData.Globals["initialReduxState"].ToObject<Store>();
+            var prerenderResult = await Prerenderer.RenderToString(
+                "/",
+                nodeServices,
+                token,
+                new JavaScriptModuleExport(applicationBasePath + "/src/dist/main-server"),
+                unencodedAbsoluteUrl,
+                unencodedPathAndQuery,
+                data,
+                30000,
+                Request.PathBase.ToString()
+            );
+
+            // var prerenderData = await _spaPrerenderer.RenderToString("src/dist/main-server", customDataParameter: data);
+            var state = prerenderResult.Globals["initialReduxState"].ToObject<Store>();
 
             var meta = state.Environment.Meta;
             ViewData["title"] = meta.Title;
@@ -42,7 +64,7 @@ namespace scarfinity_react.Controllers
             ViewData["og:type"] = "website";
 
 
-            return View(prerenderData);
+            return View(prerenderResult);
         }
 
         public IActionResult Error()

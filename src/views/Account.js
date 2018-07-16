@@ -41,7 +41,7 @@ class Controller extends React.Component {
     }
 
     componentWillMount() {
-        if(this.props.account.auth) {
+        if(this.props.account.auth || true) {
             this.props.cookies.set('user-email', this.props.account.userEmail);
             this.props.cookies.set('user-name', this.props.account.userName);
             this.props.cookies.set('user-token', this.props.account.userToken);

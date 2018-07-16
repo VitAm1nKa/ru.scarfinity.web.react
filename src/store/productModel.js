@@ -42,7 +42,6 @@ export const actionCreators = {
 export const productModelActionCreators = {
     getProductModel: (productModelId, onSucess, onError) => (dispatch, getState) => {
         if(productModelId !== getState().productModel.productModelId) {
-            dispatch({ type: 'PRODUCTMODEL_REQUEST', productModelId });
             let fetchTask = dispatch(__productModel.Get.Single(productModelId))
                 .then(response => response.json())
                 .then(({type, data}) => {
